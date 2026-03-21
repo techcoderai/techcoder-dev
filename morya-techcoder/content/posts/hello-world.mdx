@@ -1,0 +1,107 @@
+---
+title: "Hello World: Your First TechCoder Blog Post"
+excerpt: "A complete guide to writing blog posts using the TechCoder MDX content system. Includes images, code blocks, and all markdown features."
+date: "2026-03-21"
+category: Tricks
+tags: [MDX, TechCoder, Guide, Markdown, Blogging]
+coverImage: /content/blog/hello-world.svg
+thumbnail: /content/blog/hello-world.svg
+ogImage: /content/blog/hello-world.svg
+---
+
+## Welcome to TechCoder
+
+This is a sample blog post demonstrating everything you can do with the **TechCoder MDX content system**. Just drop a `.mdx` file into `content/posts/` and it appears on the site automatically.
+
+## Adding Images
+
+You can include images using standard markdown syntax. Images are automatically optimized with Next.js:
+
+![Hello World Thumbnail](/content/blog/hello-world.svg)
+
+Store your blog images in `public/content/blog/` and reference them with `/content/blog/your-image.svg`.
+
+## Code Blocks
+
+Inline code like `console.log("Hello!")` is styled with `JetBrains Mono` in the accent color.
+
+Fenced code blocks get the full dark-theme treatment:
+
+```javascript
+// Your first TechCoder post
+const post = {
+  title: "Hello World",
+  category: "Tricks",
+  tags: ["MDX", "TechCoder"],
+};
+
+console.log(`Welcome to ${post.title}!`);
+```
+
+Multi-language support works out of the box:
+
+```python
+def greet(name: str) -> str:
+    """Greet a developer."""
+    return f"Welcome to TechCoder, {name}!"
+
+print(greet("Developer"))
+```
+
+## Text Formatting
+
+- **Bold text** for emphasis
+- Regular paragraph text in Inter for readability
+- [Links are styled in gold](/blog) with underlines
+
+## Blockquotes
+
+> "The best way to predict the future is to invent it."
+> — Alan Kay
+
+## Lists
+
+### Unordered
+- Drop a `.mdx` file into `content/posts/`
+- Add frontmatter (title, excerpt, date, category, tags, thumbnail)
+- Write your content in markdown
+- Done — it appears on the site
+
+### Ordered
+1. Create your image in `public/content/blog/`
+2. Reference it in frontmatter as `thumbnail: /content/blog/my-image.svg`
+3. Use `![alt text](/content/blog/my-image.svg)` for in-body images
+
+## Tables
+
+| Feature | Supported |
+|---------|-----------|
+| MDX Components | Yes |
+| Image Optimization | Yes |
+| Code Highlighting | Yes |
+| Frontmatter | Yes |
+| Auto Reading Time | Yes |
+
+---
+
+## How to Add a New Post
+
+1. Create a new `.mdx` file in `content/posts/` — the filename becomes the URL slug
+2. Add this frontmatter template at the top:
+
+```yaml
+---
+title: "Your Post Title"
+excerpt: "A brief description for cards and SEO."
+date: "2026-03-21"
+category: AI
+tags: [Tag1, Tag2]
+thumbnail: /content/blog/your-thumbnail.svg
+ogImage: /content/blog/your-og-image.svg
+---
+```
+
+3. Write your content below the `---` using markdown or MDX
+4. Save — the post appears automatically on the homepage and blog listing
+
+That's it. **Write and ship.**
