@@ -45,9 +45,14 @@ export default function BlogListPage({
       <div className="container-wide mx-auto">
         {/* Page header */}
         <div className="mb-10 animate-fade-up">
-          <h1 className="heading-xl text-3xl md:text-4xl mb-3">Blog</h1>
-          <p className="text-tc-text-muted text-base md:text-lg leading-relaxed">
-            Deep dives, quick wins, and everything in between.
+          <span className="chip mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-tc-primary" />
+            The Library
+          </span>
+          <h1 className="heading-xl text-3xl md:text-4xl mb-3">Articles &amp; guides</h1>
+          <p className="text-tc-text-muted text-base md:text-lg leading-relaxed max-w-xl">
+            In-depth guides, hands-on tutorials, and deep dives — every one written and
+            edited by the TechCoder team.
           </p>
         </div>
 
@@ -63,7 +68,7 @@ export default function BlogListPage({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search articles..."
-              className="focus-ring w-full pl-11 pr-4 py-3.5 rounded-xl bg-white border border-gray-200 text-sm text-tc-text placeholder:text-tc-text-light outline-none hover:border-tc-text-light/50 focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(255,180,51,0.1)] transition-all duration-200"
+              className="focus-ring w-full pl-11 pr-4 py-3.5 rounded-xl bg-tc-bg-card border border-tc-border text-sm text-tc-text placeholder:text-tc-text-light outline-none hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(249,115,22,0.12)] transition-all duration-200"
             />
           </div>
 
@@ -76,8 +81,8 @@ export default function BlogListPage({
                 className={cn(
                   "focus-ring px-4 py-2.5 text-xs font-bold rounded-full border transition-all duration-200",
                   activeCategory === cat
-                    ? "bg-tc-primary text-tc-text border-tc-primary shadow-sm"
-                    : "bg-white text-tc-text-muted border-gray-200 hover:border-tc-primary hover:text-tc-primary active:bg-tc-bg-elevated"
+                    ? "bg-gradient-to-r from-tc-primary to-tc-secondary text-white border-transparent shadow-glow"
+                    : "bg-tc-bg-card text-tc-text-muted border-tc-border hover:border-tc-primary hover:text-tc-primary active:bg-tc-bg-elevated"
                 )}
               >
                 {cat === "All" ? "All Posts" : cat}
@@ -94,7 +99,7 @@ export default function BlogListPage({
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 bg-white rounded-xl border border-gray-200 shadow-md mb-20">
+          <div className="text-center py-24 card-surface mb-20">
             <p className="text-tc-text text-lg font-semibold mb-2">No posts found</p>
             <p className="text-sm text-tc-text-light">
               Try adjusting your search or filter.

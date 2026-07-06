@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
 
-const montserrat = Montserrat({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const inter = Inter({
@@ -27,14 +27,25 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://techcoder.dev"),
-  title: "TechCoder | Code Smarter. Ship Faster.",
+  title: "TechCoder | Learn, Build & Grow as a Developer",
   description:
-    "Your curated feed of AI breakthroughs, web development deep dives, and developer tricks that actually save time.",
+    "TechCoder is a developer publication with in-depth articles, hands-on tutorials, and copy-paste code snippets across AI, web engineering, and developer tooling.",
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
   },
 };
+
+// Runs before paint to prevent a flash of the wrong theme.
+const themeScript = `
+(function() {
+  try {
+    var stored = localStorage.getItem('tc-theme');
+    var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    if (theme === 'dark') document.documentElement.classList.add('dark');
+  } catch (e) {}
+})();
+`;
 
 export default function RootLayout({
   children,
@@ -44,21 +55,24 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body suppressHydrationWarning className="min-h-full flex flex-col relative">
-        {/* Global background elements */}
+        {/* Global ambient background */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-          {/* Dot grid pattern */}
+          <div className="absolute inset-0 grid-overlay opacity-60" />
           <div
-            className="absolute inset-0 opacity-[0.12]"
-            style={{
-              backgroundImage: "radial-gradient(circle, #E5E7EB 1px, transparent 1px)",
-              backgroundSize: "32px 32px",
-            }}
+            className="absolute -top-40 right-[-10%] w-[640px] h-[640px] rounded-full opacity-50 blur-[130px] animate-pulse-glow"
+            style={{ background: "var(--tc-glow)" }}
           />
-          {/* Subtle warm glow */}
-          <div className="absolute -top-40 right-0 w-[500px] h-[500px] rounded-full bg-tc-primary opacity-[0.03] blur-[120px]" />
+          <div
+            className="absolute top-[40%] left-[-15%] w-[520px] h-[520px] rounded-full opacity-35 blur-[140px] animate-float-slow"
+            style={{ background: "var(--tc-glow-soft)" }}
+          />
         </div>
 
         <Navbar />

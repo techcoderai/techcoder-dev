@@ -29,3 +29,37 @@ export function calcReadingTime(text: string): string {
   const minutes = Math.max(1, Math.ceil(words / 238));
   return `${minutes} min read`;
 }
+
+/**
+ * Converts heading text into a URL-safe slug used for anchor links and the TOC.
+ * @example slugify("Reading Experience!") → "reading-experience"
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[`*_~]/g, "")
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export type Heading = { id: string; text: string; level: number };
+
+/**
+ * Extracts h2/h3 headings from a markdown body for the table of contents.
+ * Fenced code blocks are stripped first so `# comments` inside code are ignored.
+ */
+export function getHeadings(markdown: string): Heading[] {
+  const withoutCode = markdown.replace(/```[\s\S]*?```/g, "");
+  const headings: Heading[] = [];
+  for (const line of withoutCode.split("\n")) {
+    const match = /^(#{2,3})\s+(.+?)\s*#*$/.exec(line);
+    if (!match) continue;
+    const level = match[1].length;
+    const text = match[2].replace(/[`*_~]/g, "").trim();
+    headings.push({ id: slugify(text), text, level });
+  }
+  return headings;
+}

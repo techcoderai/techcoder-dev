@@ -14,7 +14,7 @@ export default function MagicBorderCard({ post }: { post: BlogPost }) {
     <article className="group h-full">
       <Link
         href={`/blog/${post.slug}`}
-        className="focus-ring flex flex-col h-full rounded-xl bg-white border border-gray-200 overflow-hidden shadow-md transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]"
+        className="focus-ring flex flex-col h-full rounded-2xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-md)] transition-all duration-300 ease-out hover:shadow-[var(--tc-shadow-lg)] hover:-translate-y-1.5 hover:border-tc-border-strong"
       >
         {/* Cover */}
         <div className="relative aspect-[16/9] bg-tc-bg-elevated overflow-hidden">
@@ -71,7 +71,7 @@ export default function MagicBorderCard({ post }: { post: BlogPost }) {
           </p>
 
           {/* Metadata */}
-          <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-100 text-xs text-tc-text-light font-medium">
+          <div className="flex items-center gap-3 pt-4 mt-4 border-t border-tc-border text-xs text-tc-text-light font-medium">
             <time dateTime={post.date}>{formatDate(post.date)}</time>
             <span className="w-0.5 h-0.5 rounded-full bg-tc-text-light/60" />
             <span className="flex items-center gap-1">
