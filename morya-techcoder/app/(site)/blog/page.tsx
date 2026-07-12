@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { blogPosts, getCategories } from "@/content/loader";
 import BlogListContent from "@/components/sections/BlogListContent";
 
@@ -9,5 +10,9 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  return <BlogListContent posts={blogPosts} categories={getCategories()} />;
+  return (
+    <Suspense>
+      <BlogListContent posts={blogPosts} categories={getCategories()} />
+    </Suspense>
+  );
 }

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import type { Difficulty } from "@/content/blogs";
+import type { Difficulty } from "@/types/blog";
 
 const rank: Record<Difficulty, number> = {
   Beginner: 1,
