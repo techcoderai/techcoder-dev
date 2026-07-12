@@ -7,6 +7,9 @@ import NextImage from "next/image";
  * MDX usage:
  *   ![A diagram](/content/blog/diagram.png)
  *   <Image src="/content/blog/diagram.png" alt="A diagram" caption="Fig 1." />
+ *
+ * Note: Uses <span> wrapper instead of <figure> to avoid hydration errors.
+ * MDX wraps inline images in <p> tags, and <figure> cannot be a child of <p>.
  */
 export default function MdxImage({
   src,
@@ -22,8 +25,9 @@ export default function MdxImage({
   height?: number;
 }) {
   if (!src) return null;
+
   return (
-    <figure className="my-6">
+    <span className="my-6 block">
       <NextImage
         src={src}
         alt={alt}
@@ -33,10 +37,10 @@ export default function MdxImage({
         sizes="(max-width: 768px) 100vw, 720px"
       />
       {caption && (
-        <figcaption className="mt-2 text-center text-xs text-tc-text-light">
+        <span className="mt-2 block text-center text-xs text-tc-text-light">
           {caption}
-        </figcaption>
+        </span>
       )}
-    </figure>
+    </span>
   );
 }
