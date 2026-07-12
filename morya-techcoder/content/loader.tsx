@@ -4,10 +4,23 @@ import path from "path";
 import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import Image from "next/image";
-import { calcReadingTime } from "@/lib/utils";
-import type { BlogPost, BlogCategory } from "@/content/blogs";
+import { calcReadingTime, slugify } from "@/lib/utils";
+import type { BlogPost, BlogCategory, Difficulty } from "@/content/blogs";
+import HeadingLink from "@/components/ui/HeadingLink";
+import CodeBlock from "@/components/ui/CodeBlock";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
+
+/** Recursively pulls the plain text out of MDX heading children for slug ids. */
+function getNodeText(node: React.ReactNode): string {
+  if (node == null || node === false) return "";
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(getNodeText).join("");
+  if (typeof node === "object" && "props" in node) {
+    return getNodeText((node as { props?: { children?: React.ReactNode } }).props?.children);
+  }
+  return "";
+}
 
 /**
  * Custom MDX components — maps markdown elements to styled React components.
@@ -27,6 +40,25 @@ const mdxComponents = {
       />
     </span>
   ),
+  h2: ({ children }: { children?: React.ReactNode }) => {
+    const id = slugify(getNodeText(children));
+    return (
+      <h2 id={id} className="group scroll-mt-28">
+        {children}
+        <HeadingLink id={id} />
+      </h2>
+    );
+  },
+  h3: ({ children }: { children?: React.ReactNode }) => {
+    const id = slugify(getNodeText(children));
+    return (
+      <h3 id={id} className="group scroll-mt-28">
+        {children}
+        <HeadingLink id={id} />
+      </h3>
+    );
+  },
+  pre: ({ children }: { children?: React.ReactNode }) => <CodeBlock>{children}</CodeBlock>,
 };
 
 /**
@@ -61,6 +93,9 @@ function loadPosts(): BlogPost[] {
       coverImage: data.coverImage || "",
       thumbnail: data.thumbnail || "",
       ogImage: data.ogImage || "",
+      difficulty: (data.difficulty as Difficulty) || undefined,
+      updated: data.updated || undefined,
+      prerequisites: data.prerequisites || undefined,
       body: content.trim(),
     };
   });

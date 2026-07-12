@@ -51,9 +51,13 @@ export default function HomeContent() {
         {/* Featured Picks */}
         <div className="mb-20">
           <div className="mb-10 animate-fade-up animate-delay-1">
-            <h2 className="heading-lg text-2xl md:text-3xl mb-3">Featured Picks</h2>
-            <p className="text-tc-text-muted text-sm sm:text-base leading-relaxed">
-              Hand-picked reads with that extra spark.
+            <span className="chip mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-tc-primary" />
+              Featured
+            </span>
+            <h2 className="heading-lg mb-3">Featured articles</h2>
+            <p className="body-lg max-w-xl">
+              Hand-picked reads worth your time — the tutorials and deep dives we&apos;re proudest of.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
@@ -65,9 +69,9 @@ export default function HomeContent() {
 
         {/* Latest Articles by Category */}
         <div className="mb-10 animate-fade-up">
-          <h2 className="heading-lg text-2xl md:text-3xl mb-3">Latest Articles</h2>
-          <p className="text-tc-text-muted text-sm sm:text-base leading-relaxed">
-            Fresh content across AI, web development, and developer tooling.
+          <h2 className="heading-lg mb-3">Latest across the stack</h2>
+          <p className="body-lg max-w-xl">
+            Fresh tutorials and deep dives spanning AI, web engineering, and developer tooling.
           </p>
         </div>
         <div className="flex flex-col gap-16">

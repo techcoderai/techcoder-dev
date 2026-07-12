@@ -14,7 +14,8 @@ export default function NewsletterBox() {
   };
 
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-md p-6 sm:p-8 md:p-10">
+    <section className="relative overflow-hidden rounded-[26px] card-surface p-6 sm:p-8 md:p-12">
+      <div className="absolute inset-0 -z-10 mesh-glow opacity-60" />
       <div className="relative z-10 max-w-xl mx-auto text-center">
         <h2 className="heading-lg text-xl sm:text-2xl md:text-3xl text-tc-text mb-3">
           Stay Ahead of the Curve
@@ -37,11 +38,11 @@ export default function NewsletterBox() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="focus-ring flex-1 px-5 py-3.5 rounded-full bg-tc-bg text-tc-text placeholder:text-tc-text-light border border-gray-200 hover:border-tc-text-light/50 focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(255,180,51,0.1)] outline-none transition-all duration-200 text-sm"
+              className="focus-ring flex-1 px-5 py-3.5 rounded-full bg-tc-bg-card text-tc-text placeholder:text-tc-text-light border border-tc-border hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(249,115,22,0.12)] outline-none transition-all duration-200 text-sm"
             />
             <button
               type="submit"
-              className="group/btn focus-ring inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-tc-primary text-tc-text font-bold rounded-full hover:bg-tc-primary-dark transition-all duration-200 ease-in-out text-sm hover:-translate-y-1 hover:shadow-[0_4px_12px_rgba(255,180,51,0.25)] active:translate-y-0 active:shadow-none"
+              className="group/btn btn-primary focus-ring px-6 py-3.5 text-sm"
             >
               Subscribe
               <Send size={14} className="transition-transform duration-200 group-hover/btn:translate-x-0.5" />
