@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
-import type { BlogPost, BlogCategory } from "@/content/blogs";
+import type { BlogPost } from "@/types/blog";
+import { CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
+import { filterPosts, type CategoryFilter } from "@/lib/posts";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import { cn } from "@/lib/utils";
-
-const validCategories: BlogCategory[] = ["AI", "WebDev", "Tricks"];
 
 export default function BlogListPage({
   posts,
@@ -16,29 +17,23 @@ export default function BlogListPage({
   posts: BlogPost[];
   categories: BlogCategory[];
 }) {
+  const searchParams = useSearchParams();
+  // Seed the active filter from a `?category=` URL param (e.g. links from the
+  // home page). Read during render — no effect needed.
+  const paramCategory = searchParams.get("category");
+  const initialCategory: CategoryFilter =
+    paramCategory && CATEGORY_KEYS.includes(paramCategory as BlogCategory)
+      ? (paramCategory as BlogCategory)
+      : "All";
+
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<BlogCategory | "All">("All");
+  const [activeCategory, setActiveCategory] =
+    useState<CategoryFilter>(initialCategory);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const cat = params.get("category") as BlogCategory | null;
-    if (cat && validCategories.includes(cat)) {
-      setActiveCategory(cat);
-    }
-  }, []);
-
-  const filtered = useMemo(() => {
-    return posts.filter((post) => {
-      const matchesCategory =
-        activeCategory === "All" || post.category === activeCategory;
-      const matchesSearch =
-        !query ||
-        post.title.toLowerCase().includes(query.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(query.toLowerCase()) ||
-        post.tags.some((t) => t.toLowerCase().includes(query.toLowerCase()));
-      return matchesCategory && matchesSearch;
-    });
-  }, [query, activeCategory, posts]);
+  const filtered = useMemo(
+    () => filterPosts(posts, { query, category: activeCategory }),
+    [query, activeCategory, posts]
+  );
 
   return (
     <div className="section-padding pt-28 md:pt-32">

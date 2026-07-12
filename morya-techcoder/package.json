@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@keystatic/core": "^0.5.50",
+    "@keystatic/next": "^5.0.4",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "gray-matter": "^4.0.3",
@@ -17,6 +19,7 @@
     "next-mdx-remote": "^6.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-tweet": "^3.3.1",
     "server-only": "^0.0.1",
     "tailwind-merge": "^3.5.0"
   },

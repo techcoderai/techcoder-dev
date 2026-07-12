@@ -1,0 +1,107 @@
+---
+title: "MDX Components Showcase"
+excerpt: "A living reference of every custom MDX component available in TechCoder articles. This post is a draft, so it only appears in development."
+date: 2026-07-08
+category: WebDev
+tags: ["mdx", "reference", "components"]
+thumbnail: ""
+difficulty: Beginner
+draft: true
+---
+
+This draft post demonstrates every custom component. It's marked `draft: true`,
+so it appears only in `npm run dev` — never in production. Full docs:
+`docs/mdx-components.md`.
+
+## Callouts
+
+<Callout type="note" title="Note">
+Standard note callout for general information.
+</Callout>
+
+<Callout type="tip">
+Tip callouts are great for pro tips and shortcuts.
+</Callout>
+
+<Callout type="warning">
+Warning callouts flag things that need attention.
+</Callout>
+
+<Callout type="danger">
+Danger callouts flag destructive or risky actions.
+</Callout>
+
+## Code
+
+```ts
+export function greet(name: string): string {
+  return `Hello, ${name}!`;
+}
+```
+
+## Terminal
+
+<Terminal title="bash">
+$ npm install
+added 242 packages in 2s
+$ npm run dev
+ready on http://localhost:3000
+</Terminal>
+
+## Steps
+
+<Steps>
+<Step title="Install dependencies">
+Run `npm install` in the project root.
+</Step>
+<Step title="Start the dev server">
+Run `npm run dev` and open the browser.
+</Step>
+</Steps>
+
+## Info cards
+
+<InfoCards>
+<InfoCard title="Fast" icon="Zap">Ships static HTML by default.</InfoCard>
+<InfoCard title="Docs" icon="BookOpen" href="/docs">Read the full guide.</InfoCard>
+</InfoCards>
+
+## File tree
+
+<FileTree>
+<Folder name="app">
+<File name="layout.tsx" />
+<Folder name="blog">
+<File name="page.tsx" />
+</Folder>
+</Folder>
+</FileTree>
+
+## Tabs
+
+<Tabs>
+<Tab label="npm">
+```bash
+npm install
+```
+</Tab>
+<Tab label="pnpm">
+```bash
+pnpm add
+```
+</Tab>
+</Tabs>
+
+## Badges and tables
+
+Status: <Badge variant="success">Stable</Badge> <Badge variant="warning">Beta</Badge>
+
+| Feature | Support |
+| ------- | ------- |
+| MDX     | Yes     |
+| Tables  | Yes     |
+| Embeds  | Yes     |
+
+## Embeds
+
+<YouTube id="dQw4w9WgXcQ" title="Example video" />

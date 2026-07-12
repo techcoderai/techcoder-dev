@@ -1,18 +1,13 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { blogPosts } from "@/content/loader";
-import type { BlogCategory } from "@/content/blogs";
+import { CATEGORIES, CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
+import { getFeaturedPosts, getPostsByCategory } from "@/lib/posts";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 
-const categoryMeta: Record<BlogCategory, { label: string; description: string }> = {
-  AI: { label: "AI & Machine Learning", description: "Latest breakthroughs and practical AI engineering" },
-  WebDev: { label: "Web Development", description: "Modern frameworks, tools, and best practices" },
-  Tricks: { label: "Tips & Tricks", description: "Shortcuts and hacks that boost your productivity" },
-};
-
 function CategorySection({ category, index }: { category: BlogCategory; index: number }) {
-  const meta = categoryMeta[category];
-  const filtered = blogPosts.filter((p) => p.category === category).slice(0, 3);
+  const meta = CATEGORIES[category];
+  const filtered = getPostsByCategory(blogPosts, category, 3);
   if (filtered.length === 0) return null;
 
   const delayClass = index === 0 ? "animate-delay-2" : index === 1 ? "animate-delay-3" : "animate-delay-4";
@@ -42,8 +37,7 @@ function CategorySection({ category, index }: { category: BlogCategory; index: n
 }
 
 export default function HomeContent() {
-  const categories: BlogCategory[] = ["AI", "WebDev", "Tricks"];
-  const featured = blogPosts.slice(0, 3);
+  const featured = getFeaturedPosts(blogPosts, 3);
 
   return (
     <div className="section-padding">
@@ -75,7 +69,7 @@ export default function HomeContent() {
           </p>
         </div>
         <div className="flex flex-col gap-16">
-          {categories.map((cat, i) => (
+          {CATEGORY_KEYS.map((cat, i) => (
             <CategorySection key={cat} category={cat} index={i} />
           ))}
         </div>

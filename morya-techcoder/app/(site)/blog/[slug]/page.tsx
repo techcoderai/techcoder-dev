@@ -5,8 +5,9 @@ import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
 import { blogPosts, getBlogBySlug, compileBlogContent } from "@/content/loader";
 import { formatDate, getHeadings } from "@/lib/utils";
+import { getRelatedPosts } from "@/lib/posts";
 import { categoryColors } from "@/lib/categories";
-import type { BlogPost, Difficulty } from "@/content/blogs";
+import type { BlogPost, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 import ReadingProgress from "@/components/ui/ReadingProgress";
@@ -26,11 +27,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogBySlug(slug);
   if (!post) return { title: "Article Not Found | TechCoder" };
+  const ogImage = post.ogImage || post.thumbnail;
   return {
-    title: `${post.title} | TechCoder`,
-    description: post.excerpt,
-    openGraph: post.ogImage
-      ? { images: [{ url: post.ogImage, width: 800, height: 450 }] }
+    title: `${post.seo?.title || post.title} | TechCoder`,
+    description: post.seo?.description || post.excerpt,
+    openGraph: ogImage
+      ? { images: [{ url: ogImage, width: 800, height: 450 }] }
       : undefined,
   };
 }
@@ -53,9 +55,7 @@ export default async function BlogDetailPage({ params }: Props) {
   const difficulty = resolveDifficulty(post);
   const showUpdated = post.updated && post.updated !== post.date;
 
-  const related = blogPosts
-    .filter((p) => p.category === post.category && p.id !== post.id)
-    .slice(0, 2);
+  const related = getRelatedPosts(blogPosts, post, 2);
 
   return (
     <>

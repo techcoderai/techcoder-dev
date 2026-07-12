@@ -1,61 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TechCoder
 
-## Getting Started
+A developer-first publication — technical blogs, AI news, and programming
+tutorials — built with Next.js 16, React 19, and Tailwind CSS v4. Content is
+authored in MDX and edited visually with [Keystatic](https://keystatic.com), a
+Git-based CMS. No database.
 
-First, run the development server:
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Site: <http://localhost:3000>
+- Content editor: <http://localhost:3000/keystatic>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Publishing a blog post
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Open <http://localhost:3000/keystatic> → **Create Blog post**.
+2. Fill in the fields, upload a hero image, and write the body (insert callouts,
+   code, videos from the **+** menu).
+3. Keep **Draft** on to preview; turn it off to publish.
+4. Commit the generated `.mdx` file with Git.
 
-## Learn More
+Prefer writing by hand? Drop an `.mdx` file in `content/posts/` — see
+[docs/blog-system.md](./docs/blog-system.md).
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server (with the Keystatic editor). |
+| `npm run build` | Production build (static generation). |
+| `npm run start` | Serve the production build. |
+| `npm run lint` | Run ESLint. |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
+Everything is documented in [`/docs`](./docs/README.md):
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Architecture](./docs/architecture.md) — stack, data flow, and design decisions
+- [Blog system](./docs/blog-system.md) — how posts load, render, and route
+- [Keystatic](./docs/keystatic.md) — the visual editor, images, deployment
+- [MDX components](./docs/mdx-components.md) — reference for every component
+- [Authoring workflow](./docs/authoring-workflow.md) — fastest path to publish
+- [Conventions](./docs/conventions.md) — naming and coding standards
+- [Troubleshooting](./docs/troubleshooting.md) · [Migration notes](./docs/migration-notes.md)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project structure
 
-### Layout 
-morya-techcoder/
-├── app/
-│   ├── globals.css          ← TechCoder design system (tokens, typography, prose styles)
-│   ├── layout.tsx           ← Root layout with Montserrat + Inter fonts, Navbar, Footer
-│   ├── page.tsx             ← Home page (Hero + category sections + newsletter)
-│   ├── blog/
-│   │   ├── page.tsx         ← Blog list with search + category filtering
-│   │   └── [slug]/page.tsx  ← Blog detail with markdown renderer + related posts
-├── components/
-│   ├── layout/
-│   │   ├── Navbar.tsx       ← Translucent blur-on-scroll, mobile hamburger menu
-│   │   └── Footer.tsx       ← Brand, nav links, social icons
-│   ├── sections/
-│   │   ├── HeroSection.tsx  ← Animated hero with staggered Framer Motion reveals
-│   │   ├── HomeContent.tsx  ← Category-grouped post grids
-│   │   └── BlogListContent.tsx ← Search bar + category pills + filtered grid
-│   └── ui/
-│       ├── BlogCard.tsx     ← Card with hover lift, category badge, reading time
-│       └── NewsletterBox.tsx ← Golden gradient CTA with email form
-├── content/
-│   └── blogs.ts             ← 6 sample posts (2 AI, 2 WebDev, 2 Tricks) with full bodies
-├── lib/
-│   └── utils.ts             ← cn(), formatDate(), calcReadingTime()
+```
+app/          Routing. Public site in app/(site)/, editor in app/keystatic/
+components/   layout · sections · ui · mdx (article building blocks)
+content/      posts/*.mdx · loader.ts (data) · mdx-components.tsx (rendering)
+lib/          categories.ts · posts.ts · utils.ts   (pure logic)
+types/        blog.ts   (shared types)
+hooks/        reusable client hooks
+docs/         full documentation
+keystatic.config.ts   CMS schema
+```
+
+Full breakdown: [docs/folder-structure.md](./docs/folder-structure.md).
+
+## Tech stack
+
+Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · MDX
+(`next-mdx-remote`) · Keystatic · lucide-react · react-tweet.

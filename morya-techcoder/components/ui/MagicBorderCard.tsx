@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
-import type { BlogPost } from "@/content/blogs";
+import type { BlogPost } from "@/types/blog";
 import { categoryColors } from "@/lib/categories";
 
 export default function MagicBorderCard({ post }: { post: BlogPost }) {

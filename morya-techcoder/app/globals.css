@@ -516,6 +516,10 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 .prose-tc img { border-radius: 14px; margin: 1.5rem 0; }
 .prose-tc hr { border: none; border-top: 1px solid var(--tc-border); margin: 2.5rem 0; }
 .prose-tc strong { color: var(--tc-text); font-weight: 600; }
+.prose-tc table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9375rem; display: block; overflow-x: auto; }
+.prose-tc th, .prose-tc td { border: 1px solid var(--tc-border); padding: 0.6rem 0.9rem; text-align: left; vertical-align: top; }
+.prose-tc th { background: var(--tc-bg-elevated); font-weight: 600; color: var(--tc-text); }
+.prose-tc td { color: var(--tc-text-muted); }
 
 /* ═══════════════════════  SELECTION & SCROLLBAR  ═══════════════════════ */
 ::selection { background: var(--tc-primary); color: #fff; }
