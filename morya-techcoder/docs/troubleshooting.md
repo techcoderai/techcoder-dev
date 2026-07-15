@@ -7,10 +7,24 @@
 - Check the terminal for errors in `keystatic.config.ts`.
 
 ## A post I created in Keystatic doesn't appear on the site
-- Is **Draft** turned off? Drafts are hidden in production builds. In
-  `npm run dev` they *should* appear — if not, check the `date` field is set.
-- Did you save? Keystatic writes the file on **Save**.
-- The dev server picks up new files automatically; if not, restart it.
+
+**Most common cause:** Next.js is using cached content from before you created the post.
+
+**Solution:**
+```bash
+# Stop dev server (Ctrl+C), then restart:
+npm run dev
+
+# Or clear cache first:
+rm -rf .next && npm run dev
+```
+
+**Why:** The content loader (`content/loader.ts`) runs once at startup and caches all posts in memory. New posts written to disk aren't picked up until the server restarts.
+
+**Other checks:**
+- Is **Draft** turned off? Drafts are hidden in production builds (visible in dev only).
+- Did you save? Keystatic writes the file on **Save** click.
+- Check the `date` field is set correctly (YYYY-MM-DD format).
 
 ## "Module not found: server-only"
 You imported `content/loader.ts` into a **client** component (a file with
@@ -44,6 +58,19 @@ another `useSearchParams` consumer, wrap it in `<Suspense>` too.
 ## Build fails after adding a category
 Make sure you edited `lib/categories.ts` (the single source of truth) and didn't
 leave a hardcoded category string somewhere. Search the repo for the old list.
+
+## Hydration error: `<figure> cannot be a descendant of <p>`
+
+**Cause:** This was fixed on 2026-07-12. If you see this error, you're on an old version.
+
+**What happened:** MDX wraps inline images in `<p>` tags, but our MdxImage component returned `<figure>` tags (invalid HTML).
+
+**Fix:** Already implemented in `components/mdx/MdxImage.tsx` and `content/mdx-components.tsx`. The fix:
+1. MdxImage returns plain `<img>` when no caption (for markdown `![alt](src)`)
+2. Custom paragraph handler unwraps single-image paragraphs
+3. `<figure>` only used with explicit `<Image caption="..." />` component
+
+**See:** [docs/hydration-error-fix.md](./hydration-error-fix.md) for full technical details.
 
 ## Reset a stuck dev server
 ```bash
