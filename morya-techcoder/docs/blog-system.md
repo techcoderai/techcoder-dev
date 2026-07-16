@@ -18,7 +18,7 @@
 title: "Next.js 16 + Tailwind v4"        # required
 excerpt: "A short summary for cards."     # required — also the meta description
 date: 2026-01-15                          # required — publish date (sorts posts)
-category: WebDev                          # AI | WebDev | Tricks
+category: Programming                     # Programming | AI | Technology | Reviews | Guides
 tags: ["nextjs", "tailwind"]
 thumbnail: /content/blog/hero.png         # hero / card image
 ogImage: /content/blog/og.png             # optional; falls back to thumbnail

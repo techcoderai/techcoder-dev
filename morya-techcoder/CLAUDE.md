@@ -48,10 +48,12 @@ morya-techcoder/
 │   ├── layout.tsx                    # Root layout (fonts + theme provider)
 │   ├── (site)/                       # 🆕 Route group for public site
 │   │   ├── layout.tsx                # Navbar + Footer + ambient background
-│   │   ├── page.tsx                  # Home page (Hero + featured content)
-│   │   └── blog/
-│   │       ├── page.tsx              # Blog list with search & filters
-│   │       └── [slug]/page.tsx       # Dynamic blog detail pages
+│   │   ├── page.tsx                  # Home page (Hero + topic grid + rails)
+│   │   ├── blog/
+│   │   │   ├── page.tsx              # Blog list with search & filters
+│   │   │   └── [slug]/page.tsx       # Dynamic blog detail pages
+│   │   └── topics/
+│   │       └── [category]/page.tsx   # 🆕 Per-topic landing pages (SSG)
 │   ├── keystatic/                    # 🆕 Keystatic admin UI
 │   │   └── [[...params]]/page.tsx   # Visual CMS editor at /keystatic
 │   └── api/keystatic/                # 🆕 Keystatic file operations API
@@ -63,11 +65,14 @@ morya-techcoder/
 │   │   └── Footer.tsx                # Multi-column footer with social links
 │   ├── sections/
 │   │   ├── HeroSection.tsx           # Animated hero with 3D code preview
+│   │   ├── TopicGrid.tsx             # 🆕 On-page topic discovery (reusable category treatment)
 │   │   ├── HomeContent.tsx           # Category-grouped post grids
 │   │   ├── BlogListContent.tsx       # Client-side search & filtering
 │   │   └── TrustedBy, Capabilities, Testimonials, FAQ, etc.
 │   ├── ui/
-│   │   ├── MagicBorderCard.tsx       # Blog card with hover animations
+│   │   ├── MagicBorderCard.tsx       # Compact, elegant article card
+│   │   ├── CategoryBadge.tsx         # 🆕 Reusable color-coded category pill
+│   │   ├── CardCarousel.tsx          # 🆕 Responsive snapping slider (featured rail)
 │   │   ├── CodeBlock.tsx             # Copy-to-clipboard code blocks
 │   │   ├── TableOfContents.tsx       # Auto-generated TOC (uses useActiveHeading hook)
 │   │   ├── ReadingProgress.tsx       # Scroll progress bar (uses useReadingProgress hook)
@@ -96,7 +101,8 @@ morya-techcoder/
 │   └── posts/*.mdx                   # Blog posts (MDX only, no .md duplicates)
 │
 ├── lib/                              # 🔄 Pure logic (framework-agnostic)
-│   ├── categories.ts                 # 🔄 SINGLE SOURCE OF TRUTH for categories
+│   ├── categories.ts                 # 🔄 SINGLE SOURCE OF TRUTH for categories (6 topics)
+│   ├── category-icons.ts             # 🆕 Maps category icon names → lucide components
 │   ├── posts.ts                      # 🆕 Business logic (filtering, featured, related)
 │   └── utils.ts                      # Helpers (cn, formatDate, calcReadingTime)
 │
@@ -126,11 +132,14 @@ morya-techcoder/
 
 ### Routes
 
-- `/` - Home page with hero, featured posts, category sections
-- `/blog` - Blog listing with search and category filters
+- `/` - Home page (hero, topic grid, featured carousel + editorial rails)
+- `/blog` - Full article library with search and category filters
 - `/blog/[slug]` - Individual blog post pages (SSG via generateStaticParams)
-- `/blog?category=AI` - Filtered views via URL params
-- `/keystatic` - 🆕 Visual CMS admin interface (full-screen, no site chrome)
+- `/topics/[category]` - 🆕 Per-topic landing pages (SSG for all 6 topics; empty
+  and "coming soon" topics render a graceful state). Slug via `categorySlug()`,
+  e.g. `/topics/ai`, `/topics/dev-tools`. This is the primary category route the
+  nav/footer/topic-grid link to; `/blog?category=` still works for direct links.
+- `/keystatic` - Visual CMS admin interface (full-screen, no site chrome)
 
 ### Route Group Pattern
 
@@ -193,10 +202,9 @@ export interface BlogPost {
   slug: string;
   excerpt: string;
   date: string;                  // ISO format (YYYY-MM-DD)
-  category: BlogCategory;         // "AI" | "WebDev" | "Tricks"
+  category: BlogCategory;         // "Programming" | "AI" | "Technology" | "Reviews" | "Guides" | "DevTools"
   tags: string[];
   readingTime: string;            // Auto-calculated (238 wpm)
-  coverImage: string;
   thumbnail: string;
   ogImage: string;
   difficulty?: Difficulty;
@@ -272,10 +280,13 @@ compileMDX({
 - Primary: Orange gradient (`#F97316` → `#FDBA74`)
 - Accent: Rose/pink for "New" badges (`#F43F5E`)
 
-**Category Colors (from `lib/categories.ts`):**
-- AI: Orange tones
-- WebDev: Blue tones
-- Tricks: Green/emerald tones
+**Category Colors (from `lib/categories.ts`), one accent per topic:**
+- Programming: Blue tones
+- AI (Artificial Intelligence): Orange tones (the brand accent)
+- Technology: Cyan/teal tones
+- Reviews: Violet tones
+- Guides (Buying Guides): Emerald tones
+- DevTools (Developer Tools): Slate tones — flagged `comingSoon`
 
 **Theme:** 40+ CSS custom properties (`--tc-*` tokens) with light/dark mode support
 
@@ -287,20 +298,32 @@ compileMDX({
 **After Refactor:** Everything derives from ONE object:
 
 ```typescript
-export const CATEGORIES = {
-  AI: {
-    label: "AI & Machine Learning",
-    description: "Latest breakthroughs and practical AI engineering",
-    badge: "bg-tc-cat-ai-bg text-tc-cat-ai-text border border-tc-cat-ai-border",
-    dot: "bg-tc-cat-ai-text",
+// Rich metadata per topic. Icons are string keys (lucide names) so this module
+// stays framework-agnostic; lib/category-icons.ts resolves them to components.
+const CATEGORY_DEFS = {
+  Programming: {
+    label: "Programming",
+    short: "Programming",
+    description: "Languages, frameworks, and the craft of writing great software.",
+    icon: "Code2",
+    badge: "bg-tc-cat-programming-bg text-tc-cat-programming-text border border-tc-cat-programming-border",
+    dot: "bg-tc-cat-programming-text",
+    accent: "text-tc-cat-programming-text",
   },
-  WebDev: { /* ... */ },
-  Tricks: { /* ... */ },
-} as const;
+  AI: { /* Artificial Intelligence */ },
+  Technology: { /* ... */ },
+  Reviews: { /* ... */ },
+  Guides: { /* Buying Guides */ },
+  DevTools: { /* Developer Tools, comingSoon: true */ },
+} as const satisfies Record<string, CategoryMeta>;
 
-// Derived exports (automatic from CATEGORIES)
-export type BlogCategory = keyof typeof CATEGORIES;
+// Derived exports (automatic from the definitions)
+export type BlogCategory = keyof typeof CATEGORY_DEFS;
+// Widened view so optional fields (e.g. comingSoon) are accessible everywhere
+export const CATEGORIES: Record<BlogCategory, CategoryMeta> = CATEGORY_DEFS;
 export const CATEGORY_KEYS = Object.keys(CATEGORIES) as BlogCategory[];
+// Keys that accept content today (excludes "coming soon" topics)
+export const ACTIVE_CATEGORY_KEYS = CATEGORY_KEYS.filter((k) => !CATEGORIES[k].comingSoon);
 export const categoryColors = /* map from CATEGORIES */;
 export const categoryOptions = /* for Keystatic dropdown */;
 ```
@@ -468,7 +491,7 @@ import type { BlogPost } from "@/types/blog";
    title: "Your Post Title"
    excerpt: "Brief description for SEO and cards"
    date: "2026-07-12"
-   category: "AI"  # or "WebDev" or "Tricks"
+   category: "Programming"  # or "AI" | "Technology" | "Reviews" | "Guides"
    tags: ["nextjs", "typescript"]
    thumbnail: "/content/blog/post-thumbnail.jpg"
    ogImage: "/content/blog/post-og.jpg"

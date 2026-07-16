@@ -471,7 +471,7 @@ const SHOW_DRAFTS =
 
 ## Monitoring
 npm run build -- --profile
-npx lighthouse https://techcoder.dev
+npx lighthouse https://techcoder.tech
 ```
 
 **Priority:** LOW (quality-of-life improvement)

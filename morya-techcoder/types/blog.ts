@@ -19,7 +19,6 @@ export interface BlogPost {
   category: BlogCategory;
   tags: string[];
   readingTime: string;
-  coverImage: string;
   thumbnail: string;
   ogImage: string;
   /** Optional difficulty label. Falls back to a value derived from category. */

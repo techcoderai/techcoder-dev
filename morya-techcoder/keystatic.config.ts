@@ -57,7 +57,7 @@ export default config({
         category: fields.select({
           label: "Category",
           options: categoryOptions,
-          defaultValue: "WebDev",
+          defaultValue: "Programming",
         }),
         tags: fields.array(fields.text({ label: "Tag" }), {
           label: "Tags",

@@ -5,7 +5,7 @@ import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { calcReadingTime } from "@/lib/utils";
 import type { BlogPost, Difficulty } from "@/types/blog";
-import type { BlogCategory } from "@/lib/categories";
+import { ACTIVE_CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
 import { mdxComponents } from "@/content/mdx-components";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
@@ -74,10 +74,9 @@ function loadPosts(): BlogPost[] {
         slug,
         excerpt: data.excerpt ?? "",
         date: data.date ?? "",
-        category: (data.category as BlogCategory) ?? "WebDev",
+        category: (data.category as BlogCategory) ?? "Programming",
         tags: data.tags ?? [],
         readingTime: calcReadingTime(content),
-        coverImage: resolveAsset(data.coverImage),
         thumbnail: resolveAsset(data.thumbnail),
         ogImage: resolveAsset(data.ogImage),
         difficulty: (data.difficulty as Difficulty) || undefined,
@@ -102,9 +101,14 @@ export function getBlogBySlug(slug: string): BlogPost | undefined {
   return blogPosts.find((post) => post.slug === slug);
 }
 
-/** Returns all unique categories present in the loaded posts. */
+/**
+ * Returns the categories that actually have posts, in the canonical order
+ * defined by `ACTIVE_CATEGORY_KEYS` (so blog filters read Programming → AI →
+ * Technology … rather than in whatever order the newest posts happen to fall).
+ */
 export function getCategories(): BlogCategory[] {
-  return [...new Set(blogPosts.map((post) => post.category))];
+  const present = new Set(blogPosts.map((post) => post.category));
+  return ACTIVE_CATEGORY_KEYS.filter((category) => present.has(category));
 }
 
 /**

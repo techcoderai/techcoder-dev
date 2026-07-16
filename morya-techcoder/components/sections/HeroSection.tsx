@@ -1,73 +1,32 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import {
-  ArrowRight,
-  Sparkles,
-  Terminal,
-  GitBranch,
-  BookOpen,
-  Code2,
-  FileCode2,
-} from "lucide-react";
+import { ArrowRight, Sparkles, Compass, Star, TrendingUp } from "lucide-react";
+import CategoryBadge from "@/components/ui/CategoryBadge";
+import { CATEGORIES } from "@/lib/categories";
+import { categoryIcon } from "@/lib/category-icons";
 
-/* Restrained, on-brand syntax tokens */
-const K = ({ children }: { children: ReactNode }) => (
-  <span className="text-tc-primary">{children}</span>
-);
-const F = ({ children }: { children: ReactNode }) => (
-  <span className="text-tc-primary-dark font-medium">{children}</span>
-);
-const S = ({ children }: { children: ReactNode }) => (
-  <span className="text-emerald-600 dark:text-emerald-400">{children}</span>
-);
-const C = ({ children }: { children: ReactNode }) => (
-  <span className="text-tc-text-light italic">{children}</span>
-);
+/* Representative headlines for the editorial preview — decorative, not live data. */
+const previewFeature = {
+  category: "AI" as const,
+  title: "The AI models quietly reshaping how we work",
+  meta: "6 min read",
+};
 
-const codeLines: ReactNode[] = [
-  <C key="c">{"// usePrefersDark.ts — from 1,200+ snippets"}</C>,
-  <span key="1">
-    <K>import</K> {"{ useEffect, useState }"} <K>from</K> <S>&quot;react&quot;</S>;
-  </span>,
-  <span key="2">&nbsp;</span>,
-  <span key="3">
-    <K>export function</K> <F>usePrefersDark</F>() {"{"}
-  </span>,
-  <span key="4">
-    {"  "}
-    <K>const</K> [dark, setDark] = <F>useState</F>(<K>false</K>);
-  </span>,
-  <span key="5">&nbsp;</span>,
-  <span key="6">
-    {"  "}
-    <F>useEffect</F>(() =&gt; {"{"}
-  </span>,
-  <span key="7">
-    {"    "}
-    <K>const</K> mq = <F>matchMedia</F>(<S>&quot;(prefers-color-scheme: dark)&quot;</S>);
-  </span>,
-  <span key="8">
-    {"    "}
-    <F>setDark</F>(mq.matches);
-  </span>,
-  <span key="9">{"  }, []);"}</span>,
-  <span key="10">&nbsp;</span>,
-  <span key="11">
-    {"  "}
-    <K>return</K> dark;
-  </span>,
-  <span key="12">{"}"}</span>,
-];
+const previewList = [
+  { category: "Reviews" as const, title: "Our honest verdict on this year's flagship phones", meta: "8 min read" },
+  { category: "Technology" as const, title: "The quiet rise of on-device computing", meta: "5 min read" },
+  { category: "Programming" as const, title: "Patterns that keep large codebases sane", meta: "7 min read" },
+] as const;
 
 export default function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [6, -6]), { stiffness: 120, damping: 18 });
-  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), { stiffness: 120, damping: 18 });
+  const rx = useSpring(useTransform(my, [-0.5, 0.5], [5, -5]), { stiffness: 120, damping: 18 });
+  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-6, 6]), { stiffness: 120, damping: 18 });
 
   const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = ref.current?.getBoundingClientRect();
@@ -105,7 +64,7 @@ export default function HeroSection() {
             <span className="flex items-center justify-center w-4 h-4 rounded-full bg-tc-primary text-white">
               <Sparkles size={9} className="fill-current" />
             </span>
-            New tutorials & deep dives every week
+            Trustworthy tech insights, every week
             <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
         </motion.div>
@@ -117,8 +76,9 @@ export default function HeroSection() {
           transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           className="display-xl mt-7 max-w-4xl"
         >
-          Learn, build, and grow
-          <br className="hidden sm:block" /> as a <span className="text-gradient-animated">developer.</span>
+          Discover the technology
+          <br className="hidden sm:block" /> that&apos;s{" "}
+          <span className="text-gradient-animated">worth knowing.</span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -126,10 +86,11 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 max-w-xl text-base sm:text-lg text-tc-text-muted leading-relaxed"
+          className="mt-6 max-w-2xl text-base sm:text-lg text-tc-text-muted leading-relaxed"
         >
-          TechCoder is the developer publication for people who build — in-depth articles,
-          hands-on tutorials, and copy-paste snippets across AI, web engineering, and tooling.
+          From breakthrough AI and honest gadget reviews to deep programming guides —
+          TechCoder is where curious minds find clear, trustworthy takes on the technology
+          that actually matters.
         </motion.p>
 
         {/* CTAs */}
@@ -140,17 +101,17 @@ export default function HeroSection() {
           className="mt-9 flex flex-col sm:flex-row items-center gap-3.5"
         >
           <Link href="/blog" className="btn-primary focus-ring group px-7 py-3.5 text-[15px]">
-            Start reading
+            Start exploring
             <ArrowRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
-          <Link href="/blog?category=WebDev" className="btn-secondary focus-ring px-7 py-3.5 text-[15px]">
-            <Code2 size={15} />
-            Browse tutorials
+          <Link href="/#topics" className="btn-secondary focus-ring px-7 py-3.5 text-[15px]">
+            <Compass size={15} />
+            Browse topics
           </Link>
         </motion.div>
       </div>
 
-      {/* Code editor preview */}
+      {/* Editorial preview */}
       <motion.div
         ref={ref}
         onMouseMove={onMove}
@@ -159,88 +120,66 @@ export default function HeroSection() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
         style={{ perspective: 1400 }}
-        className="container-wide mx-auto mt-16 md:mt-20 relative max-w-4xl"
+        className="container-wide mx-auto mt-16 md:mt-20 relative max-w-3xl"
       >
         <motion.div
           style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
           className="relative rounded-[26px] card-surface shadow-premium p-2.5 sm:p-3"
         >
-          {/* Window chrome + file tabs */}
           <div className="rounded-[18px] overflow-hidden border border-tc-border bg-tc-bg-secondary">
+            {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 h-11 border-b border-tc-border bg-tc-surface/60">
               <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
               <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
               <span className="w-3 h-3 rounded-full bg-[#28C840]" />
-              <div className="ml-3 hidden sm:flex items-center gap-1">
-                {[
-                  { name: "usePrefersDark.ts", active: true },
-                  { name: "Button.tsx", active: false },
-                  { name: "README.md", active: false },
-                ].map((t) => (
-                  <span
-                    key={t.name}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-[11px] font-mono ${
-                      t.active
-                        ? "bg-tc-bg-elevated text-tc-text border-b-2 border-tc-primary"
-                        : "text-tc-text-light"
-                    }`}
-                  >
-                    <FileCode2 size={11} className={t.active ? "text-tc-primary" : ""} />
-                    {t.name}
-                  </span>
-                ))}
-              </div>
-              <span className="ml-auto flex items-center gap-1.5 text-[11px] text-tc-text-light font-mono">
-                <GitBranch size={12} className="text-tc-primary" />
-                main
+              <span className="mx-auto flex items-center gap-1.5 rounded-md bg-tc-bg-elevated px-3 py-1 text-[11px] font-medium text-tc-text-light">
+                techcoder.tech
               </span>
             </div>
 
-            {/* Code body */}
-            <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr]">
-              {/* File explorer */}
-              <aside className="hidden sm:block border-r border-tc-border bg-tc-bg-card/40 p-3 text-[11.5px] font-mono text-tc-text-light">
-                <p className="uppercase tracking-wider text-[10px] mb-2 text-tc-text-light/70">
-                  hooks
-                </p>
-                {["usePrefersDark.ts", "useReveal.ts", "useMediaQuery.ts"].map((f, i) => (
-                  <p
-                    key={f}
-                    className={`flex items-center gap-1.5 py-1 rounded px-1.5 ${
-                      i === 0 ? "bg-tc-primary/10 text-tc-primary" : ""
-                    }`}
-                  >
-                    <FileCode2 size={11} /> {f}
-                  </p>
-                ))}
-              </aside>
+            {/* Magazine layout */}
+            <div className="p-4 sm:p-5 grid gap-4 sm:grid-cols-[1.35fr_1fr]">
+              {/* Featured story */}
+              <div className="relative overflow-hidden rounded-2xl border border-tc-border">
+                <div className="relative h-40 sm:h-full min-h-[168px] bg-gradient-to-br from-tc-primary via-tc-secondary to-tc-primary-light">
+                  <div className="absolute inset-0 dot-overlay opacity-20" />
+                  <CategoryBadge
+                    category={previewFeature.category}
+                    className="absolute top-3 left-3 !bg-white/90 !text-tc-primary-dark !border-transparent shadow-sm"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/55 to-transparent">
+                    <p className="font-heading font-bold text-sm sm:text-[15px] leading-snug text-white line-clamp-2">
+                      {previewFeature.title}
+                    </p>
+                    <p className="mt-1.5 text-[11px] text-white/75">{previewFeature.meta}</p>
+                  </div>
+                </div>
+              </div>
 
-              {/* Editor */}
-              <div className="bg-tc-bg-card/60 p-4 sm:p-5 overflow-x-auto">
-                <pre className="font-mono text-[12.5px] leading-[1.75]">
-                  {codeLines.map((line, i) => (
-                    <div key={i} className="flex gap-4">
-                      <span className="select-none w-5 text-right text-tc-text-light/50">
-                        {i + 1}
+              {/* Story list */}
+              <div className="flex flex-col gap-3">
+                {previewList.map((item) => {
+                  const Icon = categoryIcon(item.category);
+                  return (
+                    <div
+                      key={item.title}
+                      className="flex items-center gap-3 rounded-xl border border-tc-border bg-tc-bg-card/60 p-2.5"
+                    >
+                      <span
+                        className={`flex items-center justify-center shrink-0 w-11 h-11 rounded-lg bg-tc-bg-elevated ${CATEGORIES[item.category].accent}`}
+                      >
+                        <Icon size={18} />
                       </span>
-                      <code className="text-tc-text">{line}</code>
+                      <div className="min-w-0">
+                        <CategoryBadge category={item.category} className="!px-2 !py-0.5 !text-[9px]" />
+                        <p className="mt-1 font-heading font-semibold text-[12.5px] leading-tight text-tc-text line-clamp-1">
+                          {item.title}
+                        </p>
+                      </div>
                     </div>
-                  ))}
-                </pre>
+                  );
+                })}
               </div>
-            </div>
-
-            {/* Status bar */}
-            <div className="flex items-center gap-3 px-4 h-8 border-t border-tc-border bg-tc-surface/60 text-[10.5px] font-mono text-tc-text-light">
-              <span className="flex items-center gap-1 text-tc-primary">
-                <GitBranch size={11} /> main
-              </span>
-              <span className="flex items-center gap-1">
-                <Terminal size={11} /> npm run dev · ready
-              </span>
-              <span className="ml-auto">TypeScript</span>
-              <span>UTF-8</span>
-              <span>Ln 8, Col 24</span>
             </div>
           </div>
         </motion.div>
@@ -250,14 +189,14 @@ export default function HeroSection() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.9 }}
-          className="hidden md:flex absolute -left-4 lg:-left-10 top-24 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float"
+          className="hidden md:flex absolute -left-6 lg:-left-12 top-20 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-tc-primary to-tc-secondary text-white">
-            <BookOpen size={16} />
+            <Compass size={16} />
           </span>
           <div className="text-left">
-            <p className="text-[11px] text-tc-text-light">Tutorials</p>
-            <p className="heading-sm text-sm">320+ guides</p>
+            <p className="text-[11px] text-tc-text-light">Topics to explore</p>
+            <p className="heading-sm text-sm">6 and growing</p>
           </div>
         </motion.div>
 
@@ -265,14 +204,29 @@ export default function HeroSection() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 1.05 }}
-          className="hidden md:flex absolute -right-4 lg:-right-10 bottom-16 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay"
+          className="hidden md:flex absolute -right-6 lg:-right-12 bottom-14 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-tc-primary/12 text-tc-primary">
-            <Code2 size={16} />
+            <Star size={16} className="fill-current" />
           </span>
           <div className="text-left">
-            <p className="text-[11px] text-tc-text-light">Snippets</p>
-            <p className="heading-sm text-sm">1,200+ ready</p>
+            <p className="text-[11px] text-tc-text-light">Reviews</p>
+            <p className="heading-sm text-sm">Hands-on & unbiased</p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          className="hidden lg:flex absolute -right-8 top-8 items-center gap-2 px-3.5 py-2.5 rounded-2xl glass-strong animate-float-delay-2"
+        >
+          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-tc-primary/12 text-tc-primary">
+            <TrendingUp size={15} />
+          </span>
+          <div className="text-left">
+            <p className="text-[10px] text-tc-text-light">Fresh every</p>
+            <p className="heading-sm text-[13px]">Week</p>
           </div>
         </motion.div>
       </motion.div>

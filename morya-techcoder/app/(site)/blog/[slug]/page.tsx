@@ -6,13 +6,13 @@ import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "luc
 import { blogPosts, getBlogBySlug, compileBlogContent } from "@/content/loader";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getRelatedPosts } from "@/lib/posts";
-import { categoryColors } from "@/lib/categories";
 import type { BlogPost, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 import ReadingProgress from "@/components/ui/ReadingProgress";
 import TableOfContents from "@/components/ui/TableOfContents";
 import DifficultyBadge from "@/components/ui/DifficultyBadge";
+import CategoryBadge from "@/components/ui/CategoryBadge";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -40,7 +40,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 /** Difficulty defaults derived from the article's category when not set in frontmatter. */
 function resolveDifficulty(post: BlogPost): Difficulty {
   if (post.difficulty) return post.difficulty;
-  if (post.category === "Tricks") return "Beginner";
   if (post.category === "AI") return "Advanced";
   return "Intermediate";
 }
@@ -78,14 +77,7 @@ export default async function BlogDetailPage({ params }: Props) {
               {/* Header */}
               <header className="max-w-[720px] mb-10 animate-fade-up">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
-                  <span
-                    className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                      categoryColors[post.category]?.badge ||
-                      "bg-tc-bg-elevated text-tc-text-muted border border-tc-border"
-                    }`}
-                  >
-                    {post.category}
-                  </span>
+                  <CategoryBadge category={post.category} variant="full" className="px-3 py-1 text-xs" />
                   <DifficultyBadge level={difficulty} />
                 </div>
 

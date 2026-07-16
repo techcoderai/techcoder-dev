@@ -7,13 +7,16 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { categoryHref } from "@/lib/categories";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
-  { href: "/blog?category=AI", label: "AI" },
-  { href: "/blog?category=WebDev", label: "Engineering" },
+  { href: "/blog", label: "Articles" },
+  { href: categoryHref("Programming"), label: "Programming" },
+  { href: categoryHref("AI"), label: "AI" },
+  { href: categoryHref("Technology"), label: "Technology" },
+  { href: categoryHref("Reviews"), label: "Reviews" },
 ];
 
 export default function Navbar() {
@@ -76,7 +79,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-0.5 mx-auto">
+        <div className="hidden lg:flex items-center gap-0.5 mx-auto">
           {navLinks.map((link) => {
             const active = pathname === link.href;
             return (
@@ -101,16 +104,16 @@ export default function Navbar() {
         </div>
 
         {/* Actions */}
-        <div className="hidden md:flex items-center gap-2.5 shrink-0">
+        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
           <ThemeToggle />
           <Link href="/blog" className="btn-primary focus-ring px-5 py-2.5 text-[13.5px]">
-            Read Blog
+            Read Articles
             <ArrowUpRight size={15} />
           </Link>
         </div>
 
         {/* Mobile controls */}
-        <div className="flex md:hidden items-center gap-1.5">
+        <div className="flex lg:hidden items-center gap-1.5">
           <ThemeToggle />
           <button
             onClick={() => setMenuOpen(!menuOpen)}
@@ -130,7 +133,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95 backdrop-blur-2xl"
+            className="lg:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95 backdrop-blur-2xl"
             onClick={() => setMenuOpen(false)}
           >
             <nav className="flex flex-col gap-1.5 pt-28 px-6" onClick={(e) => e.stopPropagation()}>
@@ -161,7 +164,7 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                   className="btn-primary focus-ring mt-3 w-full py-4 text-base"
                 >
-                  Read the Blog
+                  Read Articles
                   <ArrowUpRight size={17} />
                 </Link>
               </motion.div>

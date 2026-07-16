@@ -1,24 +1,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Github, Twitter, Mail, ArrowUpRight } from "lucide-react";
+import { categoryHref } from "@/lib/categories";
 
 const columns = [
   {
     title: "Explore",
     links: [
       { href: "/", label: "Home" },
-      { href: "/blog", label: "All Posts" },
-      { href: "/blog?category=AI", label: "AI & ML" },
-      { href: "/blog?category=WebDev", label: "Engineering" },
-      { href: "/blog?category=Tricks", label: "Tips & Tricks" },
+      { href: "/blog", label: "All Articles" },
+      { href: categoryHref("Programming"), label: "Programming" },
+      { href: categoryHref("AI"), label: "Artificial Intelligence" },
+      { href: categoryHref("Technology"), label: "Technology" },
     ],
   },
   {
-    title: "Learn",
+    title: "Discover",
     links: [
-      { href: "/blog", label: "Tutorials" },
-      { href: "/blog", label: "Learning Paths" },
-      { href: "/blog?category=Tricks", label: "Code Snippets" },
+      { href: categoryHref("Reviews"), label: "Reviews" },
+      { href: categoryHref("Guides"), label: "Buying Guides" },
+      { href: "/#topics", label: "All Topics" },
       { href: "/blog", label: "Newsletter" },
     ],
   },
@@ -44,8 +45,8 @@ export default function Footer() {
               </span>
             </Link>
             <p className="body-sm max-w-xs">
-              A developer publication with in-depth articles, hands-on tutorials, and
-              copy-paste code snippets. Learn, build, and grow as a developer.
+              A technology publication with in-depth articles, hands-on guides, and honest
+              reviews across programming, AI, and the gadgets you use every day.
             </p>
             <div className="flex gap-2.5 mt-6">
               {socials.map(({ icon: Icon, href, label }) => (

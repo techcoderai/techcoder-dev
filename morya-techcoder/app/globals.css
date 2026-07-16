@@ -57,16 +57,25 @@
   --tc-border-code:    rgba(255, 255, 255, 0.08);
   --tc-text-code:      #E5E7EB;
 
-  /* Category badges */
+  /* Category badges — one accent per topic, tuned for light theme */
+  --tc-cat-programming-bg:      #EFF6FF;
+  --tc-cat-programming-text:    #1D4ED8;
+  --tc-cat-programming-border:  rgba(37, 99, 235, 0.20);
   --tc-cat-ai-bg:      #FFF1E7;
   --tc-cat-ai-text:    #C2410C;
   --tc-cat-ai-border:  rgba(249, 115, 22, 0.22);
-  --tc-cat-webdev-bg:      #EFF6FF;
-  --tc-cat-webdev-text:    #1D4ED8;
-  --tc-cat-webdev-border:  rgba(37, 99, 235, 0.20);
-  --tc-cat-tricks-bg:      #ECFDF5;
-  --tc-cat-tricks-text:    #047857;
-  --tc-cat-tricks-border:  rgba(4, 120, 87, 0.20);
+  --tc-cat-technology-bg:      #ECFEFF;
+  --tc-cat-technology-text:    #0E7490;
+  --tc-cat-technology-border:  rgba(14, 116, 144, 0.20);
+  --tc-cat-reviews-bg:      #F5F3FF;
+  --tc-cat-reviews-text:    #6D28D9;
+  --tc-cat-reviews-border:  rgba(109, 40, 217, 0.20);
+  --tc-cat-guides-bg:      #ECFDF5;
+  --tc-cat-guides-text:    #047857;
+  --tc-cat-guides-border:  rgba(4, 120, 87, 0.20);
+  --tc-cat-devtools-bg:      #F1F5F9;
+  --tc-cat-devtools-text:    #475569;
+  --tc-cat-devtools-border:  rgba(71, 85, 105, 0.20);
 
   /* Mesh / grid */
   --tc-grid-line:      rgba(15, 23, 42, 0.05);
@@ -115,15 +124,24 @@
   --tc-border-code:    rgba(255, 255, 255, 0.08);
   --tc-text-code:      #E5E7EB;
 
+  --tc-cat-programming-bg:      rgba(59, 130, 246, 0.14);
+  --tc-cat-programming-text:    #93C5FD;
+  --tc-cat-programming-border:  rgba(59, 130, 246, 0.28);
   --tc-cat-ai-bg:      rgba(249, 115, 22, 0.14);
   --tc-cat-ai-text:    #FDBA74;
   --tc-cat-ai-border:  rgba(249, 115, 22, 0.28);
-  --tc-cat-webdev-bg:      rgba(59, 130, 246, 0.14);
-  --tc-cat-webdev-text:    #93C5FD;
-  --tc-cat-webdev-border:  rgba(59, 130, 246, 0.28);
-  --tc-cat-tricks-bg:      rgba(16, 185, 129, 0.14);
-  --tc-cat-tricks-text:    #6EE7B7;
-  --tc-cat-tricks-border:  rgba(16, 185, 129, 0.28);
+  --tc-cat-technology-bg:      rgba(6, 182, 212, 0.14);
+  --tc-cat-technology-text:    #67E8F9;
+  --tc-cat-technology-border:  rgba(6, 182, 212, 0.28);
+  --tc-cat-reviews-bg:      rgba(139, 92, 246, 0.14);
+  --tc-cat-reviews-text:    #C4B5FD;
+  --tc-cat-reviews-border:  rgba(139, 92, 246, 0.28);
+  --tc-cat-guides-bg:      rgba(16, 185, 129, 0.14);
+  --tc-cat-guides-text:    #6EE7B7;
+  --tc-cat-guides-border:  rgba(16, 185, 129, 0.28);
+  --tc-cat-devtools-bg:      rgba(148, 163, 184, 0.14);
+  --tc-cat-devtools-text:    #CBD5E1;
+  --tc-cat-devtools-border:  rgba(148, 163, 184, 0.28);
 
   --tc-grid-line:      rgba(255, 255, 255, 0.045);
   --tc-dot:            rgba(255, 255, 255, 0.10);
@@ -147,15 +165,24 @@
   --color-tc-text-light:     var(--tc-text-light);
   --color-tc-border:         var(--tc-border);
   --color-tc-border-strong:  var(--tc-border-strong);
+  --color-tc-cat-programming-bg:      var(--tc-cat-programming-bg);
+  --color-tc-cat-programming-text:    var(--tc-cat-programming-text);
+  --color-tc-cat-programming-border:  var(--tc-cat-programming-border);
   --color-tc-cat-ai-bg:      var(--tc-cat-ai-bg);
   --color-tc-cat-ai-text:    var(--tc-cat-ai-text);
   --color-tc-cat-ai-border:  var(--tc-cat-ai-border);
-  --color-tc-cat-webdev-bg:      var(--tc-cat-webdev-bg);
-  --color-tc-cat-webdev-text:    var(--tc-cat-webdev-text);
-  --color-tc-cat-webdev-border:  var(--tc-cat-webdev-border);
-  --color-tc-cat-tricks-bg:      var(--tc-cat-tricks-bg);
-  --color-tc-cat-tricks-text:    var(--tc-cat-tricks-text);
-  --color-tc-cat-tricks-border:  var(--tc-cat-tricks-border);
+  --color-tc-cat-technology-bg:      var(--tc-cat-technology-bg);
+  --color-tc-cat-technology-text:    var(--tc-cat-technology-text);
+  --color-tc-cat-technology-border:  var(--tc-cat-technology-border);
+  --color-tc-cat-reviews-bg:      var(--tc-cat-reviews-bg);
+  --color-tc-cat-reviews-text:    var(--tc-cat-reviews-text);
+  --color-tc-cat-reviews-border:  var(--tc-cat-reviews-border);
+  --color-tc-cat-guides-bg:      var(--tc-cat-guides-bg);
+  --color-tc-cat-guides-text:    var(--tc-cat-guides-text);
+  --color-tc-cat-guides-border:  var(--tc-cat-guides-border);
+  --color-tc-cat-devtools-bg:      var(--tc-cat-devtools-bg);
+  --color-tc-cat-devtools-text:    var(--tc-cat-devtools-text);
+  --color-tc-cat-devtools-border:  var(--tc-cat-devtools-border);
 
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -301,9 +328,12 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--tc-text)
   letter-spacing: 0.18em;
 }
 
-.body-lg { font-family: var(--font-body); font-size: 1.125rem; line-height: 1.75; color: var(--tc-text-muted); }
-.body-base { font-family: var(--font-body); font-size: 1rem; line-height: 1.75; color: var(--tc-text-muted); }
-.body-sm { font-family: var(--font-body); font-size: 0.875rem; line-height: 1.7; color: var(--tc-text-muted); }
+.body-lg { font-family: var(--font-body); font-size: 1.125rem; line-height: 1.75; color: var(--tc-text-muted); text-wrap: pretty; }
+.body-base { font-family: var(--font-body); font-size: 1rem; line-height: 1.75; color: var(--tc-text-muted); text-wrap: pretty; }
+.body-sm { font-family: var(--font-body); font-size: 0.875rem; line-height: 1.7; color: var(--tc-text-muted); text-wrap: pretty; }
+
+/* Balanced wrapping keeps headlines from leaving an orphan word on the last line */
+.display-xl, .heading-xl, .heading-lg, .heading-md { text-wrap: balance; }
 
 code, kbd, samp, pre { font-family: var(--font-mono); }
 
@@ -520,6 +550,10 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 .prose-tc th, .prose-tc td { border: 1px solid var(--tc-border); padding: 0.6rem 0.9rem; text-align: left; vertical-align: top; }
 .prose-tc th { background: var(--tc-bg-elevated); font-weight: 600; color: var(--tc-text); }
 .prose-tc td { color: var(--tc-text-muted); }
+
+/* Hide scrollbars on horizontal carousels while keeping them scrollable */
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
 /* ═══════════════════════  SELECTION & SCROLLBAR  ═══════════════════════ */
 ::selection { background: var(--tc-primary); color: #fff; }

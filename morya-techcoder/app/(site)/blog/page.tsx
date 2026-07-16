@@ -6,7 +6,7 @@ import BlogListContent from "@/components/sections/BlogListContent";
 export const metadata: Metadata = {
   title: "Blog | TechCoder",
   description:
-    "Explore articles on AI, web development, and developer productivity tricks.",
+    "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
 };
 
 export default function BlogPage() {

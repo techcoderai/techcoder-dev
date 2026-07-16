@@ -24,10 +24,10 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://techcoder.dev"),
-  title: "TechCoder | Learn, Build & Grow as a Developer",
+  metadataBase: new URL("https://techcoder.tech"),
+  title: "TechCoder | Technology Knowledge You Can Trust",
   description:
-    "TechCoder is a developer publication with in-depth articles, hands-on tutorials, and copy-paste code snippets across AI, web engineering, and developer tooling.",
+    "TechCoder is a premium technology publication with in-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
