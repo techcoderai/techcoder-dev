@@ -86,12 +86,12 @@ export default function MagicBorderCard({ post, size = "default", className }: P
           )}
         </div>
 
-        {/* Content */}
-        <div className={cn("flex flex-col flex-1", isLg ? "p-5" : "p-4")}>
+        {/* Content — tightened for quick mobile scanning */}
+        <div className={cn("flex flex-col flex-1", isLg ? "p-4 sm:p-5" : "p-3.5 sm:p-4")}>
           <h3
             className={cn(
-              "card-premium-title font-heading font-bold text-tc-text leading-snug mb-1.5 line-clamp-2 transition-colors duration-300",
-              isLg ? "text-base sm:text-lg" : "text-[15px] sm:text-base"
+              "card-premium-title font-heading font-bold text-tc-text leading-snug mb-1 line-clamp-2 transition-colors duration-300",
+              isLg ? "text-[15px] sm:text-lg" : "text-[14.5px] sm:text-base"
             )}
           >
             {post.title}
@@ -99,13 +99,13 @@ export default function MagicBorderCard({ post, size = "default", className }: P
           <p
             className={cn(
               "text-tc-text-muted leading-relaxed line-clamp-2 mb-auto",
-              isLg ? "text-[13.5px]" : "text-[13px]"
+              isLg ? "text-[13px] sm:text-[13.5px]" : "text-[12.5px] sm:text-[13px]"
             )}
           >
             {post.excerpt}
           </p>
 
-          <div className="flex items-center gap-2.5 pt-3 mt-3.5 border-t border-tc-border text-[11px] font-medium text-tc-text-light">
+          <div className="card-premium-meta flex items-center gap-2 pt-2.5 mt-2.5 border-t border-tc-border text-[11px] font-medium text-tc-text-light">
             <time dateTime={post.date}>{formatDate(post.date)}</time>
             <span className="w-0.5 h-0.5 rounded-full bg-tc-text-light/60" />
             <span className="flex items-center gap-1">

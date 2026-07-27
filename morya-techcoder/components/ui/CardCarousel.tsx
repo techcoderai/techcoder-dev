@@ -192,10 +192,13 @@ export default function CardCarousel({
 
   if (posts.length === 0) return null;
 
+  // Mobile-first: one primary card fills the viewport with a ~10% peek of the
+  // next card (Apple News / App Store editorial feel). Fixed pixel widths kick
+  // in from sm+ so the desktop rail keeps its multi-card cadence.
   const cardWidth =
     size === "lg"
-      ? "w-[300px] sm:w-[340px] lg:w-[380px]"
-      : "w-[280px] sm:w-[300px] lg:w-[320px]";
+      ? "w-[87vw] max-w-[380px] sm:w-[340px] sm:max-w-none lg:w-[380px]"
+      : "w-[84vw] max-w-[340px] sm:w-[300px] sm:max-w-none lg:w-[320px]";
 
   return (
     <div className={cn("relative group/carousel", className)}>
@@ -230,7 +233,7 @@ export default function CardCarousel({
       >
         <div
           ref={trackRef}
-          className="flex gap-5 w-max will-change-transform"
+          className="flex gap-4 sm:gap-5 w-max will-change-transform"
           style={{ transform: "translate3d(0,0,0)" }}
         >
           {[0, 1].map((copy) =>

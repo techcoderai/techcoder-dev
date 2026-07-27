@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Menu, X, ArrowUpRight, ChevronLeft, List, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { categoryHref } from "@/lib/categories";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import { useReadingChrome } from "@/components/reading/ReadingChromeProvider";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -22,7 +23,27 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const reduceMotion = useReducedMotion();
   const pathname = usePathname();
+  const { chrome, setSheetOpen } = useReadingChrome();
+
+  // On an article, once the hero scrolls away the mobile navbar morphs into a
+  // reading toolbar: back · fading title · contents · share.
+  const reading = scrolled && !!chrome;
+
+  const shareArticle = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: chrome?.title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch {
+      /* user dismissed the share sheet, or the API is unavailable */
+    }
+  }, [chrome]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -51,32 +72,75 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-3 sm:px-6">
       <nav
         className={cn(
-          "flex items-center justify-between gap-2 w-full max-w-[1180px] rounded-full transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          "flex items-center justify-between gap-2 w-full max-w-[1180px] rounded-full transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          // Mobile-first: a leaner bar that reclaims vertical space for content,
+          // scaling back up to the roomier desktop bar at sm+.
           scrolled
-            ? "mt-3 h-14 px-3 sm:px-4 glass-strong"
-            : "mt-5 h-16 px-4 sm:px-5 border border-transparent"
+            ? "nav-shell-scrolled mt-2.5 h-12 px-3 shadow-[var(--tc-shadow-md)] sm:mt-3 sm:h-14 sm:px-4"
+            : "mt-3 h-14 px-4 border border-transparent sm:mt-5 sm:h-16 sm:px-5"
         )}
       >
-        {/* Logo */}
-        <Link
-          href="/"
-          className="focus-ring rounded-full flex items-center gap-2.5 group shrink-0"
-          onClick={() => setMenuOpen(false)}
-        >
-          <span className="relative flex items-center justify-center">
-            <span className="absolute inset-0 rounded-xl bg-tc-primary/25 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <Image
-              src="/icon.png"
-              alt="TechCoder"
-              width={34}
-              height={34}
-              className="relative rounded-xl transition-transform duration-300 group-hover:scale-105"
-            />
-          </span>
-          <span className="font-heading text-[17px] font-bold tracking-tight text-tc-text">
-            Tech<span className="text-gradient">Coder</span>
-          </span>
-        </Link>
+        {/* Left group — logo, plus back + fading title in mobile reading mode */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 lg:flex-none">
+          {/* Back — mobile reading toolbar only */}
+          {reading && chrome && (
+            <Link
+              href={chrome.backHref}
+              aria-label="Back to articles"
+              className="press focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200 lg:hidden"
+            >
+              <ChevronLeft size={19} />
+            </Link>
+          )}
+
+          {/* Logo (scales down on scroll; hidden on mobile while reading) */}
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: reduceMotion ? 0 : 0.4,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className={cn(
+              "shrink-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+              scrolled && "scale-[0.94]",
+              reading && "max-lg:hidden"
+            )}
+          >
+            <Link
+              href="/"
+              className="focus-ring group flex items-center gap-2.5 rounded-full"
+              onClick={() => setMenuOpen(false)}
+            >
+              <span className="relative flex items-center justify-center">
+                <span className="absolute inset-0 rounded-xl bg-tc-primary/25 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Image
+                  src="/icon.png"
+                  alt="TechCoder"
+                  width={34}
+                  height={34}
+                  className="relative rounded-xl transition-transform duration-300 group-hover:scale-105"
+                />
+              </span>
+              <span className="font-heading text-[17px] font-bold tracking-tight text-tc-text">
+                Tech<span className="text-gradient">Coder</span>
+              </span>
+            </Link>
+          </motion.div>
+
+          {/* Article title — fades into the navbar while reading (mobile) */}
+          {reading && chrome && (
+            <motion.span
+              key={chrome.title}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="min-w-0 flex-1 truncate font-heading text-[15px] font-semibold text-tc-text lg:hidden"
+            >
+              {chrome.title}
+            </motion.span>
+          )}
+        </div>
 
         {/* Desktop links */}
         <div className="hidden lg:flex items-center gap-0.5 mx-auto">
@@ -112,16 +176,39 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile controls */}
-        <div className="flex lg:hidden items-center gap-1.5">
-          <ThemeToggle />
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="focus-ring flex items-center justify-center w-9 h-9 rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+        {/* Mobile controls — 44px thumb-friendly tap targets */}
+        <div className="flex lg:hidden items-center gap-1 shrink-0">
+          {reading ? (
+            <>
+              <button
+                onClick={() => setSheetOpen(true)}
+                aria-label="Open contents"
+                className="press focus-ring flex h-10 w-10 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
+              >
+                <List size={18} />
+              </button>
+              <button
+                onClick={shareArticle}
+                aria-label="Share article"
+                className="press focus-ring flex h-10 w-10 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
+              >
+                <Share2 size={17} />
+              </button>
+              <ThemeToggle />
+            </>
+          ) : (
+            <>
+              <ThemeToggle />
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="press focus-ring flex items-center justify-center w-11 h-11 rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
+                aria-label="Toggle menu"
+                aria-expanded={menuOpen}
+              >
+                {menuOpen ? <X size={19} /> : <Menu size={19} />}
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -136,7 +223,7 @@ export default function Navbar() {
             className="lg:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95 backdrop-blur-2xl"
             onClick={() => setMenuOpen(false)}
           >
-            <nav className="flex flex-col gap-1.5 pt-28 px-6" onClick={(e) => e.stopPropagation()}>
+            <nav className="flex flex-col gap-1.5 pt-24 px-5" onClick={(e) => e.stopPropagation()}>
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.href}
@@ -147,7 +234,7 @@ export default function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="focus-ring flex items-center justify-between w-full py-4 px-5 text-lg font-medium text-tc-text rounded-2xl card-surface"
+                    className="press focus-ring flex items-center justify-between w-full py-4 px-5 text-lg font-medium text-tc-text rounded-2xl card-surface"
                   >
                     {link.label}
                     <ArrowUpRight size={18} className="text-tc-text-muted" />

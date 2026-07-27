@@ -3,7 +3,13 @@
 import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { ArrowRight, Sparkles, Compass, Star, TrendingUp } from "lucide-react";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 import { CATEGORIES } from "@/lib/categories";
@@ -24,6 +30,7 @@ const previewList = [
 
 export default function HeroSection() {
   const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const rx = useSpring(useTransform(my, [-0.5, 0.5], [5, -5]), { stiffness: 120, damping: 18 });
@@ -39,14 +46,23 @@ export default function HeroSection() {
     mx.set(0);
     my.set(0);
   };
+  const reveal = (delay: number, distance = 16) => ({
+    initial: reduceMotion ? false : { opacity: 0, y: distance },
+    animate: { opacity: 1, y: 0 },
+    transition: {
+      duration: reduceMotion ? 0 : 0.4,
+      delay: reduceMotion ? 0 : delay,
+      ease: [0.22, 1, 0.36, 1] as const,
+    },
+  });
 
   return (
-    <section className="relative overflow-hidden pt-36 md:pt-44 pb-20 md:pb-28 px-4 sm:px-6">
-      {/* Ambient mesh */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
+    <section className="relative px-4 pb-12 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:pb-28 md:pt-44">
+      {/* Ambient mesh — clipped so glow doesn't spill; floats live outside this layer */}
+      <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] mesh-glow opacity-80 blur-[40px]" />
         <div
-          className="absolute inset-x-0 top-0 h-[520px] dot-overlay opacity-70"
+          className="absolute inset-x-0 top-0 h-[520px] dot-overlay opacity-50"
           style={{
             maskImage: "radial-gradient(ellipse 60% 70% at 50% 30%, #000 20%, transparent 75%)",
             WebkitMaskImage: "radial-gradient(ellipse 60% 70% at 50% 30%, #000 20%, transparent 75%)",
@@ -57,25 +73,21 @@ export default function HeroSection() {
       <div className="container-wide mx-auto flex flex-col items-center text-center">
         {/* Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          {...reveal(0.08, 10)}
         >
-          <Link href="/blog" className="chip group hover:border-tc-primary transition-colors">
+          <Link href="/blog" className="chip hero-badge group">
             <span className="flex items-center justify-center w-4 h-4 rounded-full bg-tc-primary text-white">
               <Sparkles size={9} className="fill-current" />
             </span>
-            Trustworthy tech insights, every week
-            <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+            <span className="relative">Trustworthy tech insights, every week</span>
+            <ArrowRight size={12} className="icon-nudge" />
           </Link>
         </motion.div>
 
         {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="display-xl mt-7 max-w-4xl"
+          {...reveal(0.16)}
+          className="display-xl mt-5 max-w-4xl sm:mt-7"
         >
           Discover the technology
           <br className="hidden sm:block" /> that&apos;s{" "}
@@ -84,10 +96,8 @@ export default function HeroSection() {
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 max-w-2xl text-base sm:text-lg text-tc-text-muted leading-relaxed"
+          {...reveal(0.24)}
+          className="mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
         >
           From breakthrough AI and honest gadget reviews to deep programming guides —
           TechCoder is where curious minds find clear, trustworthy takes on the technology
@@ -96,17 +106,15 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-9 flex flex-col sm:flex-row items-center gap-3.5"
+          {...reveal(0.32)}
+          className="mt-6 flex w-full flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:flex-row sm:items-center"
         >
-          <Link href="/blog" className="btn-primary focus-ring group px-7 py-3.5 text-[15px]">
+          <Link href="/blog" className="btn-primary focus-ring group w-full sm:w-auto justify-center px-7 py-3.5 text-[15px]">
             Start exploring
-            <ArrowRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight size={17} className="icon-nudge" />
           </Link>
-          <Link href="/#topics" className="btn-secondary focus-ring px-7 py-3.5 text-[15px]">
-            <Compass size={15} />
+          <Link href="/#topics" className="btn-secondary focus-ring group w-full sm:w-auto justify-center px-7 py-3.5 text-[15px]">
+            <Compass size={15} className="icon-lift" />
             Browse topics
           </Link>
         </motion.div>
@@ -117,29 +125,29 @@ export default function HeroSection() {
         ref={ref}
         onMouseMove={onMove}
         onMouseLeave={onLeave}
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        {...reveal(0.4, 28)}
         style={{ perspective: 1400 }}
-        className="container-wide mx-auto mt-16 md:mt-20 relative max-w-3xl"
+        className="container-wide relative mx-auto mt-10 w-[calc(100%-1rem)] max-w-3xl sm:mt-16 sm:w-full md:mt-20"
       >
-        <motion.div
-          style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-          className="relative rounded-[26px] card-surface shadow-premium p-2.5 sm:p-3"
-        >
-          <div className="rounded-[18px] overflow-hidden border border-tc-border bg-tc-bg-secondary">
-            {/* Browser chrome */}
-            <div className="flex items-center gap-2 px-4 h-11 border-b border-tc-border bg-tc-surface/60">
-              <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-              <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
-              <span className="w-3 h-3 rounded-full bg-[#28C840]" />
-              <span className="mx-auto flex items-center gap-1.5 rounded-md bg-tc-bg-elevated px-3 py-1 text-[11px] font-medium text-tc-text-light">
-                techcoder.tech
-              </span>
-            </div>
+        <div className="hero-browser-glow" aria-hidden="true" />
+        <div className="hero-browser-float">
+          <motion.div
+            style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+            className="relative rounded-[26px] card-surface shadow-premium p-2.5 sm:p-3"
+          >
+            <div className="rounded-[18px] overflow-hidden border border-tc-border bg-tc-bg-secondary">
+              {/* Browser chrome */}
+              <div className="flex items-center gap-2 px-4 h-11 border-b border-tc-border bg-tc-surface/60">
+                <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
+                <span className="w-3 h-3 rounded-full bg-[#28C840]" />
+                <span className="mx-auto flex items-center gap-1.5 rounded-md bg-tc-bg-elevated px-3 py-1 text-[11px] font-medium text-tc-text-light">
+                  techcoder.tech
+                </span>
+              </div>
 
-            {/* Magazine layout */}
-            <div className="p-4 sm:p-5 grid gap-4 sm:grid-cols-[1.35fr_1fr]">
+              {/* Magazine layout */}
+              <div className="p-4 sm:p-5 grid gap-4 sm:grid-cols-[1.35fr_1fr]">
               {/* Featured story */}
               <div className="relative overflow-hidden rounded-2xl border border-tc-border">
                 <div className="relative h-40 sm:h-full min-h-[168px] bg-tc-bg-elevated">
@@ -189,16 +197,17 @@ export default function HeroSection() {
                   );
                 })}
               </div>
+              </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
 
-        {/* Floating cards */}
+        {/* Floating cards — z-10 so they sit above .hero-browser-float (z-1) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.9 }}
-          className="hidden md:flex absolute -left-6 lg:-left-12 top-20 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float"
+          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.72, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none hidden md:flex absolute z-10 -left-6 lg:-left-12 top-20 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-tc-primary to-tc-secondary text-white">
             <Compass size={16} />
@@ -210,10 +219,10 @@ export default function HeroSection() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 1.05 }}
-          className="hidden md:flex absolute -right-6 lg:-right-12 bottom-14 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay"
+          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none hidden md:flex absolute z-10 -right-6 lg:-right-12 bottom-14 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-tc-primary/12 text-tc-primary">
             <Star size={16} className="fill-current" />
@@ -225,10 +234,10 @@ export default function HeroSection() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
-          className="hidden lg:flex absolute -right-8 top-8 items-center gap-2 px-3.5 py-2.5 rounded-2xl glass-strong animate-float-delay-2"
+          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.88, ease: [0.22, 1, 0.36, 1] }}
+          className="pointer-events-none hidden lg:flex absolute z-10 -right-8 top-8 items-center gap-2 px-3.5 py-2.5 rounded-2xl glass-strong animate-float-delay-2"
         >
           <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-tc-primary/12 text-tc-primary">
             <TrendingUp size={15} />

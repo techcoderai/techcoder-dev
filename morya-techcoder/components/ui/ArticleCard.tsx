@@ -17,7 +17,13 @@ interface ArticleCardProps {
 function CategoryPill({ category, className }: { category: BlogPost["category"]; className?: string }) {
   const colors = categoryColors[category];
   return (
-    <span className={cn("category-pill", colors?.badge || "bg-tc-bg-elevated text-tc-text-muted border-tc-border", className)}>
+    <span
+      className={cn(
+        "category-pill inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide leading-none",
+        colors?.badge || "bg-tc-bg-elevated text-tc-text-muted border-tc-border",
+        className
+      )}
+    >
       {CATEGORIES[category]?.label ?? category}
     </span>
   );

@@ -74,7 +74,7 @@ export function getCategoryStyle(category: string) {
 function CatPill({ category, className }: { category: string; className?: string }) {
   const style = getCategoryStyle(category);
   return (
-    <span className={cn("cat-pill border", style.pill, className)}>
+    <span className={cn("cat-pill inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide leading-none border", style.pill, className)}>
       <span className={cn("w-1 h-1 rounded-full", style.dot)} />
       {style.label}
     </span>

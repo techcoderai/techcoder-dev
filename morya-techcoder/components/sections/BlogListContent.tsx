@@ -36,10 +36,10 @@ export default function BlogListPage({
   );
 
   return (
-    <div className="section-padding pt-28 md:pt-32">
+    <div className="section-padding pt-24 sm:pt-28 md:pt-32">
       <div className="container-wide mx-auto">
         {/* Page header */}
-        <div className="mb-10 animate-fade-up">
+        <div className="mb-8 sm:mb-10 animate-fade-up">
           <span className="chip mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-tc-primary" />
             The Library
@@ -52,7 +52,7 @@ export default function BlogListPage({
         </div>
 
         {/* Search + Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-12">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-12">
           <div className="relative flex-1">
             <Search
               size={18}
@@ -67,14 +67,15 @@ export default function BlogListPage({
             />
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <SlidersHorizontal size={15} className="text-tc-text-light mr-1 shrink-0" />
+          {/* Mobile: single-row scrollable filter rail; sm+: wraps inline */}
+          <div className="flex items-center gap-2 flex-nowrap overflow-x-auto scrollbar-none -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap">
+            <SlidersHorizontal size={15} className="hidden sm:block text-tc-text-light mr-1 shrink-0" />
             {(["All", ...categories] as const).map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "focus-ring px-4 py-2.5 text-xs font-bold rounded-full border transition-all duration-200",
+                  "press focus-ring shrink-0 px-4 py-2.5 text-xs font-bold rounded-full border transition-all duration-200",
                   activeCategory === cat
                     ? "bg-gradient-to-r from-tc-primary to-tc-secondary text-white border-transparent shadow-glow"
                     : "bg-tc-bg-card text-tc-text-muted border-tc-border hover:border-tc-primary hover:text-tc-primary active:bg-tc-bg-elevated"

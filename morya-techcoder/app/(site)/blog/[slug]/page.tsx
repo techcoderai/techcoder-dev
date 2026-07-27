@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
 import { blogPosts, getBlogBySlug, compileBlogContent } from "@/content/loader";
@@ -9,8 +8,9 @@ import { getRelatedPosts } from "@/lib/posts";
 import type { BlogPost, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
-import ReadingProgress from "@/components/ui/ReadingProgress";
+import FadeInImage from "@/components/ui/FadeInImage";
 import TableOfContents from "@/components/ui/TableOfContents";
+import SetReadingChrome from "@/components/reading/SetReadingChrome";
 import DifficultyBadge from "@/components/ui/DifficultyBadge";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 
@@ -58,14 +58,15 @@ export default async function BlogDetailPage({ params }: Props) {
 
   return (
     <>
-      <ReadingProgress />
+      {/* Register this article with the reading chrome (navbar toolbar + layer) */}
+      <SetReadingChrome title={post.title} backHref="/blog" headings={headings} />
 
-      <article className="pt-28 md:pt-32 pb-16 md:pb-20 relative">
+      <article className="pt-24 sm:pt-28 md:pt-32 pb-16 md:pb-20 relative">
         <div className="container-wide mx-auto px-4 sm:px-6 md:px-8 relative z-10">
           {/* Back link */}
           <Link
             href="/blog"
-            className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-medium text-tc-text-muted hover:text-tc-primary transition-all duration-200 mb-10"
+            className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-medium text-tc-text-muted hover:text-tc-primary transition-all duration-200 mb-6 sm:mb-10"
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform duration-200" />
             Back to Articles
@@ -75,16 +76,16 @@ export default async function BlogDetailPage({ params }: Props) {
             {/* Article column */}
             <div className="min-w-0">
               {/* Header */}
-              <header className="max-w-[720px] mb-10 animate-fade-up">
-                <div className="flex flex-wrap items-center gap-2.5 mb-5">
+              <header className="max-w-[720px] mb-8 sm:mb-10 animate-fade-up">
+                <div className="flex flex-wrap items-center gap-2.5 mb-4 sm:mb-5">
                   <CategoryBadge category={post.category} variant="full" className="px-3 py-1 text-xs" />
                   <DifficultyBadge level={difficulty} />
                 </div>
 
-                <h1 className="heading-xl text-2xl sm:text-3xl md:text-4xl lg:text-[3rem] mb-5">
+                <h1 className="heading-xl text-[1.9rem] sm:text-3xl md:text-4xl lg:text-[3rem] mb-4 sm:mb-5">
                   {post.title}
                 </h1>
-                <p className="text-base sm:text-lg text-tc-text-muted leading-relaxed mb-6">
+                <p className="text-[17px] sm:text-lg text-tc-text-muted leading-relaxed mb-5 sm:mb-6">
                   {post.excerpt}
                 </p>
 
@@ -106,15 +107,14 @@ export default async function BlogDetailPage({ params }: Props) {
                 </div>
               </header>
 
-              {/* Thumbnail */}
+              {/* Thumbnail — slightly shorter on mobile for a faster path to the text */}
               {post.thumbnail && (
-                <div className="max-w-[720px] mb-10">
-                  <Image
+                <div className="relative max-w-[720px] mb-8 sm:mb-10 aspect-[16/9] max-h-[248px] w-full overflow-hidden rounded-2xl border border-tc-border sm:max-h-none">
+                  <FadeInImage
                     src={post.thumbnail}
                     alt={post.title}
-                    width={800}
-                    height={450}
-                    className="rounded-2xl w-full h-auto border border-tc-border"
+                    fill
+                    className="object-cover"
                     sizes="(max-width: 768px) 100vw, 720px"
                     priority
                   />
@@ -203,9 +203,9 @@ export default async function BlogDetailPage({ params }: Props) {
 
           {/* Related */}
           {related.length > 0 && (
-            <div className="mt-20 pt-14 border-t border-tc-border">
-              <h2 className="heading-lg text-xl md:text-2xl mb-8">Keep reading</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+            <div className="mt-14 pt-10 sm:mt-20 sm:pt-14 border-t border-tc-border">
+              <h2 className="heading-lg text-[1.375rem] md:text-2xl mb-6 sm:mb-8">Keep reading</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-7">
                 {related.map((p) => (
                   <MagicBorderCard key={p.id} post={p} />
                 ))}

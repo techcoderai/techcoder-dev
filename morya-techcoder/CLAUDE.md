@@ -74,8 +74,9 @@ morya-techcoder/
 │   │   ├── CategoryBadge.tsx         # 🆕 Reusable color-coded category pill
 │   │   ├── CardCarousel.tsx          # 🆕 Responsive snapping slider (featured rail)
 │   │   ├── CodeBlock.tsx             # Copy-to-clipboard code blocks
-│   │   ├── TableOfContents.tsx       # Auto-generated TOC (uses useActiveHeading hook)
-│   │   ├── ReadingProgress.tsx       # Scroll progress bar (uses useReadingProgress hook)
+│   │   ├── TableOfContents.tsx       # Desktop sidebar TOC — sliding active indicator (layoutId)
+│   │   ├── FadeInImage.tsx           # next/image drop-in: eases from opacity/scale on load
+│   │   ├── ReadingProgress.tsx       # Smooth top progress bar (imperative, uses useScrollProgress)
 │   │   ├── NewsletterBox.tsx         # Email subscription form
 │   │   ├── ThemeToggle.tsx           # Light/dark mode switcher
 │   │   ├── DifficultyBadge.tsx       # Visual difficulty indicators
@@ -110,9 +111,16 @@ morya-techcoder/
 ├── types/                            # 🆕 Dedicated types directory
 │   └── blog.ts                       # 🔄 Moved from content/blogs.ts
 │
+├── components/reading/               # 🆕 Immersive mobile reading experience
+│   ├── ReadingChromeProvider.tsx     # Context: article chrome + Contents sheet state
+│   ├── SetReadingChrome.tsx          # Registers the current article (client, on the page)
+│   └── ReadingLayer.tsx              # Top progress bar + floating circular indicator + TOC bottom sheet
+│
 ├── hooks/                            # 🆕 Reusable client hooks
-│   ├── useReadingProgress.ts         # Extracted scroll percentage logic
-│   └── useActiveHeading.ts           # Extracted intersection observer logic
+│   ├── useReadingProgress.ts         # Scroll percentage (state-based)
+│   ├── useScrollProgress.ts          # 🆕 Imperative rAF scroll progress (no re-renders)
+│   ├── useReadingState.ts            # 🆕 Active heading + completed sections scroll-spy
+│   └── useActiveHeading.ts           # Intersection observer active-heading (desktop TOC)
 │
 ├── docs/                             # 🆕 Comprehensive documentation (8 files)
 │   ├── README.md                     # Documentation index
@@ -550,6 +558,12 @@ No need to edit types, filter pills, section headers, or color mappings separate
 - Conditional classes with `cn()` helper (`clsx` + `tailwind-merge`)
 - Avoid inline styles except for dynamic values (e.g., `style={{ width: percent }}`)
 - Animation classes: `.animate-fade-up`, `.animate-float`, `.animate-pulse-slow`
+- **Motion system** — use the shared tokens `--tc-dur-fast|--tc-dur|--tc-dur-slow`
+  and `--tc-ease*` for all transitions (never hardcode ms/easing). Reusable
+  interaction utilities: `.moving-border` (animated gradient edge on hover),
+  `.press` (tactile scale), `.link-underline`, layered `--tc-shadow-md|lg`.
+  Route transitions live in `app/(site)/template.tsx`. See
+  [docs/motion-system.md](docs/motion-system.md).
 
 ---
 

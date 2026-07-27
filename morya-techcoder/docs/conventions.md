@@ -36,6 +36,21 @@ Practical rules that keep this codebase consistent and easy to maintain solo.
   (`bg-tc-bg-card`, `text-tc-text-muted`) so light/dark themes both work.
 - Merge conditional classes with `cn()` from `@/lib/utils`.
 
+### Motion and interaction
+
+- Use the shared motion tokens: `--tc-dur-fast` (150ms), `--tc-dur` (250ms),
+  and `--tc-dur-slow` (400ms).
+- Use `--tc-ease` for entrances and elevation, `--tc-ease-soft` for color or
+  highlight movement, and avoid bounce or overshoot.
+- Reuse `card-premium` for article lift, moving border, layered shadow, and
+  media zoom. Use `card-premium-flat` for dense rows that should not lift.
+- Reuse `btn-primary` / `btn-secondary` for tactile press, elevation, and
+  restrained highlight treatments.
+- Use `link-underline` for animated editorial links, `icon-nudge` for a 2px
+  directional cue, and `icon-lift` for a 1px decorative icon movement.
+- Entrance animation must respect reduced-motion preferences. CSS animations
+  are covered globally; Framer Motion components should use `useReducedMotion`.
+
 ## Component guidelines
 
 - One responsibility per component. If a component does data-shaping *and*

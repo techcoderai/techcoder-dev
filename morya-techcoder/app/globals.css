@@ -46,11 +46,16 @@
   --tc-glass-border:   rgba(15, 23, 42, 0.08);
   --tc-glass-shadow:   0 8px 32px rgba(15, 23, 42, 0.08);
 
-  /* Premium shadows */
-  --tc-shadow-sm:      0 1px 2px rgba(15, 23, 42, 0.06);
-  --tc-shadow-md:      0 8px 30px rgba(15, 23, 42, 0.08);
-  --tc-shadow-lg:      0 24px 60px -12px rgba(15, 23, 42, 0.16);
-  --tc-shadow-glow:    0 12px 40px -8px rgba(249, 115, 22, 0.35);
+  /* Premium shadows — layered (near · medium · far) so elevation reads as
+     depth, not darkness. Hover swaps to a larger, softer stack, never harsher. */
+  --tc-shadow-sm:      0 1px 2px rgba(15, 23, 42, 0.05);
+  --tc-shadow-md:      0 1px 2px rgba(15, 23, 42, 0.04),
+                       0 6px 16px -8px rgba(15, 23, 42, 0.10),
+                       0 14px 40px -18px rgba(15, 23, 42, 0.12);
+  --tc-shadow-lg:      0 2px 6px rgba(15, 23, 42, 0.05),
+                       0 12px 28px -12px rgba(15, 23, 42, 0.14),
+                       0 30px 64px -24px rgba(15, 23, 42, 0.18);
+  --tc-shadow-glow:    0 10px 34px -10px rgba(249, 115, 22, 0.30);
 
   /* Code surfaces */
   --tc-bg-code:        #0B0B0D;
@@ -80,6 +85,17 @@
   /* Mesh / grid */
   --tc-grid-line:      rgba(15, 23, 42, 0.05);
   --tc-dot:            rgba(15, 23, 42, 0.14);
+
+  /* ── Motion system (theme-independent) ──
+     One vocabulary for every interaction. Easings mirror the calm, slightly
+     "settled" curves used by Apple / Linear: quick to respond, gentle to land,
+     never bouncing or overshooting. */
+  --tc-ease:        cubic-bezier(0.22, 1, 0.36, 1);   /* standard ease-out */
+  --tc-ease-inout:  cubic-bezier(0.65, 0, 0.35, 1);   /* symmetric */
+  --tc-ease-soft:   cubic-bezier(0.4, 0, 0.2, 1);     /* material-soft */
+  --tc-dur-fast:    150ms;   /* taps, presses, tiny nudges (120–180) */
+  --tc-dur:         250ms;   /* standard hovers & color shifts (220–280) */
+  --tc-dur-slow:    400ms;   /* elevation, reveals, larger moves (350–450) */
 }
 
 /* ─────────────────────────  DARK THEME  ───────────────────────── */
@@ -116,9 +132,13 @@
   --tc-glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.45);
 
   --tc-shadow-sm:      0 1px 2px rgba(0, 0, 0, 0.4);
-  --tc-shadow-md:      0 8px 30px rgba(0, 0, 0, 0.5);
-  --tc-shadow-lg:      0 24px 60px -12px rgba(0, 0, 0, 0.7);
-  --tc-shadow-glow:    0 12px 44px -8px rgba(249, 115, 22, 0.45);
+  --tc-shadow-md:      0 1px 2px rgba(0, 0, 0, 0.4),
+                       0 6px 18px -8px rgba(0, 0, 0, 0.5),
+                       0 16px 44px -18px rgba(0, 0, 0, 0.55);
+  --tc-shadow-lg:      0 2px 8px rgba(0, 0, 0, 0.45),
+                       0 14px 32px -12px rgba(0, 0, 0, 0.6),
+                       0 34px 70px -24px rgba(0, 0, 0, 0.65);
+  --tc-shadow-glow:    0 12px 40px -10px rgba(249, 115, 22, 0.38);
 
   --tc-bg-code:        #0B0B0D;
   --tc-border-code:    rgba(255, 255, 255, 0.08);
@@ -199,6 +219,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  /* Kill the blue flash on tap; we provide our own tactile feedback instead */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Smooth, animated theme switching */
@@ -260,6 +282,20 @@ body,
 @keyframes borderAngle {
   to { --tc-border-angle: 360deg; }
 }
+@keyframes highlightSweep {
+  0%, 68% { transform: translateX(-160%) skewX(-18deg); opacity: 0; }
+  74%     { opacity: 0.28; }
+  88%, 100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
+}
+@keyframes badgeShimmer {
+  0%, 72% { transform: translateX(-180%) skewX(-18deg); opacity: 0; }
+  78%     { opacity: 0.18; }
+  94%, 100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
+}
+@keyframes browserFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
 
 .animate-fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-fade-in { animation: fadeIn 0.5s ease-out both; }
@@ -271,6 +307,22 @@ body,
 .animate-pulse-glow { animation: pulseGlow 5s ease-in-out infinite; }
 .animate-blink { animation: blink 1.1s step-end infinite; }
 .animate-spin-slow { animation: spinSlow 14s linear infinite; }
+
+/* Reading-complete reward: a single calm ring pulse (no confetti) */
+@keyframes readPulse {
+  0%   { transform: scale(0.9); opacity: 0.5; }
+  80%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.animate-read-pulse { animation: readPulse 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Gentle "pop" for the completion checkmark */
+@keyframes readPop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-read-pop { animation: readPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 .animate-delay-1 { animation-delay: 0.10s; }
 .animate-delay-2 { animation-delay: 0.20s; }
@@ -304,9 +356,9 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--tc-text)
 .heading-lg {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 2rem; /* mobile-first: 32px section titles */
   letter-spacing: -0.025em;
-  line-height: 1.15;
+  line-height: 1.12;
   color: var(--tc-text);
 }
 @media (min-width: 768px) { .heading-lg { font-size: 2.25rem; } }
@@ -379,6 +431,12 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   border: 1px solid var(--tc-glass-border);
   box-shadow: var(--tc-glass-shadow);
 }
+.nav-shell-scrolled {
+  background: color-mix(in srgb, var(--tc-bg-card) 88%, transparent);
+  backdrop-filter: blur(32px) saturate(185%);
+  -webkit-backdrop-filter: blur(32px) saturate(185%);
+  border: 1px solid var(--tc-glass-border);
+}
 .card-surface {
   background: var(--tc-bg-card);
   border: 1px solid var(--tc-border);
@@ -388,16 +446,20 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 .shadow-premium { box-shadow: var(--tc-shadow-lg); }
 .shadow-glow { box-shadow: var(--tc-shadow-glow); }
 
-/* Hover-lift interaction */
+/* Hover-lift interaction — calm elevation on the unified motion curve */
 .hover-lift {
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.35s ease;
+  transition: transform var(--tc-dur-slow) var(--tc-ease),
+              box-shadow var(--tc-dur-slow) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease);
 }
 .hover-lift:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow: var(--tc-shadow-lg);
   border-color: var(--tc-border-strong);
+}
+.hover-lift:active {
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: var(--tc-dur-fast);
 }
 
 /* Animated gradient border (spotlight) */
@@ -428,9 +490,9 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   isolation: isolate;
   transform: translateZ(0);
   transition:
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.35s ease;
+    transform var(--tc-dur-slow) var(--tc-ease),
+    box-shadow var(--tc-dur-slow) var(--tc-ease),
+    border-color var(--tc-dur) var(--tc-ease);
 }
 .card-premium::before {
   content: "";
@@ -453,14 +515,18 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.45s ease;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
   pointer-events: none;
   z-index: 2;
 }
 .card-premium:hover {
-  transform: translateY(-3px) scale(1.015);
+  transform: translateY(-4px) scale(1.01);
   box-shadow: var(--tc-shadow-lg);
   border-color: transparent;
+}
+.card-premium:active {
+  transform: translateY(-1px) scale(0.998);
+  transition-duration: var(--tc-dur-fast);
 }
 .card-premium:hover::before {
   opacity: 1;
@@ -468,17 +534,24 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 }
 /* Zoom only the image node — scaling both the wrapper and the img felt jerky. */
 .card-premium .card-premium-media img {
-  transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.85s var(--tc-ease);
   will-change: transform;
 }
 .card-premium:hover .card-premium-media img {
   transform: scale(1.04);
 }
-.card-premium:hover .card-premium-title {
-  color: var(--tc-primary);
-}
 .card-premium:hover .card-premium-badge {
-  filter: saturate(1.15) brightness(1.05);
+  filter: saturate(1.12) brightness(1.04);
+}
+/* Metadata recedes a touch on hover so the title leads the eye */
+.card-premium-meta {
+  transition: opacity var(--tc-dur) var(--tc-ease);
+}
+.card-premium:hover .card-premium-meta {
+  opacity: 0.72;
+}
+.card-premium-title {
+  transition: color var(--tc-dur) var(--tc-ease);
 }
 
 /* Dense list rows: keep the border + type cues, skip lift/scale */
@@ -545,6 +618,28 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
     radial-gradient(closest-side at 80% 30%, var(--tc-glow-soft), transparent),
     radial-gradient(closest-side at 50% 80%, var(--tc-glow-soft), transparent);
 }
+.hero-browser-glow {
+  position: absolute;
+  z-index: 0;
+  inset: -18% -12% -22%;
+  background: radial-gradient(
+    ellipse at 50% 48%,
+    rgba(249, 115, 22, 0.12) 0%,
+    rgba(249, 115, 22, 0.05) 38%,
+    transparent 70%
+  );
+  filter: blur(22px);
+  pointer-events: none;
+}
+.hero-browser-float {
+  position: relative;
+  z-index: 1;
+  animation: browserFloat 7s var(--tc-ease-inout) 1.1s infinite;
+  filter: drop-shadow(0 24px 34px rgba(15, 23, 42, 0.06));
+}
+.dark .hero-browser-float {
+  filter: drop-shadow(0 26px 38px rgba(0, 0, 0, 0.22));
+}
 .noise {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
@@ -568,17 +663,39 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   background: linear-gradient(120deg, var(--tc-primary), var(--tc-secondary));
   border-radius: 9999px;
   box-shadow: 0 6px 20px -6px var(--tc-glow), inset 0 1px 0 rgba(255,255,255,0.25);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.25s ease;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease),
+              filter var(--tc-dur) var(--tc-ease);
   overflow: hidden;
+  isolation: isolate;
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: -45% auto -45% -35%;
+  width: 28%;
+  z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: highlightSweep 5.8s var(--tc-ease-soft) 1.4s infinite;
+  pointer-events: none;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 30px -6px var(--tc-glow), inset 0 1px 0 rgba(255,255,255,0.3);
-  filter: brightness(1.04);
+  filter: brightness(1.05);
 }
-.btn-primary:active { transform: translateY(0); }
+/* Press — instant, scales down, sheds shadow for a physical "give" */
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 3px 10px -6px var(--tc-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+  filter: brightness(1);
+  transition-duration: var(--tc-dur-fast);
+}
 
 .btn-secondary {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -591,14 +708,47 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--tc-border-strong);
   border-radius: 9999px;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, background 0.25s ease;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease),
+              background var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease);
+}
+.btn-secondary::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--tc-border-angle),
+    transparent 0 36%,
+    var(--tc-primary-light) 48%,
+    var(--tc-primary) 54%,
+    transparent 66% 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--tc-dur) var(--tc-ease);
+  pointer-events: none;
+}
+.btn-secondary:hover::before {
+  opacity: 0.75;
+  animation: borderAngle 3.2s linear infinite;
 }
 .btn-secondary:hover {
   transform: translateY(-2px);
   border-color: var(--tc-primary);
   background: var(--tc-glow-soft);
+  box-shadow: var(--tc-shadow-md);
 }
-.btn-secondary:active { transform: translateY(0); }
+.btn-secondary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: none;
+  transition-duration: var(--tc-dur-fast);
+}
 
 .btn-ghost {
   display: inline-flex;
@@ -606,7 +756,7 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   gap: 0.4rem;
   font-weight: 600;
   color: var(--tc-text-muted);
-  transition: color 0.2s ease;
+  transition: color var(--tc-dur) var(--tc-ease);
 }
 .btn-ghost:hover { color: var(--tc-primary); }
 
@@ -618,6 +768,9 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 
 /* Chip / pill label */
 .chip {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -629,10 +782,145 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
   background: var(--tc-glow-soft);
   border: 1px solid var(--tc-glass-border);
   color: var(--tc-primary-dark);
+  transition: background var(--tc-dur) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.hero-badge::after {
+  content: "";
+  position: absolute;
+  inset: -55% auto -55% -25%;
+  width: 18%;
+  z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
+  transform: translateX(-180%) skewX(-18deg);
+  animation: badgeShimmer 7s var(--tc-ease-soft) 1.8s infinite;
+  pointer-events: none;
+}
+/* Interactive chips (links) get a gently animated background on hover */
+a.chip:hover,
+button.chip:hover {
+  background: var(--tc-glow);
+  border-color: var(--tc-primary);
+}
+
+/* Category pill — rounded, airy label for cards & rails */
+.category-pill,
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* ═══════════════════════  MICRO-INTERACTIONS  ═══════════════════════ */
+
+/*
+ * Reusable moving gradient border.
+ *
+ * Add `moving-border` to any rounded element: a soft orange gradient sweeps
+ * continuously around the edge on hover, then stops smoothly on leave. Pure
+ * CSS (conic-gradient masked to a 1px ring) — no WebGL, no glow, no neon.
+ * Shares the `--tc-border-angle` @property + `borderAngle` keyframe used by
+ * article cards so the whole site speaks one border language.
+ */
+.moving-border { position: relative; isolation: isolate; }
+.moving-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--tc-border-angle),
+    transparent 0%,
+    transparent 38%,
+    rgba(249, 115, 22, 0.15) 46%,
+    var(--tc-primary-light) 52%,
+    var(--tc-primary) 56%,
+    rgba(249, 115, 22, 0.15) 62%,
+    transparent 70%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
+  pointer-events: none;
+  z-index: 2;
+}
+.moving-border:hover::before {
+  opacity: 1;
+  animation: borderAngle 3.2s linear infinite;
+}
+
+/*
+ * Animated underline for inline links & card titles. Grows from the left on
+ * hover (of the element or its parent `.group`) instead of a flat fade.
+ */
+.link-underline {
+  background-image: linear-gradient(var(--tc-primary), var(--tc-primary));
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.link-underline:hover,
+.group:hover .link-underline {
+  background-size: 100% 1.5px;
+}
+
+/* Shared icon movement: 2px for directional cues, 1px for decorative icons. */
+.icon-nudge,
+.icon-lift {
+  transition: transform var(--tc-dur) var(--tc-ease);
+}
+.group:hover .icon-nudge,
+a:hover > .icon-nudge,
+button:hover > .icon-nudge {
+  transform: translateX(2px);
+}
+.group:hover .icon-lift,
+a:hover > .icon-lift,
+button:hover > .icon-lift {
+  transform: translateY(-1px);
+}
+
+/* Oversized, faintly-inked index number for imageless card placeholders */
+.article-stamp {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--tc-text);
+  opacity: 0.06;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moving-border::before,
+  .btn-primary::after,
+  .btn-secondary::before,
+  .hero-badge::after,
+  .hero-browser-float {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ═══════════════════════  LAYOUT  ═══════════════════════ */
-.section-padding { padding: 5rem 1.5rem; }
+/* Mobile-first vertical rhythm: 56px sections keep discovery tight & scannable */
+.section-padding { padding: 3.5rem 1.25rem; }
 @media (min-width: 768px) { .section-padding { padding: 7rem 2rem; } }
 @media (min-width: 1024px) { .section-padding { padding: 8.75rem 2rem; } }
 
@@ -645,6 +933,8 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 .prose-tc h2 { font-family: var(--font-heading); font-weight: 700; font-size: 1.5rem; line-height: 1.25; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--tc-text); letter-spacing: -0.015em; }
 .prose-tc h3 { font-family: var(--font-heading); font-weight: 600; font-size: 1.25rem; line-height: 1.3; margin-top: 1.75rem; margin-bottom: 0.5rem; color: var(--tc-text); letter-spacing: -0.01em; }
 .prose-tc h4 { font-family: var(--font-heading); font-weight: 600; font-size: 1.125rem; line-height: 1.4; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--tc-text); }
+/* Offset in-page anchor jumps so headings clear the fixed navbar + progress bar */
+.prose-tc h1, .prose-tc h2, .prose-tc h3, .prose-tc h4 { scroll-margin-top: 5.5rem; }
 @media (min-width: 768px) {
   .prose-tc h1 { font-size: 2.25rem; }
   .prose-tc h2 { font-size: 1.75rem; }
@@ -674,6 +964,35 @@ code, kbd, samp, pre { font-family: var(--font-mono); }
 /* Hide scrollbars on horizontal carousels while keeping them scrollable */
 .scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ═══════════════════════  MOBILE INTERACTIONS  ═══════════════════════ */
+/* Native momentum + horizontal snap rail (Apple News / App Store feel).    */
+.snap-rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scroll-padding-left: 1.25rem;
+}
+.snap-rail > * { scroll-snap-align: start; }
+
+/* Tactile press — used on touch for cards & pill buttons. GPU transform only. */
+.press { transition: transform var(--tc-dur-fast) var(--tc-ease); }
+.press:active { transform: scale(0.97); }
+
+/* On touch (no hover), give article cards a subtle press instead of hover-lift */
+@media (hover: none) {
+  .card-premium:active {
+    transform: scale(0.985);
+    transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active,
+  .card-premium:active { transform: none; }
+}
 
 /* ═══════════════════════  SELECTION & SCROLLBAR  ═══════════════════════ */
 ::selection { background: var(--tc-primary); color: #fff; }

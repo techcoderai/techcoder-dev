@@ -66,9 +66,9 @@ function RailHeader({
   category: BlogCategory;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 mb-5 sm:mb-6">
       <div>
-        <h3 className="heading-lg text-xl md:text-2xl">{title}</h3>
+        <h3 className="heading-lg text-[1.375rem] md:text-2xl">{title}</h3>
         <p className="text-sm text-tc-text-muted mt-1.5 max-w-lg">{subtitle}</p>
       </div>
       <Link
@@ -95,7 +95,7 @@ function FeaturedAsymmetric({ posts }: { posts: BlogPost[] }) {
         <Link
           href={`/blog/${lead.slug}`}
           aria-label={`Read: ${lead.title}`}
-          className="card-premium card-premium-cover focus-ring relative flex flex-col h-full min-h-[320px] sm:min-h-[380px] rounded-2xl overflow-hidden border border-tc-border bg-tc-bg-card shadow-[var(--tc-shadow-sm)]"
+          className="card-premium card-premium-cover focus-ring relative flex flex-col h-full min-h-[264px] sm:min-h-[380px] rounded-2xl overflow-hidden border border-tc-border bg-tc-bg-card shadow-[var(--tc-shadow-sm)]"
         >
           <div className="card-premium-media absolute inset-0 overflow-hidden">
             {lead.thumbnail ? (
@@ -332,8 +332,8 @@ export default function HomeContent() {
     <div className="section-padding pt-0">
       <div className="container-wide mx-auto">
         {/* Featured — large editorial + supporting stack */}
-        <div className="mb-20">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8 animate-fade-up">
+        <div className="mb-14 sm:mb-20">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6 sm:mb-8 animate-fade-up">
             <div>
               <span className="chip mb-5">
                 <span className="w-1.5 h-1.5 rounded-full bg-tc-primary" />
@@ -356,7 +356,7 @@ export default function HomeContent() {
         </div>
 
         {/* Topic rails — each with a distinct layout */}
-        <div className="flex flex-col gap-20">
+        <div className="flex flex-col gap-14 sm:gap-20">
           {RAILS.map((rail) => (
             <Rail key={rail.category} {...rail} />
           ))}
