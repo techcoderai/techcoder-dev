@@ -7,6 +7,7 @@ import Testimonials from "@/components/sections/Testimonials";
 import FAQ from "@/components/sections/FAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 import NewsletterBox from "@/components/ui/NewsletterBox";
+import { isFeatureEnabled } from "@/lib/featureFlags";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
       <TopicGrid />
       <HomeContent />
       <Capabilities />
-      <Testimonials />
+      {isFeatureEnabled("showTestimonials") && <Testimonials />}
 
       <section className="section-padding pt-0">
         <div className="container-wide mx-auto">
@@ -25,7 +26,7 @@ export default function Home() {
         </div>
       </section>
 
-      <FAQ />
+      {isFeatureEnabled("showFAQ") && <FAQ />}
       <FinalCTA />
     </>
   );

@@ -80,6 +80,12 @@ From `content/loader.ts`:
 
 From `lib/posts.ts`:
 - `filterPosts(posts, { query, category })`
-- `getFeaturedPosts(posts, n)`
+- `getFeaturedPosts(posts, n)` — posts with `featured: true` (falls back to newest if none flagged)
 - `getPostsByCategory(posts, category, n?)`
 - `getRelatedPosts(posts, current, n)`
+
+### Featuring a post on the homepage
+
+Set `featured: true` in the post’s frontmatter (or tick **Featured** in Keystatic).
+Only flagged posts appear in “Featured articles”. If nothing is flagged yet, the
+helper falls back to the newest posts so the rail isn’t empty during setup.

@@ -29,6 +29,11 @@ export interface BlogPost {
   prerequisites?: string[];
   /** When true, the post is hidden in production but visible in `next dev`. */
   draft?: boolean;
+  /**
+   * When true, the post is eligible for the homepage "Featured articles"
+   * section. Controlled from Keystatic or MDX frontmatter.
+   */
+  featured?: boolean;
   /** Optional SEO overrides. Falls back to `title` / `excerpt` when empty. */
   seo?: { title?: string; description?: string };
   /** Raw MDX/markdown body of the article. */

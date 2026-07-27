@@ -39,7 +39,8 @@ and simple to reason about.
   (`img`, `h2`, `Callout`, `YouTube`, …) to React components.
 - **`components/mdx/*`** — the reusable article building blocks.
 - **`lib/`** — pure, framework-agnostic logic: `categories.ts` (single source of
-  truth for categories), `posts.ts` (filtering/related helpers), `utils.ts`
+  truth for categories), `posts.ts` (filtering/related helpers),
+  `featureFlags.ts` (progressive section rollout), `utils.ts`
   (`cn`, `formatDate`, `slugify`, `getHeadings`).
 - **`types/blog.ts`** — the `BlogPost` / `Difficulty` types shared everywhere.
 - **`hooks/`** — reusable client behaviors (`useReadingProgress`, `useActiveHeading`).
@@ -75,6 +76,18 @@ Route groups don't change URLs — `/` and `/blog` are unaffected.
 ### 6. Draft mode via `NODE_ENV`
 Posts with `draft: true` are visible in `npm run dev` but filtered out of
 production builds. This gives "preview before publishing" with zero extra infra.
+
+### 7. Feature flags (`lib/featureFlags.ts`)
+Homepage sections that aren't ready to ship (e.g. Testimonials, FAQ) are gated
+behind a typed flag map. Components call `isFeatureEnabled("showFAQ")` instead
+of hardcoding conditions. Flags are compile-time constants today; the lookup can
+later read env/remote config without changing call sites.
+
+### 8. Homepage editorial variety
+The home page rails intentionally use distinct layouts (asymmetric featured,
+infinite carousel, ranked list, editorial two-column, compact grid) so the page
+reads like a magazine. Shared hover language lives in `.card-premium` tokens in
+`globals.css`; the infinite article carousel is `components/ui/CardCarousel.tsx`.
 
 ## Rendering & caching
 

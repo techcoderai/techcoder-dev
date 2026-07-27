@@ -40,9 +40,9 @@ function Meta({ post, muted = false }: { post: BlogPost; muted?: boolean }) {
 function HeroCard({ post, className }: { post: BlogPost; className?: string }) {
   return (
     <article className={cn("group relative", className)}>
-      <Link href={`/blog/${post.slug}`} className="focus-ring block rounded-2xl overflow-hidden">
+      <Link href={`/blog/${post.slug}`} className="card-premium focus-ring block rounded-2xl overflow-hidden border border-tc-border">
         {/* Image */}
-        <div className="relative aspect-[16/9] bg-tc-bg-elevated img-zoom">
+        <div className="card-premium-media relative aspect-[16/9] bg-tc-bg-elevated overflow-hidden">
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
@@ -61,8 +61,8 @@ function HeroCard({ post, className }: { post: BlogPost; className?: string }) {
 
           {/* Overlay content */}
           <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
-            <CategoryPill category={post.category} className="w-fit mb-4 bg-white/15 text-white border-white/20 backdrop-blur-sm" />
-            <h2 className="font-heading font-bold text-white text-xl sm:text-2xl md:text-3xl leading-tight tracking-tight max-w-2xl link-underline">
+            <CategoryPill category={post.category} className="card-premium-badge w-fit mb-4 bg-white/15 text-white border-white/20 backdrop-blur-sm" />
+            <h2 className="card-premium-title font-heading font-bold text-white text-xl sm:text-2xl md:text-3xl leading-tight tracking-tight max-w-2xl">
               {post.title}
             </h2>
             <p className="mt-2 text-sm text-white/70 leading-relaxed line-clamp-2 max-w-xl hidden sm:block">
@@ -93,10 +93,10 @@ function FeaturedCard({ post, className, index }: { post: BlogPost; className?: 
     <article className={cn("group flex flex-col h-full", className)}>
       <Link
         href={`/blog/${post.slug}`}
-        className="focus-ring flex flex-col h-full rounded-2xl bg-tc-bg-card border border-tc-border overflow-hidden transition-all duration-300 hover:border-tc-border-strong hover:shadow-[var(--tc-shadow-lg)] hover:-translate-y-1"
+        className="card-premium focus-ring flex flex-col h-full rounded-2xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-sm)]"
       >
         {/* Image */}
-        <div className="relative aspect-[3/2] bg-tc-bg-elevated img-zoom overflow-hidden">
+        <div className="card-premium-media relative aspect-[3/2] bg-tc-bg-elevated overflow-hidden">
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
@@ -121,8 +121,8 @@ function FeaturedCard({ post, className, index }: { post: BlogPost; className?: 
 
         {/* Content */}
         <div className="flex flex-col flex-1 p-5">
-          <CategoryPill category={post.category} className="w-fit mb-3" />
-          <h3 className="font-heading font-bold text-[15px] text-tc-text leading-snug tracking-tight line-clamp-2 group-hover:text-tc-primary transition-colors duration-200 link-underline">
+          <CategoryPill category={post.category} className="card-premium-badge w-fit mb-3" />
+          <h3 className="card-premium-title font-heading font-bold text-[15px] text-tc-text leading-snug tracking-tight line-clamp-2 transition-colors duration-300">
             {post.title}
           </h3>
           <p className="mt-2 text-[13px] text-tc-text-muted leading-relaxed line-clamp-2 mb-auto">
@@ -143,10 +143,10 @@ function HorizontalCard({ post, className, index }: { post: BlogPost; className?
     <article className={cn("group", className)}>
       <Link
         href={`/blog/${post.slug}`}
-        className="focus-ring flex gap-4 py-5 border-b border-tc-border transition-colors duration-200 hover:border-tc-border-strong"
+        className="card-premium card-premium-flat focus-ring flex gap-4 py-5 px-4 sm:px-5 border-0 rounded-none shadow-none transition-colors duration-200 hover:bg-tc-bg-elevated/40"
       >
         {/* Number stamp or image */}
-        <div className="relative flex-shrink-0 w-24 sm:w-28 aspect-[4/3] rounded-xl bg-tc-bg-elevated overflow-hidden img-zoom">
+        <div className="card-premium-media relative flex-shrink-0 w-24 sm:w-28 aspect-[4/3] rounded-xl bg-tc-bg-elevated overflow-hidden">
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
@@ -168,8 +168,8 @@ function HorizontalCard({ post, className, index }: { post: BlogPost; className?
 
         {/* Text */}
         <div className="flex flex-col justify-center min-w-0 flex-1">
-          <CategoryPill category={post.category} className="w-fit mb-1.5" />
-          <h3 className="font-heading font-semibold text-[14px] sm:text-[15px] text-tc-text leading-snug tracking-tight line-clamp-2 group-hover:text-tc-primary transition-colors duration-200">
+          <CategoryPill category={post.category} className="card-premium-badge w-fit mb-1.5" />
+          <h3 className="card-premium-title font-heading font-semibold text-[14px] sm:text-[15px] text-tc-text leading-snug tracking-tight line-clamp-2 transition-colors duration-300">
             {post.title}
           </h3>
           <div className="mt-2">

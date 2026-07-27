@@ -103,6 +103,7 @@ morya-techcoder/
 ├── lib/                              # 🔄 Pure logic (framework-agnostic)
 │   ├── categories.ts                 # 🔄 SINGLE SOURCE OF TRUTH for categories (6 topics)
 │   ├── category-icons.ts             # 🆕 Maps category icon names → lucide components
+│   ├── featureFlags.ts               # 🆕 Progressive section rollout (Testimonials, FAQ, …)
 │   ├── posts.ts                      # 🆕 Business logic (filtering, featured, related)
 │   └── utils.ts                      # Helpers (cn, formatDate, calcReadingTime)
 │
@@ -211,6 +212,7 @@ export interface BlogPost {
   updated?: string;               // Optional last updated date
   prerequisites?: string[];
   draft?: boolean;                // 🆕 Visibility toggle (dev vs prod)
+  featured?: boolean;             // 🆕 Homepage “Featured articles” eligibility
   seo?: {                         // 🆕 SEO overrides
     title?: string;
     description?: string;
@@ -221,6 +223,7 @@ export interface BlogPost {
 
 **New Fields:**
 - `draft: boolean` - Filters posts in production (visible in dev only)
+- `featured: boolean` - Show in homepage Featured section (Keystatic checkbox or frontmatter)
 - `seo: { title?, description? }` - Override default title/description for SEO
 
 ### Content Loader Architecture
@@ -498,6 +501,7 @@ import type { BlogPost } from "@/types/blog";
    difficulty: "Intermediate"  # optional
    prerequisites: ["Basic React", "TypeScript"]  # optional
    draft: false  # optional (defaults false)
+   featured: true  # optional — show in homepage Featured articles
    ---
    ```
 3. Write content in markdown/MDX
@@ -517,6 +521,20 @@ import type { BlogPost } from "@/types/blog";
 - Examples: `BlogListContent.tsx`, `ThemeToggle.tsx`, `CodeBlock.tsx`
 
 **Never mix:** Server-only imports in client components will fail
+
+### Feature flags
+
+Toggle homepage (and later site-wide) sections from `lib/featureFlags.ts`:
+
+```ts
+import { isFeatureEnabled } from "@/lib/featureFlags";
+
+{isFeatureEnabled("showTestimonials") && <Testimonials />}
+{isFeatureEnabled("showFAQ") && <FAQ />}
+```
+
+Current defaults: `showTestimonials: false`, `showFAQ: false`. Components stay in
+the tree — they simply don't render when disabled.
 
 ### Adding New Categories
 
@@ -547,14 +565,17 @@ No need to edit types, filter pills, section headers, or color mappings separate
 - [keystatic.config.ts](keystatic.config.ts) - Keystatic schema & collections
 - [types/blog.ts](types/blog.ts) - TypeScript type definitions
 - [lib/categories.ts](lib/categories.ts) - SINGLE SOURCE OF TRUTH for categories
+- [lib/featureFlags.ts](lib/featureFlags.ts) - Progressive feature flags (`isFeatureEnabled`)
 - [lib/posts.ts](lib/posts.ts) - Business logic (filtering, featured, related)
 - [lib/utils.ts](lib/utils.ts) - Helper functions
 
 ### Key Components
 - [components/layout/Navbar.tsx](components/layout/Navbar.tsx) - Glassmorphic navbar
 - [components/sections/HeroSection.tsx](components/sections/HeroSection.tsx) - Animated hero
+- [components/sections/HomeContent.tsx](components/sections/HomeContent.tsx) - Magazine-style editorial rails
 - [components/sections/BlogListContent.tsx](components/sections/BlogListContent.tsx) - Search & filters
-- [components/ui/MagicBorderCard.tsx](components/ui/MagicBorderCard.tsx) - Blog cards
+- [components/ui/MagicBorderCard.tsx](components/ui/MagicBorderCard.tsx) - Blog cards (`.card-premium` hover)
+- [components/ui/CardCarousel.tsx](components/ui/CardCarousel.tsx) - Infinite premium article carousel
 - [components/ui/TableOfContents.tsx](components/ui/TableOfContents.tsx) - Auto TOC
 - [components/ui/CodeBlock.tsx](components/ui/CodeBlock.tsx) - Code blocks with copy
 - [components/mdx/](components/mdx/) - MDX component library (11 components)

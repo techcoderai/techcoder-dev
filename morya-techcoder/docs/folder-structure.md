@@ -32,6 +32,8 @@ morya-techcoder/
 │
 ├── lib/                      # Pure logic (no React, no I/O side effects)
 │   ├── categories.ts         # SINGLE SOURCE OF TRUTH for categories
+│   ├── category-icons.ts     # lucide icon name → component map
+│   ├── featureFlags.ts       # Progressive feature rollout (Testimonials, FAQ, …)
 │   ├── posts.ts              # filterPosts / getFeaturedPosts / getRelatedPosts …
 │   └── utils.ts              # cn, formatDate, slugify, getHeadings
 │
@@ -39,6 +41,7 @@ morya-techcoder/
 │   └── blog.ts               # BlogPost, Difficulty (shared types)
 │
 ├── public/
+│   ├── hero_preview.svg      # Hero browser-mockup featured image
 │   └── content/blog/         # Blog images (Keystatic uploads land here)
 │
 ├── docs/                     # You are here

@@ -25,9 +25,15 @@ export function filterPosts(
   });
 }
 
-/** Returns the N most recent posts (posts arrive already sorted by date). */
+/**
+ * Returns posts flagged with `featured: true` (newest first), capped at
+ * `count`. If nothing is flagged yet, falls back to the N most recent posts
+ * so the homepage featured rail never goes blank during content setup.
+ */
 export function getFeaturedPosts(posts: BlogPost[], count = 3): BlogPost[] {
-  return posts.slice(0, count);
+  const flagged = posts.filter((post) => post.featured);
+  const pool = flagged.length > 0 ? flagged : posts;
+  return pool.slice(0, count);
 }
 
 /** Returns up to `count` posts in a given category (all of them if omitted). */

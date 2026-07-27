@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles, Compass, Star, TrendingUp } from "lucide-react";
 import CategoryBadge from "@/components/ui/CategoryBadge";
@@ -141,13 +142,21 @@ export default function HeroSection() {
             <div className="p-4 sm:p-5 grid gap-4 sm:grid-cols-[1.35fr_1fr]">
               {/* Featured story */}
               <div className="relative overflow-hidden rounded-2xl border border-tc-border">
-                <div className="relative h-40 sm:h-full min-h-[168px] bg-gradient-to-br from-tc-primary via-tc-secondary to-tc-primary-light">
-                  <div className="absolute inset-0 dot-overlay opacity-20" />
+                <div className="relative h-40 sm:h-full min-h-[168px] bg-tc-bg-elevated">
+                  <Image
+                    src="/hero_preview.svg"
+                    alt=""
+                    fill
+                    priority
+                    className="object-cover object-[center_20%]"
+                    sizes="(max-width: 768px) 90vw, 420px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                   <CategoryBadge
                     category={previewFeature.category}
                     className="absolute top-3 left-3 !bg-white/90 !text-tc-primary-dark !border-transparent shadow-sm"
                   />
-                  <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/55 to-transparent">
+                  <div className="absolute inset-x-0 bottom-0 p-4">
                     <p className="font-heading font-bold text-sm sm:text-[15px] leading-snug text-white line-clamp-2">
                       {previewFeature.title}
                     </p>

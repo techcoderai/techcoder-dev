@@ -83,6 +83,7 @@ function loadPosts(): BlogPost[] {
         updated: data.updated || undefined,
         prerequisites: data.prerequisites || undefined,
         draft: data.draft ?? false,
+        featured: data.featured ?? false,
         seo: data.seo || undefined,
         body: content.trim(),
       });

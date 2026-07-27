@@ -33,5 +33,8 @@ If you are an LLM working in this repo:
 - Blog data flows one way: `content/posts/*.mdx` → `content/loader.ts` →
   server components → UI components. Never fetch content in client components.
 - The single source of truth for categories is `lib/categories.ts`.
+- Feature flags live in `lib/featureFlags.ts` (`isFeatureEnabled(...)`).
 - All blog types live in `types/blog.ts`.
 - Use the `--tc-*` design tokens (see `app/globals.css`); never hardcode colors.
+- Homepage article cards share the `.card-premium` hover language; carousels use
+  `components/ui/CardCarousel.tsx` (infinite, transform-based).

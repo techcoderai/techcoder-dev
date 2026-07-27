@@ -54,6 +54,11 @@ export default config({
           description: "Drafts are hidden in production but visible with `npm run dev`.",
           defaultValue: false,
         }),
+        featured: fields.checkbox({
+          label: "Featured",
+          description: "Show this post in the homepage “Featured articles” section.",
+          defaultValue: false,
+        }),
         category: fields.select({
           label: "Category",
           options: categoryOptions,

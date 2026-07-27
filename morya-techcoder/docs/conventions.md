@@ -49,6 +49,8 @@ Practical rules that keep this codebase consistent and easy to maintain solo.
 
 - Filtering, sorting, and "which posts to show" logic belongs in `lib/posts.ts`,
   not inside components. This keeps it reusable and testable.
+- Progressive show/hide of sections belongs in `lib/featureFlags.ts`. Prefer
+  `isFeatureEnabled("showFAQ")` over inline booleans so flags stay centralized.
 
 ## Adding a category
 
