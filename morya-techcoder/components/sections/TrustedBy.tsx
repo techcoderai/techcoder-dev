@@ -19,7 +19,10 @@ const topics = [
 
 export default function TrustedBy() {
   return (
-    <section className="relative py-16 md:py-20 px-4 sm:px-6 border-y border-tc-border">
+    <section
+      aria-label="Topics covered by TechCoder"
+      className="relative py-16 md:py-20 px-4 sm:px-6 border-y border-tc-border"
+    >
       <div className="container-wide mx-auto">
         <Reveal className="text-center mb-10">
           <p className="overline text-tc-text-light">
@@ -32,6 +35,7 @@ export default function TrustedBy() {
             {[...topics, ...topics].map((name, i) => (
               <span
                 key={`${name}-${i}`}
+                aria-hidden={i >= topics.length}
                 className="flex items-center gap-3 font-heading text-lg sm:text-xl font-semibold tracking-tight text-tc-text-light/70 hover:text-tc-primary transition-colors duration-300 whitespace-nowrap select-none"
               >
                 {name}

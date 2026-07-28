@@ -2,11 +2,9 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { compileMDX } from "next-mdx-remote/rsc";
 import { calcReadingTime } from "@/lib/utils";
 import type { BlogPost, Difficulty } from "@/types/blog";
 import { ACTIVE_CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
-import { mdxComponents } from "@/content/mdx-components";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
 
@@ -110,17 +108,4 @@ export function getBlogBySlug(slug: string): BlogPost | undefined {
 export function getCategories(): BlogCategory[] {
   const present = new Set(blogPosts.map((post) => post.category));
   return ACTIVE_CATEGORY_KEYS.filter((category) => present.has(category));
-}
-
-/**
- * Compiles an MDX/markdown body string into a renderable React element using
- * the shared component map. Used on the blog detail page (server-rendered).
- */
-export async function compileBlogContent(rawBody: string) {
-  const { content } = await compileMDX({
-    source: rawBody,
-    components: mdxComponents,
-    options: { parseFrontmatter: false },
-  });
-  return content;
 }

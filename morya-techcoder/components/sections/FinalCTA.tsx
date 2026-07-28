@@ -11,7 +11,7 @@ export default function FinalCTA() {
             {/* Glow layers */}
             <div className="absolute inset-0 -z-10 mesh-glow opacity-90" />
             <div className="absolute inset-0 -z-10 grid-overlay opacity-40" />
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full bg-tc-primary/20 blur-[120px] animate-pulse-glow" />
+            <div className="ambient-orb ambient-orb-primary absolute -top-24 left-1/2 h-[560px] w-[560px] -translate-x-1/2 opacity-70 animate-pulse-glow" />
 
             <div className="relative flex flex-col items-center">
               <span className="chip mb-6">

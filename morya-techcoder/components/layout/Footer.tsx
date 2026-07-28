@@ -54,7 +54,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="focus-ring flex items-center justify-center w-10 h-10 rounded-xl border border-tc-border bg-tc-bg-card text-tc-text-muted hover:text-white hover:border-transparent hover:bg-gradient-to-br hover:from-tc-primary hover:to-tc-secondary transition-all duration-300 hover:-translate-y-1"
+                  className="focus-ring flex items-center justify-center w-10 h-10 rounded-xl border border-tc-border bg-tc-bg-card text-tc-text-muted hover:text-white hover:border-transparent hover:bg-gradient-to-br hover:from-tc-primary hover:to-tc-secondary transition-[border-color,color,transform] duration-[var(--tc-dur)] hover:-translate-y-1"
                 >
                   <Icon size={17} />
                 </a>
@@ -76,7 +76,7 @@ export default function Footer() {
                     {link.label}
                     <ArrowUpRight
                       size={13}
-                      className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+                      className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-[var(--tc-dur)]"
                     />
                   </Link>
                 ))}

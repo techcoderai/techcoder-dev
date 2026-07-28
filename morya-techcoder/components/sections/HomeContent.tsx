@@ -1,15 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { ArrowRight, Clock } from "lucide-react";
 import { blogPosts } from "@/content/loader";
 import { categoryHref, type BlogCategory } from "@/lib/categories";
-import { getFeaturedPosts, getPostsByCategory } from "@/lib/posts";
+import { getFeaturedPosts, getPostsByCategory, toPostSummary } from "@/lib/posts";
 import { cn, formatDate } from "@/lib/utils";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
-import CardCarousel from "@/components/ui/CardCarousel";
 import ArticleCard from "@/components/ui/ArticleCard";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 import type { BlogPost } from "@/types/blog";
+
+/** Code-split the infinite carousel so its client JS isn't in the homepage critical path. */
+const CardCarousel = dynamic(() => import("@/components/ui/CardCarousel"), {
+  loading: () => (
+    <div className="h-[280px] rounded-xl bg-tc-bg-elevated/50 animate-pulse" aria-hidden />
+  ),
+});
 
 /**
  * Editorial rails shown on the home page, in reading order. Each rail uses a
@@ -103,7 +110,6 @@ function FeaturedAsymmetric({ posts }: { posts: BlogPost[] }) {
                 src={lead.thumbnail}
                 alt={lead.title}
                 fill
-                priority
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 60vw"
               />
@@ -205,7 +211,7 @@ function RankedList({ posts }: { posts: BlogPost[] }) {
             </div>
             <ArrowRight
               size={16}
-              className="shrink-0 text-tc-text-light opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-tc-primary hidden sm:block"
+              className="shrink-0 text-tc-text-light opacity-0 -translate-x-1 transition-[color,opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-tc-primary hidden sm:block"
             />
           </Link>
         </article>
@@ -301,13 +307,13 @@ function Rail({
         <div className="relative">
           {/* Soft category accent behind the AI carousel */}
           <div
-            className="pointer-events-none absolute -inset-x-4 -inset-y-6 rounded-3xl opacity-60 blur-2xl -z-10"
+            className="pointer-events-none absolute -inset-x-4 -inset-y-6 rounded-3xl opacity-60 -z-10"
             style={{
               background: `radial-gradient(ellipse at 30% 50%, color-mix(in srgb, var(--tc-primary) 12%, transparent), transparent 70%)`,
             }}
             aria-hidden
           />
-          <CardCarousel posts={posts} size="lg" speed={24} />
+          <CardCarousel posts={posts.map(toPostSummary)} size="lg" speed={24} />
         </div>
       )}
 
@@ -329,7 +335,7 @@ export default function HomeContent() {
   const featured = getFeaturedPosts(blogPosts, 4);
 
   return (
-    <div className="section-padding pt-0">
+    <div className="render-deferred section-padding pt-0">
       <div className="container-wide mx-auto">
         {/* Featured — large editorial + supporting stack */}
         <div className="mb-14 sm:mb-20">

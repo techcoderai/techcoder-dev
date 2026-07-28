@@ -3,7 +3,7 @@
 One vocabulary for every interaction, tuned to feel calm, editorial and
 premium — closer to Apple / Linear / Vercel than a template with random hover
 effects. Motion reinforces hierarchy; it never competes with reading. Everything
-animates `transform` / `opacity` / `filter` only, and everything respects
+animates `transform` / `opacity` wherever possible, and everything respects
 `prefers-reduced-motion` (a global rule in `globals.css` collapses durations).
 
 ## Tokens (`app/globals.css` → `:root`)
@@ -53,20 +53,65 @@ stack — it never just gets darker. Avoid one-off `box-shadow` values.
 
 ## Images
 
-`components/ui/FadeInImage.tsx` — a `next/image` drop-in that eases from
-`opacity: 0; scale: 0.98` to rest over ~300ms on load (handles cached images via
-a ref callback). Use for standalone imagery (article hero, MDX figures). **Do
-not** use on `.card-premium-media` images — they already animate `transform` on
-hover and a second transform transition would fight it.
+Article hero images render directly with `next/image` and `preload` so the LCP
+candidate is discoverable immediately and never waits for hydration. Card media
+uses the shared transform-only `.card-premium-media` zoom. Avoid load-triggered
+opacity effects on above-the-fold images because they delay LCP reporting.
 
 ## Page transitions
 
-`app/(site)/template.tsx` re-mounts per navigation and eases page content in
-(upward fade). Navbar, footer and reading chrome live in the layout (outside the
-template) so they stay put; Next handles scroll restoration and the layout paints
-the background, so there is no white flash. Reduced motion drops the translate.
+Public routes intentionally do not use a client `template.tsx`. Static content
+paints immediately instead of waiting for hydration before becoming visible.
+Section-level reveals provide the motion hierarchy without delaying route FCP or
+LCP.
+
+## Desktop navigation (`components/layout/NavLinks.tsx`)
+
+A single soft radial "pill" glides between links via a shared Framer `layoutId`
+(settling on the active route when nothing is hovered). Each label is gently
+magnetic toward the cursor (spring, capped at a few px), an underline
+(`.nav-underline`) expands from the center on hover and persists on the active
+route, and colour eases. All magnetic/layout motion is disabled under reduced
+motion. The navbar shell still compacts + strengthens blur on scroll
+(`.nav-shell-scrolled`) and the logo scales down.
+
+## Article reading companion (`components/reading/ArticleActions.tsx`)
+
+Desktop sidebar tool card: live **% read** + **time remaining** (updated
+imperatively via `useScrollProgress`, no re-renders), plus **Share** (native
+sheet → copy fallback), **Copy Link** (with a `Check` confirmation),
+**Bookmark** (`localStorage` via `useSyncExternalStore`, `animate-bookmark-pop`),
+**Print**, and **Reading Mode**. Reading Mode toggles `html.reading-focus`,
+which calmly dims regions tagged `.reading-dim` (tags, newsletter, related) and
+eases the prose measure. Mobile keeps the native share sheet (navbar Share).
+
+## Table of contents
+
+Both the desktop sidebar (`TableOfContents`) and the mobile bottom sheet
+(`ReadingLayer`) share `useReadingState`: a Framer `layoutId` indicator glides to
+the active heading, completed sections earn a `Check`, and a `done/total` count
+shows section progress. Headings nest (h3 indented under h2).
+
+## Other polish
+
+- **Scroll-to-top** (`ScrollToTop`) — fades in past 700px; bottom-left on mobile
+  (clear of the reading indicator), bottom-right on desktop.
+- **Spotlight cursor** (`SpotlightCursor`) — a barely-there warm radial that
+  trails the pointer via a CSS var on rAF. Desktop fine-pointer only; hidden
+  under reduced motion and painted behind content.
+- **Skeletons** (`app/(site)/blog/loading.tsx`, `.../[slug]/loading.tsx`) — layout-
+  matched shimmer (`.skeleton`) so route swaps don't jump.
+- **View Transitions** — `ThemeToggle` cross-fades the theme swap via
+  `document.startViewTransition` (progressive enhancement); `::view-transition-*`
+  root timing is set in `globals.css`. Both no-op under reduced motion.
 
 ## Glass
 
 Restrained glassmorphism only where it earns its cost: the navbar, floating
 cards, and the reading TOC. Do not add `backdrop-filter` broadly.
+
+Large ambient glows use radial gradients instead of large blurred elements.
+Long homepage sections use `.render-deferred` (`content-visibility: auto`) so
+off-screen layout and paint work is skipped until the section approaches the
+viewport. Continuous carousel work pauses when off-screen or when the document
+is hidden.

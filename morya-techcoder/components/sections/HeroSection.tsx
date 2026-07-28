@@ -1,19 +1,10 @@
-"use client";
-
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-  useTransform,
-} from "framer-motion";
 import { ArrowRight, Sparkles, Compass, Star, TrendingUp } from "lucide-react";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 import { CATEGORIES } from "@/lib/categories";
 import { categoryIcon } from "@/lib/category-icons";
+import TiltSurface from "@/components/ui/TiltSurface";
 
 /* Representative headlines for the editorial preview — decorative, not live data. */
 const previewFeature = {
@@ -28,39 +19,17 @@ const previewList = [
   { category: "Programming" as const, title: "Patterns that keep large codebases sane", meta: "7 min read" },
 ] as const;
 
+const previewItems = previewList.map((item) => ({
+  ...item,
+  Icon: categoryIcon(item.category),
+}));
+
 export default function HeroSection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const rx = useSpring(useTransform(my, [-0.5, 0.5], [5, -5]), { stiffness: 120, damping: 18 });
-  const ry = useSpring(useTransform(mx, [-0.5, 0.5], [-6, 6]), { stiffness: 120, damping: 18 });
-
-  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    mx.set((e.clientX - rect.left) / rect.width - 0.5);
-    my.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const onLeave = () => {
-    mx.set(0);
-    my.set(0);
-  };
-  const reveal = (delay: number, distance = 16) => ({
-    initial: reduceMotion ? false : { opacity: 0, y: distance },
-    animate: { opacity: 1, y: 0 },
-    transition: {
-      duration: reduceMotion ? 0 : 0.4,
-      delay: reduceMotion ? 0 : delay,
-      ease: [0.22, 1, 0.36, 1] as const,
-    },
-  });
-
   return (
     <section className="relative px-4 pb-12 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:pb-28 md:pt-44">
       {/* Ambient mesh — clipped so glow doesn't spill; floats live outside this layer */}
       <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1100px] h-[700px] mesh-glow opacity-80 blur-[40px]" />
+        <div className="absolute top-0 left-1/2 h-[700px] w-[1100px] -translate-x-1/2 mesh-glow opacity-80" />
         <div
           className="absolute inset-x-0 top-0 h-[520px] dot-overlay opacity-50"
           style={{
@@ -72,42 +41,37 @@ export default function HeroSection() {
 
       <div className="container-wide mx-auto flex flex-col items-center text-center">
         {/* Badge */}
-        <motion.div
-          {...reveal(0.08, 10)}
-        >
-          <Link href="/blog" className="chip hero-badge group">
+        <div className="hero-enter-fade" style={{ animationDelay: "80ms" }}>
+          <Link href="/blog" className="chip hero-badge focus-ring group">
             <span className="flex items-center justify-center w-4 h-4 rounded-full bg-tc-primary text-white">
               <Sparkles size={9} className="fill-current" />
             </span>
             <span className="relative">Trustworthy tech insights, every week</span>
             <ArrowRight size={12} className="icon-nudge" />
           </Link>
-        </motion.div>
+        </div>
 
-        {/* Headline */}
-        <motion.h1
-          {...reveal(0.16)}
-          className="display-xl mt-5 max-w-4xl sm:mt-7"
-        >
+        {/* Headline — no enter animation: this is the LCP element */}
+        <h1 className="display-xl mt-5 max-w-4xl sm:mt-7">
           Discover the technology
           <br className="hidden sm:block" /> that&apos;s{" "}
-          <span className="text-gradient-animated">worth knowing.</span>
-        </motion.h1>
+          <span className="text-gradient">worth knowing.</span>
+        </h1>
 
         {/* Subtitle */}
-        <motion.p
-          {...reveal(0.24)}
-          className="mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+        <p
+          className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+          style={{ animationDelay: "240ms" }}
         >
           From breakthrough AI and honest gadget reviews to deep programming guides —
           TechCoder is where curious minds find clear, trustworthy takes on the technology
           that actually matters.
-        </motion.p>
+        </p>
 
         {/* CTAs */}
-        <motion.div
-          {...reveal(0.32)}
-          className="mt-6 flex w-full flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:flex-row sm:items-center"
+        <div
+          className="hero-enter mt-6 flex w-full flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:flex-row sm:items-center"
+          style={{ animationDelay: "320ms" }}
         >
           <Link href="/blog" className="btn-primary focus-ring group w-full sm:w-auto justify-center px-7 py-3.5 text-[15px]">
             Start exploring
@@ -117,24 +81,20 @@ export default function HeroSection() {
             <Compass size={15} className="icon-lift" />
             Browse topics
           </Link>
-        </motion.div>
+        </div>
       </div>
 
       {/* Editorial preview */}
-      <motion.div
-        ref={ref}
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
-        {...reveal(0.4, 28)}
-        style={{ perspective: 1400 }}
-        className="container-wide relative mx-auto mt-10 w-[calc(100%-1rem)] max-w-3xl sm:mt-16 sm:w-full md:mt-20"
+      <div
+        aria-hidden="true"
+        style={{ perspective: 1400, animationDelay: "400ms" }}
+        className="hero-browser-enter container-wide relative mx-auto mt-10 w-[calc(100%-1rem)] max-w-3xl sm:mt-16 sm:w-full md:mt-20"
       >
         <div className="hero-browser-glow" aria-hidden="true" />
-        <div className="hero-browser-float">
-          <motion.div
-            style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
-            className="relative rounded-[26px] card-surface shadow-premium p-2.5 sm:p-3"
-          >
+        <TiltSurface
+          className="hero-browser-float"
+          surfaceClassName="relative rounded-[26px] card-surface shadow-premium p-2.5 sm:p-3"
+        >
             <div className="rounded-[18px] overflow-hidden border border-tc-border bg-tc-bg-secondary">
               {/* Browser chrome */}
               <div className="flex items-center gap-2 px-4 h-11 border-b border-tc-border bg-tc-surface/60">
@@ -155,7 +115,6 @@ export default function HeroSection() {
                     src="/hero_preview.svg"
                     alt=""
                     fill
-                    priority
                     className="object-cover object-[center_20%]"
                     sizes="(max-width: 768px) 90vw, 420px"
                   />
@@ -175,9 +134,7 @@ export default function HeroSection() {
 
               {/* Story list */}
               <div className="flex flex-col gap-3">
-                {previewList.map((item) => {
-                  const Icon = categoryIcon(item.category);
-                  return (
+                {previewItems.map((item) => (
                     <div
                       key={item.title}
                       className="flex items-center gap-3 rounded-xl border border-tc-border bg-tc-bg-card/60 p-2.5"
@@ -185,7 +142,7 @@ export default function HeroSection() {
                       <span
                         className={`flex items-center justify-center shrink-0 w-11 h-11 rounded-lg bg-tc-bg-elevated ${CATEGORIES[item.category].accent}`}
                       >
-                        <Icon size={18} />
+                        <item.Icon size={18} />
                       </span>
                       <div className="min-w-0">
                         <CategoryBadge category={item.category} className="!px-2 !py-0.5 !text-[9px]" />
@@ -194,19 +151,14 @@ export default function HeroSection() {
                         </p>
                       </div>
                     </div>
-                  );
-                })}
+                ))}
               </div>
               </div>
             </div>
-          </motion.div>
-        </div>
+        </TiltSurface>
 
         {/* Floating cards — z-10 so they sit above .hero-browser-float (z-1) */}
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.72, ease: [0.22, 1, 0.36, 1] }}
+        <div
           className="pointer-events-none hidden md:flex absolute z-10 -left-6 lg:-left-12 top-20 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-tc-primary to-tc-secondary text-white">
@@ -216,12 +168,9 @@ export default function HeroSection() {
             <p className="text-[11px] text-tc-text-light">Topics to explore</p>
             <p className="heading-sm text-sm">6 and growing</p>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.8, ease: [0.22, 1, 0.36, 1] }}
+        <div
           className="pointer-events-none hidden md:flex absolute z-10 -right-6 lg:-right-12 bottom-14 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay"
         >
           <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-tc-primary/12 text-tc-primary">
@@ -231,12 +180,9 @@ export default function HeroSection() {
             <p className="text-[11px] text-tc-text-light">Reviews</p>
             <p className="heading-sm text-sm">Hands-on & unbiased</p>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: reduceMotion ? 0 : 0.4, delay: reduceMotion ? 0 : 0.88, ease: [0.22, 1, 0.36, 1] }}
+        <div
           className="pointer-events-none hidden lg:flex absolute z-10 -right-8 top-8 items-center gap-2 px-3.5 py-2.5 rounded-2xl glass-strong animate-float-delay-2"
         >
           <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-tc-primary/12 text-tc-primary">
@@ -246,8 +192,8 @@ export default function HeroSection() {
             <p className="text-[10px] text-tc-text-light">Fresh every</p>
             <p className="heading-sm text-[13px]">Week</p>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }

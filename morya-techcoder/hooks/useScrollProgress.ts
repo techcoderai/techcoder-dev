@@ -15,6 +15,7 @@ import { useEffect } from "react";
 export function useScrollProgress(onProgress: (progress: number) => void): void {
   useEffect(() => {
     let ticking = false;
+    let frame = 0;
 
     const compute = () => {
       ticking = false;
@@ -27,7 +28,7 @@ export function useScrollProgress(onProgress: (progress: number) => void): void 
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
-      requestAnimationFrame(compute);
+      frame = requestAnimationFrame(compute);
     };
 
     compute();
@@ -36,6 +37,7 @@ export function useScrollProgress(onProgress: (progress: number) => void): void 
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
     };
   }, [onProgress]);
 }

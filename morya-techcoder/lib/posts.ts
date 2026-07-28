@@ -1,18 +1,33 @@
-import type { BlogPost } from "@/types/blog";
+import type { BlogPost, BlogPostSummary } from "@/types/blog";
 import type { BlogCategory } from "@/lib/categories";
 
 /** A category value plus the "All" pseudo-category used by the list filter. */
 export type CategoryFilter = BlogCategory | "All";
+
+/** Removes article-only fields before data crosses a Server/Client boundary. */
+export function toPostSummary(post: BlogPost): BlogPostSummary {
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt,
+    date: post.date,
+    category: post.category,
+    tags: post.tags,
+    readingTime: post.readingTime,
+    thumbnail: post.thumbnail,
+  };
+}
 
 /**
  * Filters posts by category and a free-text query (matches title, excerpt,
  * and tags). Kept here — not inside a component — so the same logic can back
  * the blog list, a future global search, and tests.
  */
-export function filterPosts(
-  posts: BlogPost[],
+export function filterPosts<T extends BlogPostSummary>(
+  posts: T[],
   { query, category }: { query: string; category: CategoryFilter }
-): BlogPost[] {
+): T[] {
   const q = query.trim().toLowerCase();
   return posts.filter((post) => {
     const matchesCategory = category === "All" || post.category === category;

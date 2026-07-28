@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
-import type { BlogPost } from "@/types/blog";
+import type { BlogPostSummary } from "@/types/blog";
 import { CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
 import { filterPosts, type CategoryFilter } from "@/lib/posts";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
@@ -14,7 +14,7 @@ export default function BlogListPage({
   posts,
   categories,
 }: {
-  posts: BlogPost[];
+  posts: BlogPostSummary[];
   categories: BlogCategory[];
 }) {
   const searchParams = useSearchParams();
@@ -63,7 +63,7 @@ export default function BlogListPage({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search articles..."
-              className="focus-ring w-full pl-11 pr-4 py-3.5 rounded-xl bg-tc-bg-card border border-tc-border text-sm text-tc-text placeholder:text-tc-text-light outline-none hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(249,115,22,0.12)] transition-all duration-200"
+              className="focus-ring w-full pl-11 pr-4 py-3.5 rounded-xl bg-tc-bg-card border border-tc-border text-sm text-tc-text placeholder:text-tc-text-light outline-none hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(249,115,22,0.12)] transition-[border-color,box-shadow] duration-[var(--tc-dur)]"
             />
           </div>
 
@@ -75,7 +75,7 @@ export default function BlogListPage({
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "press focus-ring shrink-0 px-4 py-2.5 text-xs font-bold rounded-full border transition-all duration-200",
+                  "press focus-ring shrink-0 px-4 py-2.5 text-xs font-bold rounded-full border transition-[background-color,border-color,color,box-shadow,transform] duration-[var(--tc-dur)]",
                   activeCategory === cat
                     ? "bg-gradient-to-r from-tc-primary to-tc-secondary text-white border-transparent shadow-glow"
                     : "bg-tc-bg-card text-tc-text-muted border-tc-border hover:border-tc-primary hover:text-tc-primary active:bg-tc-bg-elevated"

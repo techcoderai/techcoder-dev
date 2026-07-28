@@ -72,6 +72,46 @@ leave a hardcoded category string somewhere. Search the repo for the old list.
 
 **See:** [docs/hydration-error-fix.md](./hydration-error-fix.md) for full technical details.
 
+## Hydration error blaming `themeScript` / `app/layout.tsx`
+
+**Cause:** Almost always a **browser extension** injecting `<script>` tags into
+`<head>` before React hydrates. The diff typically shows something like:
+
+```
+src="chrome-extension://…/assets/page-scripts.js"
+```
+
+React then compares that injected node to our theme bootstrap script and reports
+a mismatch. This is not an app bug.
+
+**What we do in code:**
+- Do **not** put a manual `<head>` in the root layout (App Router owns head via
+  the Metadata API).
+- Keep the theme FOUC script as the first child of `<body>` with
+  `suppressHydrationWarning` on `<html>`, `<body>`, and the script itself
+  (`app/layout.tsx`).
+
+**What to do when debugging:**
+1. Re-check in a private/incognito window with extensions disabled.
+2. If the mismatch disappears, ignore it in normal browsing — the extension is
+   the culprit.
+3. Only dig further if it still reproduces with all extensions off.
+
+## Lighthouse Performance looks terrible (60s) on localhost
+
+**Cause:** You audited `next dev`. Dev serves unminified JS, Turbopack chunks,
+and Next DevTools (~100KB+ unused). That tanks TBT / TTI and is not what users
+get in production.
+
+**Fix:** Always measure production:
+
+```bash
+npm run build
+npm run start
+```
+
+Then run Lighthouse (Incognito, extensions off) against the production server.
+
 ## Reset a stuck dev server
 ```bash
 pkill -f "next dev"; rm -rf .next; npm run dev

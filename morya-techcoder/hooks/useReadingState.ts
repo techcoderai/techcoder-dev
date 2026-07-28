@@ -30,6 +30,7 @@ export function useReadingState(headings: Heading[]): ReadingState {
     if (!headings.length) return;
 
     let ticking = false;
+    let frame = 0;
 
     const compute = () => {
       ticking = false;
@@ -60,7 +61,7 @@ export function useReadingState(headings: Heading[]): ReadingState {
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
-      requestAnimationFrame(compute);
+      frame = requestAnimationFrame(compute);
     };
 
     compute();
@@ -69,6 +70,7 @@ export function useReadingState(headings: Heading[]): ReadingState {
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(frame);
     };
   }, [headings]);
 

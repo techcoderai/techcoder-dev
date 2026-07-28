@@ -1,15 +1,17 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
-import { blogPosts, getBlogBySlug, compileBlogContent } from "@/content/loader";
+import { blogPosts, getBlogBySlug } from "@/content/loader";
+import { compileBlogContent } from "@/content/compile";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getRelatedPosts } from "@/lib/posts";
 import type { BlogPost, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
-import FadeInImage from "@/components/ui/FadeInImage";
 import TableOfContents from "@/components/ui/TableOfContents";
+import ArticleActions from "@/components/reading/ArticleActions";
 import SetReadingChrome from "@/components/reading/SetReadingChrome";
 import DifficultyBadge from "@/components/ui/DifficultyBadge";
 import CategoryBadge from "@/components/ui/CategoryBadge";
@@ -31,9 +33,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.seo?.title || post.title} | TechCoder`,
     description: post.seo?.description || post.excerpt,
-    openGraph: ogImage
-      ? { images: [{ url: ogImage, width: 800, height: 450 }] }
-      : undefined,
+    alternates: { canonical: `/blog/${post.slug}` },
+    openGraph: {
+      type: "article",
+      url: `/blog/${post.slug}`,
+      siteName: "TechCoder",
+      title: post.seo?.title || post.title,
+      description: post.seo?.description || post.excerpt,
+      publishedTime: post.date,
+      modifiedTime: post.updated || post.date,
+      tags: post.tags,
+      images: ogImage ? [{ url: ogImage, width: 800, height: 450, alt: post.title }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.seo?.title || post.title,
+      description: post.seo?.description || post.excerpt,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 
@@ -55,9 +72,36 @@ export default async function BlogDetailPage({ params }: Props) {
   const showUpdated = post.updated && post.updated !== post.date;
 
   const related = getRelatedPosts(blogPosts, post, 2);
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.seo?.description || post.excerpt,
+    datePublished: post.date,
+    dateModified: post.updated || post.date,
+    mainEntityOfPage: `https://techcoder.tech/blog/${post.slug}`,
+    image: post.ogImage || post.thumbnail
+      ? `https://techcoder.tech${post.ogImage || post.thumbnail}`
+      : undefined,
+    publisher: {
+      "@type": "Organization",
+      name: "TechCoder",
+      url: "https://techcoder.tech",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://techcoder.tech/icon.png",
+      },
+    },
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* Register this article with the reading chrome (navbar toolbar + layer) */}
       <SetReadingChrome title={post.title} backHref="/blog" headings={headings} />
 
@@ -66,7 +110,7 @@ export default async function BlogDetailPage({ params }: Props) {
           {/* Back link */}
           <Link
             href="/blog"
-            className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-medium text-tc-text-muted hover:text-tc-primary transition-all duration-200 mb-6 sm:mb-10"
+            className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-medium text-tc-text-muted hover:text-tc-primary transition-colors duration-[var(--tc-dur)] mb-6 sm:mb-10"
           >
             <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform duration-200" />
             Back to Articles
@@ -110,13 +154,13 @@ export default async function BlogDetailPage({ params }: Props) {
               {/* Thumbnail — slightly shorter on mobile for a faster path to the text */}
               {post.thumbnail && (
                 <div className="relative max-w-[720px] mb-8 sm:mb-10 aspect-[16/9] max-h-[248px] w-full overflow-hidden rounded-2xl border border-tc-border sm:max-h-none">
-                  <FadeInImage
+                  <Image
                     src={post.thumbnail}
                     alt={post.title}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 720px"
-                    priority
+                    preload
                   />
                 </div>
               )}
@@ -147,11 +191,11 @@ export default async function BlogDetailPage({ params }: Props) {
               <div className="prose-tc mb-12">{mdxContent}</div>
 
               {/* Tags */}
-              <div className="max-w-[720px] flex flex-wrap gap-2 mb-14">
+              <div className="reading-dim max-w-[720px] flex flex-wrap gap-2 mb-14">
                 {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="group inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-tc-bg-elevated text-tc-text-muted rounded-full border border-tc-border transition-all duration-200 hover:-translate-y-0.5 hover:border-tc-primary hover:text-tc-primary hover:shadow-[var(--tc-shadow-sm)]"
+                    className="group inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-tc-bg-elevated text-tc-text-muted rounded-full border border-tc-border transition-[border-color,color,transform] duration-[var(--tc-dur)] hover:-translate-y-0.5 hover:border-tc-primary hover:text-tc-primary hover:shadow-[var(--tc-shadow-sm)]"
                   >
                     <Tag size={10} className="transition-transform duration-200 group-hover:-rotate-12" />
                     {tag}
@@ -160,7 +204,7 @@ export default async function BlogDetailPage({ params }: Props) {
               </div>
 
               {/* Newsletter */}
-              <div className="max-w-[720px]">
+              <div className="reading-dim max-w-[720px]">
                 <NewsletterBox />
               </div>
             </div>
@@ -168,6 +212,13 @@ export default async function BlogDetailPage({ params }: Props) {
             {/* Sticky sidebar */}
             <aside className="hidden lg:block">
               <div className="sticky top-28 flex flex-col gap-7">
+                {/* Reading companion — share, copy, bookmark, print, focus + progress */}
+                <ArticleActions
+                  slug={post.slug}
+                  title={post.title}
+                  readingTime={post.readingTime}
+                />
+
                 <div className="rounded-2xl card-surface p-5">
                   <p className="overline text-tc-text-light mb-4">Article</p>
                   <dl className="flex flex-col gap-3.5 text-sm">
@@ -203,7 +254,7 @@ export default async function BlogDetailPage({ params }: Props) {
 
           {/* Related */}
           {related.length > 0 && (
-            <div className="mt-14 pt-10 sm:mt-20 sm:pt-14 border-t border-tc-border">
+            <div className="reading-dim mt-14 pt-10 sm:mt-20 sm:pt-14 border-t border-tc-border">
               <h2 className="heading-lg text-[1.375rem] md:text-2xl mb-6 sm:mb-8">Keep reading</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-7">
                 {related.map((p) => (

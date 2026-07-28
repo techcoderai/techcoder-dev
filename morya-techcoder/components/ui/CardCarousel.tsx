@@ -11,11 +11,11 @@ import {
 } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { BlogPost } from "@/types/blog";
+import type { BlogPostSummary } from "@/types/blog";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 
 type Props = {
-  posts: BlogPost[];
+  posts: BlogPostSummary[];
   /** Larger cards with taller media — used for the AI rail. */
   size?: "default" | "lg";
   /** Pixels per second for the continuous drift. Slow = premium. */
@@ -52,14 +52,13 @@ export default function CardCarousel({
   const reducedMotionRef = useRef(false);
 
   const [paused, setPaused] = useState(false);
+  const [inViewport, setInViewport] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
 
-  // Need at least a couple of clones for a convincing infinite loop.
-  const loopPosts =
-    posts.length === 0
-      ? []
-      : posts.length < 4
-        ? [...posts, ...posts, ...posts]
-        : posts;
+  // Keep one set wide enough for a seamless desktop wrap without rendering
+  // more duplicate cards than necessary.
+  const repeatCount = posts.length === 0 ? 0 : Math.max(1, Math.ceil(4 / posts.length));
+  const loopPosts = Array.from({ length: repeatCount }, () => posts).flat();
 
   const measure = useCallback(() => {
     const track = trackRef.current;
@@ -79,6 +78,23 @@ export default function CardCarousel({
   }, []);
 
   useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setInViewport(entry.isIntersecting),
+      { rootMargin: "160px 0px" }
+    );
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onVisibilityChange = () => setPageVisible(!document.hidden);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
+
+  useEffect(() => {
     measure();
     const ro = new ResizeObserver(measure);
     if (trackRef.current) ro.observe(trackRef.current);
@@ -94,6 +110,7 @@ export default function CardCarousel({
   }, [paused]);
 
   useEffect(() => {
+    if (!inViewport || !pageVisible || reducedMotionRef.current) return;
     let last = performance.now();
 
     const tick = (now: number) => {
@@ -127,10 +144,22 @@ export default function CardCarousel({
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [speed]);
+  }, [inViewport, pageVisible, speed]);
 
   const nudge = (dir: 1 | -1) => {
     const step = (viewportRef.current?.clientWidth ?? 320) * 0.7;
+    if (reducedMotionRef.current) {
+      offsetRef.current += dir * step;
+      const setW = setWidthRef.current;
+      if (setW > 0) {
+        if (offsetRef.current <= -setW) offsetRef.current += setW;
+        if (offsetRef.current > 0) offsetRef.current -= setW;
+      }
+      if (trackRef.current) {
+        trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+      }
+      return;
+    }
     velocityRef.current += dir * step * 1.8;
   };
 
@@ -155,6 +184,9 @@ export default function CardCarousel({
     velocityRef.current = (dx / dt) * 1000;
     lastXRef.current = e.clientX;
     lastTRef.current = now;
+    if (reducedMotionRef.current && trackRef.current) {
+      trackRef.current.style.transform = `translate3d(${offsetRef.current}px, 0, 0)`;
+    }
   };
 
   const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
@@ -164,6 +196,11 @@ export default function CardCarousel({
       e.currentTarget.releasePointerCapture(e.pointerId);
     } catch {
       /* already released */
+    }
+    if (reducedMotionRef.current) {
+      velocityRef.current = 0;
+      setPaused(false);
+      return;
     }
     // Resume autoplay after a short beat so the coast can finish.
     window.setTimeout(() => {
@@ -233,19 +270,23 @@ export default function CardCarousel({
       >
         <div
           ref={trackRef}
-          className="flex gap-4 sm:gap-5 w-max will-change-transform"
+          className="flex gap-4 sm:gap-5 w-max"
           style={{ transform: "translate3d(0,0,0)" }}
         >
           {[0, 1].map((copy) =>
-            loopPosts.map((post, i) => (
-              <div
-                key={`${copy}-${post.id}-${i}`}
-                className={cn("shrink-0", cardWidth)}
-                aria-hidden={copy === 1 ? true : undefined}
-              >
-                <MagicBorderCard post={post} size={size} />
-              </div>
-            ))
+            loopPosts.map((post, i) => {
+              const isClone = copy === 1 || i >= posts.length;
+              return (
+                <div
+                  key={`${copy}-${post.id}-${i}`}
+                  className={cn("shrink-0", cardWidth)}
+                  aria-hidden={isClone || undefined}
+                  inert={isClone || undefined}
+                >
+                  <MagicBorderCard post={post} size={size} />
+                </div>
+              );
+            })
           )}
         </div>
       </div>

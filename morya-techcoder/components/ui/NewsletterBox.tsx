@@ -26,19 +26,30 @@ export default function NewsletterBox() {
         </p>
 
         {submitted ? (
-          <div className="flex items-center justify-center gap-2.5 text-tc-primary-dark font-bold text-lg animate-fade-up">
+          <div
+            role="status"
+            aria-live="polite"
+            className="flex items-center justify-center gap-2.5 text-tc-primary-dark font-bold text-lg animate-fade-up"
+          >
             <CheckCircle2 size={24} />
             You&apos;re in! Check your inbox.
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <label htmlFor="newsletter-email" className="sr-only">
+              Email address
+            </label>
             <input
+              id="newsletter-email"
+              name="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="focus-ring flex-1 px-5 py-3.5 rounded-full bg-tc-bg-card text-tc-text placeholder:text-tc-text-light border border-tc-border hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(249,115,22,0.12)] outline-none transition-all duration-200 text-sm"
+              className="focus-ring flex-1 px-5 py-3.5 rounded-full bg-tc-bg-card text-tc-text placeholder:text-tc-text-light border border-tc-border hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_rgba(249,115,22,0.12)] outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] text-sm"
             />
             <button
               type="submit"

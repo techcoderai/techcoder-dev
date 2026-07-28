@@ -1,20 +1,20 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { Clock, ArrowUpRight } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
-import type { BlogPost } from "@/types/blog";
+import type { BlogPostSummary } from "@/types/blog";
 import { categoryColors, CATEGORIES } from "@/lib/categories";
 
+const RECENT_POST_CUTOFF = Date.now() - 7 * 86400000;
+
 interface ArticleCardProps {
-  post: BlogPost;
+  post: BlogPostSummary;
   variant?: "hero" | "featured" | "horizontal" | "minimal";
   className?: string;
   index?: number;
 }
 
-function CategoryPill({ category, className }: { category: BlogPost["category"]; className?: string }) {
+function CategoryPill({ category, className }: { category: BlogPostSummary["category"]; className?: string }) {
   const colors = categoryColors[category];
   return (
     <span
@@ -29,7 +29,7 @@ function CategoryPill({ category, className }: { category: BlogPost["category"];
   );
 }
 
-function Meta({ post, muted = false }: { post: BlogPost; muted?: boolean }) {
+function Meta({ post, muted = false }: { post: BlogPostSummary; muted?: boolean }) {
   return (
     <div className={cn("flex items-center gap-2.5 text-[11.5px] font-medium", muted ? "text-tc-text-light" : "text-tc-text-muted")}>
       <time dateTime={post.date}>{formatDate(post.date)}</time>
@@ -43,7 +43,7 @@ function Meta({ post, muted = false }: { post: BlogPost; muted?: boolean }) {
 }
 
 /* ─── Hero card: large image, big title, prominent CTA ─────── */
-function HeroCard({ post, className }: { post: BlogPost; className?: string }) {
+function HeroCard({ post, className }: { post: BlogPostSummary; className?: string }) {
   return (
     <article className={cn("group relative", className)}>
       <Link href={`/blog/${post.slug}`} className="card-premium focus-ring block rounded-2xl overflow-hidden border border-tc-border">
@@ -54,7 +54,6 @@ function HeroCard({ post, className }: { post: BlogPost; className?: string }) {
               src={post.thumbnail}
               alt={post.title}
               fill
-              priority
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 60vw"
             />
@@ -80,7 +79,7 @@ function HeroCard({ post, className }: { post: BlogPost; className?: string }) {
                 <span className="w-px h-3 bg-white/30" />
                 <span className="flex items-center gap-1"><Clock size={11} />{post.readingTime}</span>
               </div>
-              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+              <span className="flex items-center justify-center w-9 h-9 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-[var(--tc-dur)]">
                 <ArrowUpRight size={16} />
               </span>
             </div>
@@ -92,8 +91,8 @@ function HeroCard({ post, className }: { post: BlogPost; className?: string }) {
 }
 
 /* ─── Featured card: card with top image and text below ─────── */
-function FeaturedCard({ post, className, index }: { post: BlogPost; className?: string; index?: number }) {
-  const isRecent = new Date(post.date) > new Date(Date.now() - 7 * 86400000);
+function FeaturedCard({ post, className, index }: { post: BlogPostSummary; className?: string; index?: number }) {
+  const isRecent = new Date(post.date).getTime() > RECENT_POST_CUTOFF;
 
   return (
     <article className={cn("group flex flex-col h-full", className)}>
@@ -144,7 +143,7 @@ function FeaturedCard({ post, className, index }: { post: BlogPost; className?: 
 }
 
 /* ─── Horizontal card: image left, text right ─────────────── */
-function HorizontalCard({ post, className, index }: { post: BlogPost; className?: string; index?: number }) {
+function HorizontalCard({ post, className, index }: { post: BlogPostSummary; className?: string; index?: number }) {
   return (
     <article className={cn("group", className)}>
       <Link
@@ -185,7 +184,7 @@ function HorizontalCard({ post, className, index }: { post: BlogPost; className?
 
         <ArrowUpRight
           size={16}
-          className="flex-shrink-0 self-center text-tc-text-light opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+          className="flex-shrink-0 self-center text-tc-text-light opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-[var(--tc-dur)]"
         />
       </Link>
     </article>
@@ -193,7 +192,7 @@ function HorizontalCard({ post, className, index }: { post: BlogPost; className?
 }
 
 /* ─── Minimal card: text-only, no image ───────────────────── */
-function MinimalCard({ post, className, index }: { post: BlogPost; className?: string; index?: number }) {
+function MinimalCard({ post, className, index }: { post: BlogPostSummary; className?: string; index?: number }) {
   return (
     <article className={cn("group", className)}>
       <Link

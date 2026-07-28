@@ -6,8 +6,10 @@
    top and MDX content below.
 2. `content/loader.ts` runs on the server, reads every file, and turns it into a
    `BlogPost` object (see `types/blog.ts`).
-3. `app/(site)/blog/page.tsx` renders the list; `app/(site)/blog/[slug]/page.tsx`
-   renders each article and compiles the MDX body with `compileBlogContent`.
+3. `app/(site)/blog/page.tsx` serializes compact `BlogPostSummary` objects to
+   the client-side filter; raw MDX bodies never cross that boundary.
+   `app/(site)/blog/[slug]/page.tsx` renders each article and compiles the MDX
+   body with `compileBlogContent`.
 4. Custom tags in the MDX (like `<Callout>`) are resolved via
    `content/mdx-components.tsx`.
 
@@ -76,9 +78,11 @@ From `content/loader.ts`:
 - `blogPosts` — all posts, newest first.
 - `getBlogBySlug(slug)` — one post.
 - `getCategories()` — categories actually present in the content.
-- `compileBlogContent(body)` — compiles an MDX string to a React element.
+- `compileBlogContent(body)` — compiles an MDX string to a React element
+  (`content/compile.ts`; imported only by the article page).
 
 From `lib/posts.ts`:
+- `toPostSummary(post)` — strips article-only fields before client serialization.
 - `filterPosts(posts, { query, category })`
 - `getFeaturedPosts(posts, n)` — posts with `featured: true` (falls back to newest if none flagged)
 - `getPostsByCategory(posts, category, n?)`
@@ -89,3 +93,14 @@ From `lib/posts.ts`:
 Set `featured: true` in the post’s frontmatter (or tick **Featured** in Keystatic).
 Only flagged posts appear in “Featured articles”. If nothing is flagged yet, the
 helper falls back to the newest posts so the rail isn’t empty during setup.
+
+## Performance and discovery
+
+- Article-only typography lives in `app/(site)/blog/[slug]/article.css`, keeping
+  prose rules out of the homepage stylesheet.
+- JetBrains Mono is scoped to the article layout and is not preloaded on
+  non-article routes.
+- Article hero images use `next/image` with `preload`; card images remain lazy.
+- `app/sitemap.ts` includes posts, topic pages, and post thumbnails.
+- Article metadata includes canonical, Open Graph, Twitter, and BlogPosting
+  structured data.

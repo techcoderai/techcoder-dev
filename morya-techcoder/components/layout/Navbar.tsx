@@ -4,11 +4,11 @@ import { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, X, ArrowUpRight, ChevronLeft, List, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { categoryHref } from "@/lib/categories";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import NavLinks from "@/components/layout/NavLinks";
 import { useReadingChrome } from "@/components/reading/ReadingChromeProvider";
 
 const navLinks = [
@@ -23,7 +23,6 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
   const pathname = usePathname();
   const { chrome, setSheetOpen } = useReadingChrome();
 
@@ -72,7 +71,7 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-3 sm:px-6">
       <nav
         className={cn(
-          "flex items-center justify-between gap-2 w-full max-w-[1180px] rounded-full transition-all duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "flex items-center justify-between gap-2 w-full max-w-[1180px] rounded-full transition-[height,margin,padding,background-color,border-color,box-shadow,backdrop-filter] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           // Mobile-first: a leaner bar that reclaims vertical space for content,
           // scaling back up to the roomier desktop bar at sm+.
           scrolled
@@ -94,13 +93,7 @@ export default function Navbar() {
           )}
 
           {/* Logo (scales down on scroll; hidden on mobile while reading) */}
-          <motion.div
-            initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              duration: reduceMotion ? 0 : 0.4,
-              ease: [0.22, 1, 0.36, 1],
-            }}
+          <div
             className={cn(
               "shrink-0 transition-transform duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
               scrolled && "scale-[0.94]",
@@ -109,7 +102,7 @@ export default function Navbar() {
           >
             <Link
               href="/"
-              className="focus-ring group flex items-center gap-2.5 rounded-full"
+              className="nav-logo-enter focus-ring group flex items-center gap-2.5 rounded-full"
               onClick={() => setMenuOpen(false)}
             >
               <span className="relative flex items-center justify-center">
@@ -126,46 +119,21 @@ export default function Navbar() {
                 Tech<span className="text-gradient">Coder</span>
               </span>
             </Link>
-          </motion.div>
+          </div>
 
           {/* Article title — fades into the navbar while reading (mobile) */}
           {reading && chrome && (
-            <motion.span
+            <span
               key={chrome.title}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="min-w-0 flex-1 truncate font-heading text-[15px] font-semibold text-tc-text lg:hidden"
+              className="nav-title-enter min-w-0 flex-1 truncate font-heading text-[15px] font-semibold text-tc-text lg:hidden"
             >
               {chrome.title}
-            </motion.span>
+            </span>
           )}
         </div>
 
-        {/* Desktop links */}
-        <div className="hidden lg:flex items-center gap-0.5 mx-auto">
-          {navLinks.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "focus-ring relative rounded-full px-4 py-2 text-[13.5px] font-medium transition-colors duration-200",
-                  active ? "text-tc-text" : "text-tc-text-muted hover:text-tc-text"
-                )}
-              >
-                {link.label}
-                <span
-                  className={cn(
-                    "absolute left-4 right-4 -bottom-0.5 h-px bg-gradient-to-r from-tc-primary to-tc-primary-light rounded-full origin-left transition-transform duration-300",
-                    active ? "scale-x-100" : "scale-x-0"
-                  )}
-                />
-              </Link>
-            );
-          })}
-        </div>
+        {/* Desktop links — shared pill, magnetic hover, center underline */}
+        <NavLinks links={navLinks} pathname={pathname} />
 
         {/* Actions */}
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
@@ -213,52 +181,48 @@ export default function Navbar() {
       </nav>
 
       {/* Mobile menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="lg:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95 backdrop-blur-2xl"
-            onClick={() => setMenuOpen(false)}
-          >
-            <nav className="flex flex-col gap-1.5 pt-24 px-5" onClick={(e) => e.stopPropagation()}>
-              {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 + i * 0.05 }}
-                >
-                  <Link
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="press focus-ring flex items-center justify-between w-full py-4 px-5 text-lg font-medium text-tc-text rounded-2xl card-surface"
-                  >
-                    {link.label}
-                    <ArrowUpRight size={18} className="text-tc-text-muted" />
-                  </Link>
-                </motion.div>
-              ))}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + navLinks.length * 0.05 }}
+      {menuOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
+          className="mobile-menu-enter lg:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95"
+          onClick={() => setMenuOpen(false)}
+        >
+          <nav className="flex flex-col gap-1.5 pt-24 px-5" onClick={(e) => e.stopPropagation()}>
+            {navLinks.map((link, i) => (
+              <div
+                key={link.href}
+                className="mobile-menu-item"
+                style={{ animationDelay: `${50 + i * 50}ms` }}
               >
                 <Link
-                  href="/blog"
+                  href={link.href}
+                  aria-current={pathname === link.href ? "page" : undefined}
                   onClick={() => setMenuOpen(false)}
-                  className="btn-primary focus-ring mt-3 w-full py-4 text-base"
+                  className="press focus-ring flex items-center justify-between w-full py-4 px-5 text-lg font-medium text-tc-text rounded-2xl card-surface"
                 >
-                  Read Articles
-                  <ArrowUpRight size={17} />
+                  {link.label}
+                  <ArrowUpRight size={18} className="text-tc-text-muted" />
                 </Link>
-              </motion.div>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
+            ))}
+            <div
+              className="mobile-menu-item"
+              style={{ animationDelay: `${50 + navLinks.length * 50}ms` }}
+            >
+              <Link
+                href="/blog"
+                onClick={() => setMenuOpen(false)}
+                className="btn-primary focus-ring mt-3 w-full py-4 text-base"
+              >
+                Read Articles
+                <ArrowUpRight size={17} />
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

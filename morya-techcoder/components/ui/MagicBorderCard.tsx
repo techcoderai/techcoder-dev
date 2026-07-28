@@ -1,23 +1,23 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
-import type { BlogPost } from "@/types/blog";
+import type { BlogPostSummary } from "@/types/blog";
 import CategoryBadge from "@/components/ui/CategoryBadge";
+
+const RECENT_POST_CUTOFF = Date.now() - 7 * 86400000;
 
 type Size = "default" | "lg";
 
 type Props = {
-  post: BlogPost;
+  post: BlogPostSummary;
   /** `lg` uses a taller media area — intended for premium carousels. */
   size?: Size;
   className?: string;
 };
 
 export default function MagicBorderCard({ post, size = "default", className }: Props) {
-  const isRecent = new Date(post.date) > new Date(Date.now() - 7 * 86400000);
+  const isRecent = new Date(post.date).getTime() > RECENT_POST_CUTOFF;
   const isLg = size === "lg";
 
   return (
@@ -112,7 +112,7 @@ export default function MagicBorderCard({ post, size = "default", className }: P
               <Clock size={11} />
               {post.readingTime}
             </span>
-            <span className="ml-auto inline-flex items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+            <span className="ml-auto inline-flex items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0">
               Read
               <ArrowRight size={12} />
             </span>

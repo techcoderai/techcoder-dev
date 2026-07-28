@@ -18,6 +18,10 @@ type Props = {
   params: Promise<{ category: string }>;
 };
 
+const CATEGORY_ICONS = Object.fromEntries(
+  CATEGORY_KEYS.map((key) => [key, categoryIcon(key)])
+) as Record<(typeof CATEGORY_KEYS)[number], ReturnType<typeof categoryIcon>>;
+
 /** Pre-render a landing page for every topic (including "coming soon" ones). */
 export function generateStaticParams() {
   return CATEGORY_KEYS.map((key) => ({ category: categorySlug(key) }));
@@ -31,6 +35,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${meta.label} | TechCoder`,
     description: meta.description,
+    alternates: { canonical: `/topics/${category}` },
+    openGraph: {
+      type: "website",
+      url: `/topics/${category}`,
+      title: `${meta.label} | TechCoder`,
+      description: meta.description,
+      siteName: "TechCoder",
+    },
   };
 }
 
@@ -41,7 +53,7 @@ export default async function TopicPage({ params }: Props) {
 
   const meta = CATEGORIES[key];
   const posts = getPostsByCategory(blogPosts, key);
-  const Icon = categoryIcon(key);
+  const Icon = CATEGORY_ICONS[key];
   const isEmpty = posts.length === 0;
 
   // Other browsable topics for cross-navigation at the bottom of the page.
@@ -53,7 +65,7 @@ export default async function TopicPage({ params }: Props) {
         {/* Back link */}
         <Link
           href="/blog"
-          className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-medium text-tc-text-muted hover:text-tc-primary transition-all duration-200 mb-8"
+          className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-medium text-tc-text-muted hover:text-tc-primary transition-colors duration-[var(--tc-dur)] mb-8"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform duration-200" />
           All articles
@@ -116,12 +128,12 @@ export default async function TopicPage({ params }: Props) {
           <div className="flex flex-wrap gap-2.5">
             {otherTopics.map((k) => {
               const m = CATEGORIES[k];
-              const OtherIcon = categoryIcon(k);
+              const OtherIcon = CATEGORY_ICONS[k];
               return (
                 <Link
                   key={k}
                   href={`/topics/${categorySlug(k)}`}
-                  className={`focus-ring group inline-flex items-center gap-2 rounded-full border border-tc-border bg-tc-bg-card px-4 py-2.5 text-sm font-medium text-tc-text-muted transition-all duration-200 hover:-translate-y-0.5 hover:border-tc-primary hover:text-tc-primary ${m.comingSoon ? "opacity-60" : ""}`}
+                  className={`focus-ring group inline-flex items-center gap-2 rounded-full border border-tc-border bg-tc-bg-card px-4 py-2.5 text-sm font-medium text-tc-text-muted transition-[border-color,color,transform] duration-[var(--tc-dur)] hover:-translate-y-0.5 hover:border-tc-primary hover:text-tc-primary ${m.comingSoon ? "opacity-60" : ""}`}
                 >
                   <OtherIcon size={15} className={m.accent} />
                   {m.label}

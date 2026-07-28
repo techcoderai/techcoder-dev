@@ -31,7 +31,7 @@ export default function CodeBlock({ children }: { children: ReactNode }) {
       <button
         onClick={copy}
         aria-label="Copy code"
-        className="focus-ring absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-white/80 bg-white/10 border border-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-white/20 hover:text-white"
+        className="focus-ring absolute top-3 right-3 z-10 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium text-white/80 bg-white/10 border border-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-[background-color,color,opacity] duration-[var(--tc-dur)] hover:bg-white/20 hover:text-white"
       >
         {copied ? (
           <>

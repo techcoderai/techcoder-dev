@@ -39,3 +39,9 @@ export interface BlogPost {
   /** Raw MDX/markdown body of the article. */
   body: string;
 }
+
+/** Compact shape safe to serialize into interactive article lists. */
+export type BlogPostSummary = Pick<
+  BlogPost,
+  "id" | "title" | "slug" | "excerpt" | "date" | "category" | "tags" | "readingTime" | "thumbnail"
+>;

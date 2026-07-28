@@ -1,26 +1,17 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
 });
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -28,6 +19,20 @@ export const metadata: Metadata = {
   title: "TechCoder | Technology Knowledge You Can Trust",
   description:
     "TechCoder is a premium technology publication with in-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "TechCoder",
+    title: "TechCoder | Technology Knowledge You Can Trust",
+    description:
+      "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
+  },
+  twitter: {
+    card: "summary",
+    title: "TechCoder | Technology Knowledge You Can Trust",
+    description:
+      "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
+  },
   icons: {
     icon: "/icon.png",
     apple: "/icon.png",
@@ -54,12 +59,19 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+      {/*
+        Theme bootstrap lives in <body>, not a manual <head>.
+        App Router owns <head> via the Metadata API; putting an inline script
+        there fights browser extensions that inject <script> tags into <head>
+        before hydration (shows up as a false themeScript mismatch).
+      */}
       <body suppressHydrationWarning className="min-h-full antialiased">
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+        />
         {children}
       </body>
     </html>

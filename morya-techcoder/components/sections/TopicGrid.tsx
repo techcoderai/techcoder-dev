@@ -70,7 +70,7 @@ export default function TopicGrid() {
                       ) : (
                         <ArrowRight
                           size={18}
-                          className="shrink-0 text-tc-text-light transition-all duration-300 group-hover:text-tc-primary sm:opacity-0 sm:-translate-x-1 sm:group-hover:opacity-100 sm:group-hover:translate-x-0"
+                          className="shrink-0 text-tc-text-light transition-[color,opacity,transform] duration-[var(--tc-dur)] group-hover:text-tc-primary sm:opacity-0 sm:-translate-x-1 sm:group-hover:opacity-100 sm:group-hover:translate-x-0"
                         />
                       )}
                     </div>

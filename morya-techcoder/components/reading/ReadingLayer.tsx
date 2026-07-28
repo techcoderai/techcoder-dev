@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Check, List, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Heading } from "@/lib/utils";
@@ -20,7 +20,14 @@ function FloatingReadingButton() {
   const { setSheetOpen } = useReadingChrome();
   const [done, setDone] = useState(false);
   const circleRef = useRef<SVGCircleElement>(null);
-  const pctRef = useRef<HTMLSpanElement>(null);
+  const pctRef = useRef<HTMLSpanElement | null>(null);
+
+  // Keep the % node unmanaged by React (no literal children) so our imperative
+  // textContent survives re-renders and is never reset or unmounted.
+  const setPctRef = useCallback((node: HTMLSpanElement | null) => {
+    pctRef.current = node;
+    if (node && !node.textContent) node.textContent = "0%";
+  }, []);
 
   const onProgress = useCallback((p: number) => {
     if (circleRef.current) {
@@ -83,8 +90,10 @@ function FloatingReadingButton() {
           <span className="animate-read-pulse pointer-events-none absolute inset-0 rounded-full ring-2 ring-tc-primary/60" />
         )}
       </span>
-      <span className="text-[13px] font-semibold tabular-nums">
-        {done ? "100% Read" : <span ref={pctRef}>0%</span>}
+      {/* Percentage stays mounted at all times; " Read" is appended on completion */}
+      <span className="whitespace-nowrap text-[13px] font-semibold tabular-nums">
+        <span ref={setPctRef} />
+        {done ? " Read" : null}
       </span>
     </button>
   );
@@ -92,6 +101,8 @@ function FloatingReadingButton() {
 
 /* ─── Section indicator: completed check · active dot · upcoming dot ──────── */
 function SectionIndicator({ state }: { state: "done" | "active" | "upcoming" }) {
+  const reduceMotion = useReducedMotion();
+
   if (state === "done") {
     return (
       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-tc-primary/12 text-tc-primary">
@@ -105,7 +116,10 @@ function SectionIndicator({ state }: { state: "done" | "active" | "upcoming" }) 
         <motion.span
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.35,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className="relative flex h-2.5 w-2.5 items-center justify-center rounded-full bg-tc-primary"
         >
           <span className="absolute inset-0 rounded-full bg-tc-primary/40 blur-[3px]" />
@@ -121,10 +135,13 @@ function SectionIndicator({ state }: { state: "done" | "active" | "upcoming" }) 
 }
 
 /* ─── Premium bottom sheet ────────────────────────────────────────────────── */
-function ReadingSheet({ headings }: { headings: Heading[] }) {
-  const { sheetOpen, setSheetOpen } = useReadingChrome();
+function ReadingSheetContent({ headings }: { headings: Heading[] }) {
+  const { setSheetOpen } = useReadingChrome();
+  const reduceMotion = useReducedMotion();
   const { activeId, completed } = useReadingState(headings);
   const headerPctRef = useRef<HTMLSpanElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   const onProgress = useCallback((p: number) => {
     if (headerPctRef.current) headerPctRef.current.textContent = `${Math.round(p)}%`;
@@ -133,31 +150,45 @@ function ReadingSheet({ headings }: { headings: Heading[] }) {
 
   // Lock body scroll + close on Escape while open.
   useEffect(() => {
-    if (!sheetOpen) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
     document.body.style.overflow = "hidden";
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSheetOpen(false);
+      if (e.key !== "Tab" || !sheetRef.current) return;
+      const focusable = sheetRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
+    closeRef.current?.focus();
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
+      previouslyFocused?.focus();
     };
-  }, [sheetOpen, setSheetOpen]);
+  }, [setSheetOpen]);
 
   const allDone = headings.length > 0 && completed.size >= headings.length;
 
   return (
-    <AnimatePresence>
-      {sheetOpen && (
-        <div className="lg:hidden">
+    <div className="lg:hidden">
           {/* Backdrop */}
           <motion.div
             key="reading-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: reduceMotion ? 0 : 0.2 }}
             onClick={() => setSheetOpen(false)}
             className="fixed inset-0 z-[65] bg-black/40 backdrop-blur-sm"
           />
@@ -165,13 +196,18 @@ function ReadingSheet({ headings }: { headings: Heading[] }) {
           {/* Sheet */}
           <motion.div
             key="reading-sheet"
+            ref={sheetRef}
             role="dialog"
             aria-modal="true"
             aria-label="Table of contents"
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", stiffness: 380, damping: 38 }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 380, damping: 38 }
+            }
             className="fixed inset-x-0 bottom-0 z-[66] flex max-h-[74vh] flex-col rounded-t-[26px] border-t border-tc-border bg-tc-bg-card shadow-[0_-16px_50px_-12px_rgba(0,0,0,0.35)]"
             style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
           >
@@ -188,6 +224,7 @@ function ReadingSheet({ headings }: { headings: Heading[] }) {
                 </span>
               </div>
               <button
+                ref={closeRef}
                 type="button"
                 onClick={() => setSheetOpen(false)}
                 aria-label="Close"
@@ -247,7 +284,10 @@ function ReadingSheet({ headings }: { headings: Heading[] }) {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{
+                    duration: reduceMotion ? 0 : 0.35,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                   className="shrink-0 border-t border-tc-border px-5 py-3.5"
                 >
                   <div className="flex items-center justify-center gap-2 text-[13px] font-semibold text-tc-primary">
@@ -260,8 +300,15 @@ function ReadingSheet({ headings }: { headings: Heading[] }) {
               )}
             </AnimatePresence>
           </motion.div>
-        </div>
-      )}
+    </div>
+  );
+}
+
+function ReadingSheet({ headings }: { headings: Heading[] }) {
+  const { sheetOpen } = useReadingChrome();
+  return (
+    <AnimatePresence>
+      {sheetOpen && <ReadingSheetContent headings={headings} />}
     </AnimatePresence>
   );
 }

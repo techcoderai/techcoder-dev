@@ -74,11 +74,13 @@ morya-techcoder/
 │   │   ├── CategoryBadge.tsx         # 🆕 Reusable color-coded category pill
 │   │   ├── CardCarousel.tsx          # 🆕 Responsive snapping slider (featured rail)
 │   │   ├── CodeBlock.tsx             # Copy-to-clipboard code blocks
-│   │   ├── TableOfContents.tsx       # Desktop sidebar TOC — sliding active indicator (layoutId)
+│   │   ├── TableOfContents.tsx       # Desktop TOC — sliding indicator + completion (useReadingState)
+│   │   ├── ReadingProgress.tsx       # Compositor-only top progress bar (uses useScrollProgress)
 │   │   ├── FadeInImage.tsx           # next/image drop-in: eases from opacity/scale on load
-│   │   ├── ReadingProgress.tsx       # Smooth top progress bar (imperative, uses useScrollProgress)
+│   │   ├── ScrollToTop.tsx           # 🆕 Global fade-in scroll-to-top affordance
+│   │   ├── SpotlightCursor.tsx       # 🆕 Subtle warm cursor glow (desktop, reduced-motion aware)
 │   │   ├── NewsletterBox.tsx         # Email subscription form
-│   │   ├── ThemeToggle.tsx           # Light/dark mode switcher
+│   │   ├── ThemeToggle.tsx           # Light/dark switch (View Transitions cross-fade)
 │   │   ├── DifficultyBadge.tsx       # Visual difficulty indicators
 │   │   ├── HeadingLink.tsx           # Anchor links for headings
 │   │   └── SectionHeading, Reveal, etc.
@@ -111,9 +113,14 @@ morya-techcoder/
 ├── types/                            # 🆕 Dedicated types directory
 │   └── blog.ts                       # 🔄 Moved from content/blogs.ts
 │
-├── components/reading/               # 🆕 Immersive mobile reading experience
+├── components/layout/
+│   ├── Navbar.tsx                    # Glass navbar → mobile reading toolbar on articles
+│   └── NavLinks.tsx                  # 🆕 Desktop nav: shared pill (layoutId) + magnetic + underline
+│
+├── components/reading/               # 🆕 Immersive reading experience
 │   ├── ReadingChromeProvider.tsx     # Context: article chrome + Contents sheet state
 │   ├── SetReadingChrome.tsx          # Registers the current article (client, on the page)
+│   ├── ArticleActions.tsx            # 🆕 Sidebar companion: share/copy/bookmark/print/focus + progress
 │   └── ReadingLayer.tsx              # Top progress bar + floating circular indicator + TOC bottom sheet
 │
 ├── hooks/                            # 🆕 Reusable client hooks
@@ -562,7 +569,9 @@ No need to edit types, filter pills, section headers, or color mappings separate
   and `--tc-ease*` for all transitions (never hardcode ms/easing). Reusable
   interaction utilities: `.moving-border` (animated gradient edge on hover),
   `.press` (tactile scale), `.link-underline`, layered `--tc-shadow-md|lg`.
-  Route transitions live in `app/(site)/template.tsx`. See
+  Public routes paint immediately without a client route-transition wrapper.
+  Article prose CSS and JetBrains Mono are scoped to `/blog/[slug]`; deferred
+  homepage sections use `content-visibility: auto`. See
   [docs/motion-system.md](docs/motion-system.md).
 
 ---
