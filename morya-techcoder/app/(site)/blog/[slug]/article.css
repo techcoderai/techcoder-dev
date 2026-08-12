@@ -102,6 +102,48 @@
   line-height: 1.7;
 }
 
+/* --- Shiki output (see content/compile.ts) ---------------------------------
+   Line padding moves from the <pre> onto each line so that highlighted-line
+   backgrounds span the full width of the block, including when it scrolls. */
+.prose-tc pre[data-language] { padding-inline: 0; }
+.prose-tc pre[data-language] code { display: grid; }
+.prose-tc [data-line] {
+  padding-inline: 1.25rem;
+  border-left: 2px solid transparent;
+}
+.prose-tc [data-highlighted-line] {
+  border-left-color: var(--tc-primary);
+  background: rgba(249, 115, 22, 0.1);
+}
+.prose-tc [data-highlighted-chars] {
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Filename bar above a code block — emitted by rehype-pretty-code for
+   ```ts title="app/page.tsx", or by the <CodeFile> component. */
+.prose-tc [data-rehype-pretty-code-figure] { margin: 0; }
+.prose-tc .tc-code-title,
+.prose-tc [data-rehype-pretty-code-title] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--tc-border-code);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+  background: #131316;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+.prose-tc .tc-code-title + *,
+.prose-tc [data-rehype-pretty-code-title] + * { margin-top: 0; }
+.prose-tc .tc-code-title + * pre,
+.prose-tc [data-rehype-pretty-code-title] + * pre { border-radius: 0 0 14px 14px; }
+
 .prose-tc a {
   background-image: linear-gradient(var(--tc-primary), var(--tc-primary));
   background-position: 0 100%;
@@ -115,20 +157,39 @@
 .prose-tc img { margin: 1.5rem 0; border-radius: 14px; }
 .prose-tc hr { margin: 2.5rem 0; border: 0; border-top: 1px solid var(--tc-border); }
 .prose-tc strong { color: var(--tc-text); font-weight: 600; }
-.prose-tc table {
-  display: block;
-  width: 100%;
+/* Tables scroll inside a focusable wrapper rather than being forced to
+   `display: block`, which would strip the table's semantics from assistive
+   technology. The wrapper is added by the `table` mapping in
+   content/mdx-components.tsx. */
+.prose-tc .tc-table-scroll {
   overflow-x: auto;
   margin: 1.5rem 0;
+  border: 1px solid var(--tc-border);
+  border-radius: 12px;
+  overscroll-behavior-x: contain;
+}
+.prose-tc table {
+  width: 100%;
+  /* Below this width columns become unreadable, so the wrapper scrolls
+     instead of crushing them — the usual case on phones. */
+  min-width: 34rem;
   border-collapse: collapse;
   font-size: 0.9375rem;
 }
 .prose-tc th,
 .prose-tc td {
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--tc-border);
+  padding: 0.65rem 0.95rem;
+  border-bottom: 1px solid var(--tc-border);
   text-align: left;
   vertical-align: top;
 }
-.prose-tc th { background: var(--tc-bg-elevated); color: var(--tc-text); font-weight: 600; }
+.prose-tc th + th,
+.prose-tc td + td { border-left: 1px solid var(--tc-border); }
+.prose-tc tbody tr:last-child td { border-bottom: 0; }
+.prose-tc th {
+  background: var(--tc-bg-elevated);
+  color: var(--tc-text);
+  font-weight: 600;
+}
 .prose-tc td { color: var(--tc-text-muted); }
+.prose-tc table p { margin-bottom: 0; }

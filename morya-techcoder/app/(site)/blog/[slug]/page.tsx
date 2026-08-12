@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
 import { blogPosts, getBlogBySlug } from "@/content/loader";
 import { compileBlogContent } from "@/content/compile";
+import { getAuthor } from "@/lib/author";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getRelatedPosts } from "@/lib/posts";
 import type { BlogPost, Difficulty } from "@/types/blog";
@@ -15,6 +16,7 @@ import ArticleActions from "@/components/reading/ArticleActions";
 import SetReadingChrome from "@/components/reading/SetReadingChrome";
 import DifficultyBadge from "@/components/ui/DifficultyBadge";
 import CategoryBadge from "@/components/ui/CategoryBadge";
+import RatingStars from "@/components/ui/RatingStars";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -25,15 +27,31 @@ export async function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
 }
 
+/**
+ * Every publishable article is known at build time, so anything else is a real
+ * 404 and should be rejected before rendering starts.
+ *
+ * This matters because the route streams (see `loading.tsx`): once the shell
+ * has flushed, a later `notFound()` can only swap the UI — the 200 status is
+ * already committed. That soft 404 is what search engines would otherwise index
+ * for every mistyped URL, and for drafts, which are absent from the list above
+ * in production.
+ */
+export const dynamicParams = false;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogBySlug(slug);
   if (!post) return { title: "Article Not Found | TechCoder" };
   const ogImage = post.ogImage || post.thumbnail;
+  const author = getAuthor();
   return {
     title: `${post.seo?.title || post.title} | TechCoder`,
     description: post.seo?.description || post.excerpt,
-    alternates: { canonical: `/blog/${post.slug}` },
+    authors: [{ name: author.name, url: author.url }],
+    // A canonical is only overridden when the piece first ran somewhere else.
+    alternates: { canonical: post.seo?.canonical || `/blog/${post.slug}` },
+    robots: post.seo?.noindex ? { index: false, follow: true } : undefined,
     openGraph: {
       type: "article",
       url: `/blog/${post.slug}`,
@@ -70,8 +88,14 @@ export default async function BlogDetailPage({ params }: Props) {
   const headings = getHeadings(post.body);
   const difficulty = resolveDifficulty(post);
   const showUpdated = post.updated && post.updated !== post.date;
+  const author = getAuthor();
 
   const related = getRelatedPosts(blogPosts, post, 2);
+  const authorJsonLd = {
+    "@type": "Person",
+    name: author.name,
+    ...(author.url ? { url: author.url } : {}),
+  };
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -83,6 +107,7 @@ export default async function BlogDetailPage({ params }: Props) {
     image: post.ogImage || post.thumbnail
       ? `https://techcoder.tech${post.ogImage || post.thumbnail}`
       : undefined,
+    author: authorJsonLd,
     publisher: {
       "@type": "Organization",
       name: "TechCoder",
@@ -93,6 +118,22 @@ export default async function BlogDetailPage({ params }: Props) {
       },
     },
   };
+  // Reviews get a second graph so the score is eligible for rich results —
+  // `BlogPosting` has nowhere to put a rating.
+  const reviewJsonLd = post.review && {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    itemReviewed: { "@type": "Product", name: post.review.product || post.title },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: post.review.rating,
+      bestRating: 5,
+      worstRating: 0,
+    },
+    author: authorJsonLd,
+    datePublished: post.date,
+    url: `https://techcoder.tech/blog/${post.slug}`,
+  };
 
   return (
     <>
@@ -102,6 +143,14 @@ export default async function BlogDetailPage({ params }: Props) {
           __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c"),
         }}
       />
+      {reviewJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(reviewJsonLd).replace(/</g, "\\u003c"),
+          }}
+        />
+      )}
       {/* Register this article with the reading chrome (navbar toolbar + layer) */}
       <SetReadingChrome title={post.title} backHref="/blog" headings={headings} />
 
@@ -134,6 +183,22 @@ export default async function BlogDetailPage({ params }: Props) {
                 </p>
 
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-tc-text-light">
+                  <span className="flex items-center gap-2 font-medium text-tc-text-muted">
+                    {author.avatar ? (
+                      <Image
+                        src={author.avatar}
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="h-6 w-6 rounded-full border border-tc-border object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-tc-primary/12 text-[11px] font-bold text-tc-primary">
+                        {author.name.charAt(0)}
+                      </span>
+                    )}
+                    {author.name}
+                  </span>
                   <span className="flex items-center gap-1.5">
                     <Calendar size={14} />
                     <time dateTime={post.date}>{formatDate(post.date)}</time>
@@ -156,7 +221,7 @@ export default async function BlogDetailPage({ params }: Props) {
                 <div className="relative max-w-[720px] mb-8 sm:mb-10 aspect-[16/9] max-h-[248px] w-full overflow-hidden rounded-2xl border border-tc-border sm:max-h-none">
                   <Image
                     src={post.thumbnail}
-                    alt={post.title}
+                    alt={post.thumbnailAlt || post.title}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 720px"
@@ -203,6 +268,34 @@ export default async function BlogDetailPage({ params }: Props) {
                 ))}
               </div>
 
+              {/* Byline */}
+              {author.bio && (
+                <div className="reading-dim max-w-[720px] mb-8 flex items-start gap-4 rounded-2xl card-surface p-5 sm:p-6">
+                  {author.avatar ? (
+                    <Image
+                      src={author.avatar}
+                      alt=""
+                      width={48}
+                      height={48}
+                      className="h-12 w-12 shrink-0 rounded-full border border-tc-border object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-tc-primary/12 text-lg font-bold text-tc-primary">
+                      {author.name.charAt(0)}
+                    </span>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-tc-text">{author.name}</p>
+                    {author.role && (
+                      <p className="text-xs text-tc-text-light">{author.role}</p>
+                    )}
+                    <p className="mt-2 text-sm leading-relaxed text-tc-text-muted">
+                      {author.bio}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Newsletter */}
               <div className="reading-dim max-w-[720px]">
                 <NewsletterBox />
@@ -218,6 +311,24 @@ export default async function BlogDetailPage({ params }: Props) {
                   title={post.title}
                   readingTime={post.readingTime}
                 />
+
+                {post.review && (
+                  <div className="rounded-2xl card-surface p-5">
+                    <p className="overline text-tc-text-light mb-4">Review</p>
+                    <p className="mb-3 font-semibold text-tc-text">
+                      {post.review.product || post.title}
+                    </p>
+                    <RatingStars value={post.review.rating ?? 0} />
+                    {post.review.price && (
+                      <p className="mt-3 flex items-center justify-between gap-3 text-sm">
+                        <span className="text-tc-text-light">Price</span>
+                        <span className="font-medium text-tc-text">
+                          {post.review.price}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <div className="rounded-2xl card-surface p-5">
                   <p className="overline text-tc-text-light mb-4">Article</p>

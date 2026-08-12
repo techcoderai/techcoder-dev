@@ -1,17 +1,54 @@
 ---
 title: "MDX Components Showcase"
-excerpt: "A living reference of every custom MDX component available in TechCoder articles. This post is a draft, so it only appears in development."
+excerpt: "A living reference of every editorial component available in TechCoder articles. This post is a draft, so it only appears in development."
 date: 2026-07-08
 category: Programming
 tags: ["mdx", "reference", "components"]
 thumbnail: ""
 difficulty: Beginner
 draft: true
+review:
+  product: "The showcase itself"
+  rating: 4.5
+  price: "Free"
 ---
 
-This draft post demonstrates every custom component. It's marked `draft: true`,
-so it appears only in `npm run dev` — never in production. Full docs:
+This draft post demonstrates every component. It's marked `draft: true`, so it
+appears only in `npm run dev` — never in production. Full docs:
 `docs/mdx-components.md`.
+
+<TLDR>
+- Everything below is insertable from the Keystatic editor at `/keystatic`.
+- Each block has an editorial job — none of them are decoration.
+- The generated MDX stays readable and diffable in Git.
+</TLDR>
+
+## Editorial blocks
+
+<KeyTakeaway title="Components should mean something">
+A component earns its place when it makes a specific editorial idea repeatable.
+If it only changes how text looks, it belongs in CSS.
+</KeyTakeaway>
+
+<ProductionInsight title="Reading time is derived, never typed">
+Word counts drift the moment anyone edits a paragraph, so reading time is
+computed from the body at load time rather than stored in frontmatter.
+</ProductionInsight>
+
+<Verdict product="This component set" bestFor="Long technical features" avoidIf="You only publish short news posts">
+Enough structure to make an article feel edited, few enough pieces that you can
+hold the whole set in your head.
+</Verdict>
+
+<ProsCons>
+<Pro>Every block is available from the editor's insert menu.</Pro>
+<Pro>Output is plain MDX — no proprietary format to migrate off.</Pro>
+<Con>More components means more decisions while writing.</Con>
+</ProsCons>
+
+<PullQuote author="Kelsey Hightower" role="Distinguished Engineer">
+Kubernetes is a platform for building platforms.
+</PullQuote>
 
 ## Callouts
 
@@ -39,6 +76,26 @@ export function greet(name: string): string {
 }
 ```
 
+A filename bar, authored from the editor:
+
+<CodeFile name="app/page.tsx">
+```tsx
+export default function Page() {
+  return <h1>Hello</h1>;
+}
+```
+</CodeFile>
+
+Hand-written MDX can use the fence's own meta string instead, which also
+supports line highlighting:
+
+```ts title="lib/utils.ts" {2}
+export function calcReadingTime(text: string): string {
+  const words = text.trim().split(/\s+/).length;
+  return `${Math.max(1, Math.ceil(words / 238))} min read`;
+}
+```
+
 ## Terminal
 
 <Terminal title="bash">
@@ -63,7 +120,7 @@ Run `npm run dev` and open the browser.
 
 <InfoCards>
 <InfoCard title="Fast" icon="Zap">Ships static HTML by default.</InfoCard>
-<InfoCard title="Docs" icon="BookOpen" href="/docs">Read the full guide.</InfoCard>
+<InfoCard title="Docs" icon="BookOpen" href="/blog">Read the full guide.</InfoCard>
 </InfoCards>
 
 ## File tree
@@ -92,16 +149,57 @@ pnpm add
 </Tab>
 </Tabs>
 
-## Badges and tables
+## Tables
 
-Status: <Badge variant="success">Stable</Badge> <Badge variant="warning">Beta</Badge>
+A Markdown table, written with pipes:
 
-| Feature | Support |
-| ------- | ------- |
-| MDX     | Yes     |
-| Tables  | Yes     |
-| Embeds  | Yes     |
+| Feature | Support | Notes |
+| ------- | ------- | ----- |
+| MDX     | Yes     | Compiled at build time |
+| Tables  | Yes     | Via remark-gfm |
+| Embeds  | Yes     | YouTube, X, CodePen, sandboxes |
+
+A structured comparison table, editable row by row in Keystatic:
+
+<Comparison
+  label="Capability"
+  columns={["Markdown table", "Comparison block"]}
+  rows={[
+    { label: "Best for", values: ["Prose cells", "Short values"] },
+    { label: "Editable as data", values: ["No", "Yes"] },
+    { label: "Restyle without touching content", values: ["Partly", "Yes"] }
+  ]}
+  caption="When to reach for each kind of table."
+/>
+
+## Buying guide picks
+
+<Recommendations>
+<Recommendation award="Best overall" product="Keystatic" price="Free" href="https://keystatic.com">
+Writes plain MDX into your repository, so the CMS is never load-bearing.
+</Recommendation>
+<Recommendation award="Best for teams" product="A hosted CMS" price="From $99/mo">
+Worth it once more people edit than build.
+</Recommendation>
+</Recommendations>
+
+## Badges
+
+Status: <Badge variant="success" text="Stable" /> <Badge variant="warning" text="Beta" />
 
 ## Embeds
 
 <YouTube id="dQw4w9WgXcQ" title="Example video" />
+
+<GitHubRepo owner="Thinkmill" repo="keystatic" description="The Git-based CMS behind this editor." />
+
+<LinkCard
+  href="https://opencontainers.org"
+  title="Open Container Initiative"
+  site="opencontainers.org"
+  description="The specification that makes container images portable across runtimes."
+/>
+
+## Related reading
+
+<RelatedArticles slugs={["hello-world", "css-container-queries-guide"]} />

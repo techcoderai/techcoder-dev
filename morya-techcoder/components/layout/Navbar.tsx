@@ -44,11 +44,28 @@ export default function Navbar() {
     }
   }, [chrome]);
 
+  /**
+   * A single threshold, not a continuous calculation: the bar has exactly two
+   * shapes and crosses between them once. Reading `scrollY` is deferred to rAF
+   * so a fast scroll can't force a layout read per event, and `setScrolled`
+   * with an unchanged boolean is a no-op in React — so this renders twice per
+   * page visit at most.
+   */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
+    let raf = 0;
+    const read = () => {
+      raf = 0;
+      setScrolled(window.scrollY > 72);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(read);
+    };
+    read();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   useEffect(() => {
@@ -71,7 +88,10 @@ export default function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center px-3 sm:px-6">
       <nav
         className={cn(
-          "flex items-center justify-between gap-2 w-full max-w-[1180px] rounded-full transition-[height,margin,padding,background-color,border-color,box-shadow,backdrop-filter] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          // `backdrop-filter` is deliberately absent from the transition list —
+          // animating a blur is expensive, and it's imperceptible arriving with
+          // the background fade.
+          "flex items-center justify-between gap-2 w-full max-w-[1180px] rounded-full transition-[height,margin,padding,background-color,border-color,box-shadow] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           // Mobile-first: a leaner bar that reclaims vertical space for content,
           // scaling back up to the roomier desktop bar at sm+.
           scrolled
@@ -102,21 +122,21 @@ export default function Navbar() {
           >
             <Link
               href="/"
-              className="nav-logo-enter focus-ring group flex items-center gap-2.5 rounded-full"
+              className="nav-logo nav-logo-enter focus-ring flex items-center gap-2.5 rounded-full"
               onClick={() => setMenuOpen(false)}
             >
               <span className="relative flex items-center justify-center">
-                <span className="absolute inset-0 rounded-xl bg-tc-primary/25 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="nav-logo-halo absolute inset-0 rounded-xl bg-tc-primary/20 blur-md" />
                 <Image
                   src="/icon.png"
                   alt="TechCoder"
                   width={34}
                   height={34}
-                  className="relative rounded-xl transition-transform duration-300 group-hover:scale-105"
+                  className="nav-logo-mark relative rounded-xl"
                 />
               </span>
               <span className="font-heading text-[17px] font-bold tracking-tight text-tc-text">
-                Tech<span className="text-gradient">Coder</span>
+                Tech<span className="text-gradient nav-logo-word">Coder</span>
               </span>
             </Link>
           </div>
@@ -138,9 +158,12 @@ export default function Navbar() {
         {/* Actions */}
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
           <ThemeToggle />
-          <Link href="/blog" className="btn-primary focus-ring px-5 py-2.5 text-[13.5px]">
+          <Link
+            href="/blog"
+            className="btn-primary nav-cta focus-ring px-5 py-2.5 text-[13.5px]"
+          >
             Read Articles
-            <ArrowUpRight size={15} />
+            <ArrowUpRight size={15} className="nav-cta-arrow" />
           </Link>
         </div>
 

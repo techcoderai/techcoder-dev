@@ -983,28 +983,215 @@ button:hover > .icon-lift {
 
 /* ═══════════════════════  PREMIUM POLISH  ═══════════════════════ */
 
-/* Desktop nav — center-expanding underline (persists on the active route) */
-.nav-underline {
-  width: 0;
-  transition: width var(--tc-dur) var(--tc-ease);
-}
-a:hover > .nav-underline,
-.nav-underline[data-active="true"] { width: 1.25rem; }
+/* ─────────────────────  DESKTOP NAVIGATION  ─────────────────────
+   Three layers, deliberately quiet:
+     · a pointer-following ambient wash across the whole group
+     · a per-item hover treatment (lift + center-out underline)
+     · one shared indicator that travels to the active item
+   Everything animates transform, opacity, or paint — never layout. */
 
-/* Soft active pill behind the current desktop nav link */
-.nav-link-active::before {
-  content: "";
+.nav-links {
+  position: relative;
+  /* Smooths the pointer highlight without a JS interpolation loop: the
+     variable is registered below, so the browser tweens it for us. */
+  transition: --nav-mx 200ms var(--tc-ease-soft);
+}
+
+/* Registered so --nav-mx is a real length the browser can interpolate,
+   rather than an opaque string that would snap between frames. */
+@property --nav-mx {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Ambient warm highlight trailing the pointer. Written on rAF from
+   components/layout/NavLinks.tsx — no React state, no layout reads.
+   The ellipse is short vertically so it fades out well before the group's
+   top and bottom edges, which is what keeps it from showing a cut edge.
+
+   Uses the --tc-glow-soft token rather than color-mix on purpose: the build
+   emits a solid-color fallback ahead of every color-mix, which for a wash this
+   large would mean a solid orange blob in any browser that lacks it. The token
+   is already an rgba, so every browser renders this identically — and it's
+   warmer in dark mode, where a fainter wash would disappear. */
+.nav-glow {
   position: absolute;
   inset: 0;
   z-index: 0;
-  border-radius: 9999px;
-  border: 1px solid color-mix(in srgb, var(--tc-primary) 15%, transparent);
-  background: radial-gradient(
-    120% 120% at 50% 50%,
-    color-mix(in srgb, var(--tc-primary) 14%, transparent),
-    transparent 72%
-  );
   pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
+  background: radial-gradient(
+    110px 26px at var(--nav-mx) 50%,
+    var(--tc-glow-soft),
+    transparent 70%
+  );
+}
+/* Lands the peak around 7% (light) / 11% (dark). */
+.nav-links[data-glow="true"] .nav-glow { opacity: 0.7; }
+
+.nav-link {
+  position: relative;
+  z-index: 1;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--tc-text-muted);
+  transition: color var(--tc-dur) var(--tc-ease);
+}
+.nav-link:hover { color: var(--tc-text); }
+
+/* Per-item wash. Kept faint on hover so it reads as a highlight rather than a
+   button, and only marginally stronger — plus a hairline — when active.
+   Opacity does double duty here: it fades the wash in *and* sets how strong it
+   lands, which keeps this on the shared warm tokens instead of hardcoded
+   percentages that would need a color-mix fallback. */
+.nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--tc-glow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-link:hover::before,
+.nav-link:focus-visible::before { opacity: 0.6; }
+
+/* Active: located, not shouting. The weight stays at 500 on purpose — bolding
+   the current item would change its width and shove the whole row sideways. */
+.nav-link[data-active="true"] { color: var(--tc-text); }
+.nav-link[data-active="true"]::before {
+  opacity: 0.75;
+  /* inset shadow rather than a border: same hairline, no box-model effect */
+  box-shadow: inset 0 0 0 1px var(--tc-glow);
+}
+
+.nav-link-label {
+  display: inline-block;
+  transition: transform var(--tc-dur) var(--tc-ease);
+}
+.nav-link:hover .nav-link-label,
+.nav-link:focus-visible .nav-link-label { transform: translateY(-1px); }
+
+/* Hover underline — grows from the center outward via scaleX, so no width
+   is animated and the rounded ends survive. */
+.nav-link-underline {
+  position: absolute;
+  left: 50%;
+  bottom: 0.25rem;
+  width: 20px;
+  height: 2px;
+  margin-left: -10px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--tc-primary), var(--tc-primary-light));
+  opacity: 0;
+  transform: scaleX(0);
+  pointer-events: none;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              opacity var(--tc-dur) var(--tc-ease);
+}
+/* Keyboard focus gets the same treatment as hover — the focus ring says
+   "you're here", this says "and this is what it does". */
+.nav-link:hover .nav-link-underline,
+.nav-link:focus-visible .nav-link-underline { opacity: 0.55; transform: scaleX(1); }
+/* The travelling indicator already marks the active item — don't stack two. */
+.nav-link[data-active="true"]:hover .nav-link-underline,
+.nav-link[data-active="true"]:focus-visible .nav-link-underline {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+/* The shared indicator. One node, moved with transform, so a route change
+   reads as a single object gliding to its new home. */
+.nav-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 0.25rem;
+  width: 20px;
+  height: 2px;
+  margin-left: -10px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--tc-primary), var(--tc-primary-light));
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--nav-ind-x, 0px), 0, 0) scaleX(var(--nav-ind-s, 1));
+}
+/* Enabled after the first measurement (see NavLinks) so it fades in in place. */
+.nav-links[data-ready="true"] .nav-indicator {
+  transition: transform 240ms var(--tc-ease),
+              opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-links[data-ready="true"][data-has-active="true"] .nav-indicator {
+  opacity: 0.95;
+}
+/* Hovering (or focusing) the current item widens its own indicator instead of
+   drawing a second underline underneath it. */
+.nav-links:has(a[data-active="true"]:hover),
+.nav-links:has(a[data-active="true"]:focus-visible) { --nav-ind-s: 1.3; }
+
+/* ── Logo ──
+   A lift and a degree of tilt. Enough to feel alive, not enough to bounce. */
+.nav-logo-mark { transition: transform var(--tc-dur) var(--tc-ease); }
+.nav-logo:hover .nav-logo-mark { transform: translateY(-1.5px) rotate(-3deg); }
+.nav-logo-halo {
+  opacity: 0;
+  transition: opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-logo:hover .nav-logo-halo { opacity: 0.6; }
+.nav-logo-word { transition: filter var(--tc-dur) var(--tc-ease); }
+.nav-logo:hover .nav-logo-word { filter: saturate(1.15) brightness(1.06); }
+
+/* ── Read Articles CTA ──
+   Refines .btn-primary for the navbar only: a shallower lift than a page CTA
+   (the bar is already close to the viewport edge) and a slow gradient drift. */
+.nav-cta {
+  background-size: 165% 100%;
+  background-position: 0% 50%;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease),
+              background-position var(--tc-dur-slow) var(--tc-ease);
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  background-position: 100% 50%;
+  box-shadow: 0 10px 26px -8px var(--tc-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.nav-cta:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: var(--tc-dur-fast);
+}
+.nav-cta-arrow { transition: transform var(--tc-dur) var(--tc-ease); }
+.nav-cta:hover .nav-cta-arrow { transform: translateX(3px); }
+
+/* ── Theme toggle ──
+   The icons already own a transform for the sun/moon swap, so the hover tilt
+   lives on a wrapper to avoid the two fighting over the same property. */
+.theme-toggle {
+  transition: transform var(--tc-dur-fast) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.theme-toggle:hover {
+  border-color: color-mix(in srgb, var(--tc-primary) 55%, transparent);
+  color: var(--tc-primary);
+}
+.theme-toggle:active { transform: scale(0.96); }
+.theme-icon-wrap { transition: transform var(--tc-dur) var(--tc-ease); }
+.theme-toggle:hover .theme-icon-wrap { transform: rotate(12deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The pointer highlight never activates under reduced motion (NavLinks skips
+     attaching its listeners), but pin it off in CSS too in case it was already
+     showing when the preference changed. */
+  .nav-glow { opacity: 0 !important; }
+  .nav-logo:hover .nav-logo-mark,
+  .nav-link:hover .nav-link-label,
+  .theme-toggle:hover .theme-icon-wrap { transform: none; }
 }
 
 /* Skeleton shimmer — a calm sweep, GPU transform only */

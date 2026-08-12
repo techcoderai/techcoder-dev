@@ -43,8 +43,8 @@ stack — it never just gets darker. Avoid one-off `box-shadow` values.
 - **`.press`** — lightweight tactile `scale(0.97)` for pills / icon buttons.
 - **Category icons** (`TopicGrid`) — hover: `rotate(5deg) scale(1.05)` + warm
   background wash.
-- **Nav links** — expanding gradient underline (`scale-x`), not a fade. The
-  navbar gains stronger blur + a layered shadow and the logo scales on scroll.
+- **Nav links** — a shared indicator travels between items; hover adds a 1px
+  lift and a center-out underline. See [Desktop navigation](#desktop-navigation-componentslayoutnavlinkstsx).
 - **TOC active item** (`TableOfContents`) — a single orange indicator glides
   between items via a Framer `layoutId` spring; the active label eases color and
   slides `translate-x-0.5`.
@@ -67,13 +67,59 @@ LCP.
 
 ## Desktop navigation (`components/layout/NavLinks.tsx`)
 
-A single soft radial "pill" glides between links via a shared Framer `layoutId`
-(settling on the active route when nothing is hovered). Each label is gently
-magnetic toward the cursor (spring, capped at a few px), an underline
-(`.nav-underline`) expands from the center on hover and persists on the active
-route, and colour eases. All magnetic/layout motion is disabled under reduced
-motion. The navbar shell still compacts + strengthens blur on scroll
-(`.nav-shell-scrolled`) and the logo scales down.
+Three layers, deliberately quiet. No animation library, no React state, and
+nothing that animates a layout property.
+
+**Shared active indicator.** One 20px rounded bar, positioned by writing
+`--nav-ind-x` and moved with `translate3d` over `240ms var(--tc-ease)`. Because
+it is a single persistent node in the site layout, navigating Home → Articles
+reads as one object gliding rather than two states swapping. Its width is
+**fixed on purpose**: animating width would hit layout and would flatten the
+rounded ends. Hovering the current item scales it to `1.3` via `--nav-ind-s`,
+composed into the same transform.
+
+Transitions are switched on (`data-ready`) one frame *after* the first
+measurement, so the bar fades in where it belongs instead of sliding in from the
+left edge on load. It re-measures on resize and on `document.fonts.ready`, since
+web fonts change label widths after hydration.
+
+**Pointer-following highlight.** A short, wide radial ellipse tracking the
+pointer's X across the group, peaking around 7% (light) / 11% (dark). The
+position is written to `--nav-mx` on `requestAnimationFrame` — the same approach
+as `SpotlightCursor` — and `--nav-mx` is registered with `@property` as a
+`<length>`, so **the browser interpolates it** and we don't run a lerp loop of
+our own. The ellipse is short vertically so it fades out before the group's
+edges rather than showing a cut edge. Listeners are never attached on coarse
+pointers or under reduced motion.
+
+It uses the `--tc-glow-soft` token rather than `color-mix`. The build emits a
+solid-color fallback ahead of every `color-mix`, which for a wash this large
+would mean a solid orange blob in browsers that lack it; the token is already an
+rgba, so every browser renders it identically.
+
+**Per-item states.** Hover: colour eases, the label lifts `1px`, a faint warm
+wash fades in, and a 2px underline grows from the center via `scaleX` (not
+width). Active: the same wash slightly stronger plus a 1px warm hairline drawn
+with an *inset box-shadow* rather than a border, so it has no box-model effect.
+The active item deliberately keeps `font-weight: 500` — bolding it would change
+its width and shove the whole row sideways. Keyboard focus gets the same
+treatment as hover.
+
+**Shell.** A single threshold at `72px` (rAF-deferred read, and an unchanged
+boolean is a no-op in React, so this renders at most twice per visit) swaps the
+bar to its compact state: tighter padding, `.nav-shell-scrolled` surface + blur,
+a layered shadow, and the logo at `0.94`. `backdrop-filter` is intentionally
+excluded from the transition list — animating a blur is expensive and it is
+imperceptible arriving with the background fade. On mobile this same threshold
+reveals the article reading toolbar, which is why the two stay coupled.
+
+**Logo / CTA / theme toggle.** The logo mark lifts `1.5px` and tilts `-3deg`,
+its halo fades in, and "Coder" brightens via `filter`. The navbar CTA refines
+`.btn-primary` for this context only (`.nav-cta`): a shallower `-1px` lift, a
+slow gradient drift via `background-position`, a `3px` arrow nudge, and
+`scale(0.98)` on press. The theme toggle tilts its icons `12deg` on a *wrapper*
+element, because the icons themselves already animate `transform` for the
+sun/moon crossfade.
 
 ## Article reading companion (`components/reading/ArticleActions.tsx`)
 

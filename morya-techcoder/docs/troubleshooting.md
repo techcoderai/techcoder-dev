@@ -1,10 +1,41 @@
 # Troubleshooting
 
+## `/keystatic` returns 404
+
+**If you're on a deployed site: that's intended.** The editor writes to the
+local filesystem, which doesn't exist on a serverless host, so both `/keystatic`
+and `/api/keystatic/*` are switched off in production. See
+[keystatic.md](./keystatic.md#storage-and-production).
+
+**If you're running locally**, check that you started `npm run dev` and not
+`npm run start` — `next start` runs in production mode, where the gate applies.
+
 ## The `/keystatic` page is blank or won't load
 - Make sure you're running `npm run dev` (the editor needs the API routes at
   `/api/keystatic/...`).
 - Hard-refresh the browser (the admin is a client app and caches aggressively).
 - Check the terminal for errors in `keystatic.config.ts`.
+
+## A component's props arrive `undefined` (arrays, numbers, objects)
+
+**Cause:** `next-mdx-remote` strips every JSX attribute expression unless
+`blockJS: false` is set. `<Comparison rows={[…]} />` silently becomes
+`<Comparison />`, so the component renders nothing and no error is thrown.
+
+**Fix:** `content/compile.ts` already sets `blockJS: false`. If you copy the
+compile setup elsewhere, carry that option with it — string props keep working,
+so the breakage looks like a component bug rather than a pipeline one.
+
+## A Markdown table renders as literal pipes
+
+`remark-gfm` isn't in the pipeline. MDX doesn't enable GitHub-flavoured Markdown
+by default — check the `remarkPlugins` array in `content/compile.ts`.
+
+## Code blocks have no colors
+
+Check the fence has a language (```` ```ts ````, not just ```` ``` ````), and
+that `rehype-pretty-code` is still in `rehypePlugins`. Highlighting runs at build
+time, so a change there needs a restart of `npm run dev`.
 
 ## A post I created in Keystatic doesn't appear on the site
 
@@ -37,9 +68,10 @@ See [conventions.md](./conventions.md#server-vs-client-components).
 - If you just added the component, restart `npm run dev`.
 
 ## Opening a post in Keystatic throws a parse error
-The post probably uses a component that isn't registered in the Keystatic editor
-(e.g. `Steps`, `Tabs`, `FileTree`). Edit that post in your **code editor**
-instead, or register the component in `content/keystatic-components.tsx`.
+The post uses a component that isn't registered in the Keystatic editor — today
+that means `FileTree` (with its `Folder`/`File` children) or `Table`. Edit that
+post in your **code editor**, or register the component in
+`content/keystatic-components.tsx`.
 
 ## Images don't show
 - Path must start with `/content/blog/...` and the file must exist in

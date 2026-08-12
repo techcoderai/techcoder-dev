@@ -13,6 +13,15 @@ import Terminal from "@/components/mdx/Terminal";
 import Badge from "@/components/mdx/Badge";
 import { Tabs, Tab } from "@/components/mdx/Tabs";
 import Table from "@/components/mdx/Table";
+import CodeFile from "@/components/mdx/CodeFile";
+import { TLDR, KeyTakeaway, ProductionInsight } from "@/components/mdx/Editorial";
+import Verdict from "@/components/mdx/Verdict";
+import { ProsCons, Pro, Con } from "@/components/mdx/ProsCons";
+import Comparison from "@/components/mdx/Comparison";
+import PullQuote from "@/components/mdx/PullQuote";
+import RelatedArticles from "@/components/mdx/RelatedArticles";
+import { Recommendations, Recommendation } from "@/components/mdx/Recommendations";
+import { GitHubRepo, CodePen, Sandbox, LinkCard } from "@/components/mdx/Embeds";
 
 /** Recursively pulls the plain text out of MDX heading children for slug ids. */
 function getNodeText(node: ReactNode): string {
@@ -45,28 +54,66 @@ function heading(Tag: "h2" | "h3") {
 /**
  * The single map of MDX tags → React components used to render every article.
  *
- * Two groups live here:
- *   1. HTML element overrides (img, h2, h3, pre) — style raw markdown output.
- *   2. Custom components (Callout, YouTube, …) — the reusable building blocks
- *      authors insert from the Keystatic editor or type by hand in MDX.
+ * Three groups live here:
+ *   1. HTML element overrides (img, h2, h3, pre, table) — style raw markdown.
+ *   2. Editorial components (TLDR, Verdict, ProsCons, …) — the blocks that give
+ *      a TechCoder article its voice. Each has a specific editorial job.
+ *   3. Structural components (Steps, Tabs, FileTree, …) — reusable building
+ *      blocks for explaining things.
  *
- * Keeping this in one file (instead of inside the data loader) means the
- * content pipeline is: loader.ts = data, mdx-components.tsx = presentation.
+ * Every key here that authors should reach for is also registered in
+ * `content/keystatic-components.tsx`, so the "+" menu in the editor and this
+ * map stay in step. Keeping the map in one file (instead of inside the data
+ * loader) means the content pipeline stays: loader.ts = data,
+ * mdx-components.tsx = presentation.
  */
 export const mdxComponents = {
   // --- HTML element overrides ---
   img: (props: ComponentProps<"img">) => (
-    <MdxImage src={typeof props.src === "string" ? props.src : ""} alt={props.alt} />
+    <MdxImage
+      src={typeof props.src === "string" ? props.src : ""}
+      alt={props.alt}
+      title={props.title}
+      width={typeof props.width === "number" ? props.width : undefined}
+      height={typeof props.height === "number" ? props.height : undefined}
+    />
   ),
   h2: heading("h2"),
   h3: heading("h3"),
-  pre: ({ children }: { children?: ReactNode }) => <CodeBlock>{children}</CodeBlock>,
+  pre: (props: ComponentProps<"pre">) => <CodeBlock {...props} />,
+  // Markdown tables scroll inside a focusable region rather than being made
+  // `display: block`, which would cost them their semantics.
+  table: (props: ComponentProps<"table">) => (
+    <div className="tc-table-scroll" role="region" tabIndex={0} aria-label="Table">
+      <table {...props} />
+    </div>
+  ),
 
-  // --- Custom reusable components ---
+  // --- TechCoder editorial components ---
+  TLDR,
+  KeyTakeaway,
+  ProductionInsight,
+  Verdict,
+  ProsCons,
+  Pro,
+  Con,
+  Comparison,
+  PullQuote,
+  RelatedArticles,
+  Recommendations,
+  Recommendation,
   Callout,
-  Image: MdxImage,
+
+  // --- Embeds ---
   YouTube,
   Tweet,
+  GitHubRepo,
+  CodePen,
+  Sandbox,
+  LinkCard,
+
+  // --- Structural building blocks ---
+  Image: MdxImage,
   Steps,
   Step,
   InfoCards,
@@ -75,6 +122,7 @@ export const mdxComponents = {
   Folder,
   File,
   Terminal,
+  CodeFile,
   Badge,
   Tabs,
   Tab,

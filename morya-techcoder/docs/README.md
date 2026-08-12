@@ -25,8 +25,10 @@ here, then dive into whichever topic you need.
 - **Framework:** Next.js 16 (App Router) + React 19 + Tailwind CSS v4.
 - **Content:** Blog posts are `.mdx` files in `content/posts/`. No database.
 - **Editing:** Run `npm run dev` and open `http://localhost:3000/keystatic`.
-- **Rendering:** `content/loader.ts` reads the files; `content/mdx-components.tsx`
-  maps MDX tags to React components; pages render them as static HTML.
+  Those routes **404 in production** — see [keystatic.md](./keystatic.md#storage-and-production).
+- **Rendering:** `content/loader.ts` reads the files; `content/compile.ts` runs
+  the MDX pipeline (GFM, Shiki, image sizing); `content/mdx-components.tsx` maps
+  MDX tags to React components; pages render them as static HTML.
 
 ## For AI assistants
 
@@ -38,6 +40,12 @@ If you are an LLM working in this repo:
 - The single source of truth for categories is `lib/categories.ts`.
 - Feature flags live in `lib/featureFlags.ts` (`isFeatureEnabled(...)`).
 - All blog types live in `types/blog.ts`.
+- Adding an MDX component means editing **two** files: `content/mdx-components.tsx`
+  (how it renders) and `content/keystatic-components.tsx` (how it's authored).
+  Same key in both. See [mdx-components.md](./mdx-components.md#adding-your-own-component).
+- Don't add a component that only changes appearance — style it in `article.css`.
+- Never store derived data in frontmatter (reading time, word counts), and never
+  store the same fact in both frontmatter and a body component.
 - Use the `--tc-*` design tokens (see `app/globals.css`); never hardcode colors.
 - Use the motion tokens (`--tc-dur-*`, `--tc-ease*`) for animation; never hardcode
   durations/easings. See [motion-system.md](./motion-system.md).

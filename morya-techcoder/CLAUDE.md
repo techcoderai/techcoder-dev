@@ -54,10 +54,12 @@ morya-techcoder/
 │   │   │   └── [slug]/page.tsx       # Dynamic blog detail pages
 │   │   └── topics/
 │   │       └── [category]/page.tsx   # 🆕 Per-topic landing pages (SSG)
-│   ├── keystatic/                    # 🆕 Keystatic admin UI
-│   │   └── [[...params]]/page.tsx   # Visual CMS editor at /keystatic
-│   └── api/keystatic/                # 🆕 Keystatic file operations API
-│       └── [...params]/route.ts     # POST/GET handlers for file writes
+│   ├── keystatic/                    # Keystatic admin UI — dev only
+│   │   └── [[...params]]/
+│   │       ├── page.tsx             # 🔄 Server gate: 404s in production
+│   │       └── keystatic-app.tsx    # 🆕 The editor itself (client)
+│   └── api/keystatic/                # Keystatic file operations API
+│       └── [...params]/route.ts     # 🔄 POST/GET, 404 in production
 │
 ├── components/
 │   ├── layout/
@@ -82,31 +84,47 @@ morya-techcoder/
 │   │   ├── NewsletterBox.tsx         # Email subscription form
 │   │   ├── ThemeToggle.tsx           # Light/dark switch (View Transitions cross-fade)
 │   │   ├── DifficultyBadge.tsx       # Visual difficulty indicators
+│   │   ├── RatingStars.tsx           # 🆕 0–5 score with partial fill + text equivalent
 │   │   ├── HeadingLink.tsx           # Anchor links for headings
 │   │   └── SectionHeading, Reveal, etc.
-│   └── mdx/                          # 🆕 MDX component library (11 components)
+│   └── mdx/                          # MDX component library
+│       ├── EditorialPanel.tsx        # 🆕 Shared frame for editorial blocks (not exported to MDX)
+│       ├── Editorial.tsx             # 🆕 TLDR, KeyTakeaway, ProductionInsight
+│       ├── Verdict.tsx               # 🆕 Closing judgement of a review
+│       ├── ProsCons.tsx              # 🆕 ProsCons + Pro + Con, auto-sorted
+│       ├── Comparison.tsx            # 🆕 Structured comparison table (rows/columns as data)
+│       ├── PullQuote.tsx             # 🆕 Attributed quote from a person
+│       ├── RelatedArticles.tsx       # 🆕 Hand-picked reading; titles resolved from the loader
+│       ├── Recommendations.tsx       # 🆕 Buying-guide picks with award + price
+│       ├── Embeds.tsx                # 🆕 GitHubRepo, CodePen, Sandbox, LinkCard
+│       ├── CodeFile.tsx              # 🆕 Filename bar above a code block
 │       ├── Callout.tsx               # Colored boxes (note/tip/warning/danger)
 │       ├── YouTube.tsx               # Responsive video embeds
 │       ├── Tweet.tsx                 # Server-rendered tweets
 │       ├── Terminal.tsx              # Terminal window styling
 │       ├── Steps.tsx                 # Numbered step-by-step guides
 │       ├── InfoCard.tsx              # Highlight card grids
-│       ├── FileTree.tsx              # Folder structure visualization
+│       ├── FileTree.tsx              # Folder structure visualization (MDX only)
 │       ├── Badge.tsx                 # Inline labels
 │       ├── Tabs.tsx                  # Tabbed content (npm vs pnpm)
-│       ├── Table.tsx                 # Scrollable table wrapper
+│       ├── Table.tsx                 # Scrollable table wrapper (MDX only)
 │       └── MdxImage.tsx              # Next.js Image wrapper with captions
 │
 ├── content/
 │   ├── loader.ts                     # 🔄 Pure data layer (was .tsx, now .ts)
-│   ├── mdx-components.tsx            # 🆕 Presentation layer (MDX → React mapping)
-│   ├── keystatic-components.tsx      # 🆕 Keystatic editor component config
+│   ├── compile.ts                    # 🔄 MDX pipeline: GFM + Shiki + image sizing
+│   ├── rehype-image-size.ts          # 🆕 Reads intrinsic dimensions at compile time
+│   ├── mdx-components.tsx            # Presentation layer (MDX → React mapping)
+│   ├── keystatic-components.tsx      # Keystatic editor component config
+│   ├── settings/author.json          # 🆕 Author singleton (the byline)
 │   └── posts/*.mdx                   # Blog posts (MDX only, no .md duplicates)
 │
 ├── lib/                              # 🔄 Pure logic (framework-agnostic)
 │   ├── categories.ts                 # 🔄 SINGLE SOURCE OF TRUTH for categories (6 topics)
 │   ├── category-icons.ts             # 🆕 Maps category icon names → lucide components
 │   ├── featureFlags.ts               # 🆕 Progressive section rollout (Testimonials, FAQ, …)
+│   ├── keystatic-mode.ts             # 🆕 Single flag gating both Keystatic routes
+│   ├── author.ts                     # 🆕 Reads the Author singleton (getAuthor)
 │   ├── posts.ts                      # 🆕 Business logic (filtering, featured, related)
 │   └── utils.ts                      # Helpers (cn, formatDate, calcReadingTime)
 │
@@ -190,19 +208,36 @@ morya-techcoder/
 ### Keystatic Integration
 
 **Storage Strategy:**
-- **Development:** `storage: { kind: "local" }` (writes to local filesystem)
-- **Production:** `storage: { kind: "github" }` (commits directly to GitHub via API)
+- `storage: { kind: "local" }` — the editor reads and writes this working
+  directory. There is no production storage mode, by design.
+- **Production:** `/keystatic` and `/api/keystatic/*` return **404**. The flag
+  lives in `lib/keystatic-mode.ts` and keys off `NODE_ENV`, which Next inlines
+  at build time, so the branch and the admin bundle are eliminated.
+- This is access control, not SEO. `robots.txt` still disallows the paths, but
+  that only asks crawlers not to look.
+- To enable remote editing later: switch to GitHub storage **and** gate
+  `isKeystaticEnabled` on authentication. Never simply set it to `true` — with
+  GitHub storage the API proxies writes to the repository.
 
 **Why Keystatic?**
-- Visual editor + image uploads + live preview
+- Visual editor + image uploads
 - **Still writes plain .mdx files to Git** (no database lock-in)
 - Can stop using it anytime (site keeps working)
 - Better than headless CMSes (no cost, no content lock-in)
 - Better than Notion-as-CMS (no lossy component mapping)
 
-**Editor Components:**
-- **Insertable from UI:** Callout, Terminal, InfoCard, YouTube, Tweet
-- **Manual MDX only:** Steps, Tabs, FileTree, Table, Badge (too complex for visual editor)
+**Editor Components:** nearly everything is insertable from the "+" menu —
+editorial blocks (TLDR, KeyTakeaway, ProductionInsight, Verdict, ProsCons,
+Comparison, PullQuote, RelatedArticles, Recommendations, Callout), embeds
+(YouTube, Tweet, GitHubRepo, CodePen, Sandbox, LinkCard), and structural pieces
+(Steps, Tabs, InfoCards, Terminal, CodeFile, Badge), plus native Markdown tables
+and images with alt text and captions.
+
+**Manual MDX only:** `FileTree` (arbitrary nesting doesn't fit Keystatic's flat
+children model) and `Table` (Markdown tables render natively now).
+
+**Preview:** the collection sets `previewUrl: "/blog/{slug}"`, which opens the
+real page on the dev server — drafts included. No second rendering path.
 
 ### Blog Post Schema
 
@@ -220,26 +255,33 @@ export interface BlogPost {
   date: string;                  // ISO format (YYYY-MM-DD)
   category: BlogCategory;         // "Programming" | "AI" | "Technology" | "Reviews" | "Guides" | "DevTools"
   tags: string[];
-  readingTime: string;            // Auto-calculated (238 wpm)
+  readingTime: string;            // Derived from the body (238 wpm) — never authored
   thumbnail: string;
-  ogImage: string;
+  thumbnailAlt?: string;          // 🆕 Falls back to the title
+  ogImage: string;                // Resolved from seo.ogImage (legacy top-level still read)
   difficulty?: Difficulty;
   updated?: string;               // Optional last updated date
   prerequisites?: string[];
-  draft?: boolean;                // 🆕 Visibility toggle (dev vs prod)
-  featured?: boolean;             // 🆕 Homepage “Featured articles” eligibility
-  seo?: {                         // 🆕 SEO overrides
-    title?: string;
-    description?: string;
-  };
+  draft?: boolean;                // Visibility toggle (dev vs prod)
+  featured?: boolean;             // Homepage “Featured articles” eligibility
+  review?: ReviewMeta;            // 🆕 Reviews only: { product?, rating?, price? }
+  seo?: SeoMeta;                  // 🆕 { title?, description?, ogImage?, canonical?, noindex? }
   body: string;                   // Raw MDX content
 }
 ```
 
-**New Fields:**
-- `draft: boolean` - Filters posts in production (visible in dev only)
-- `featured: boolean` - Show in homepage Featured section (Keystatic checkbox or frontmatter)
-- `seo: { title?, description? }` - Override default title/description for SEO
+**Field notes:**
+- `draft` - Filters posts in production (visible in dev only)
+- `featured` - Show in homepage Featured section (Keystatic checkbox or frontmatter)
+- `review` - Only what the site needs *outside* the prose: the sidebar summary
+  and the `Review` structured data. The written judgement is a `<Verdict>` block
+  in the body. Nothing appears in both places.
+- `seo.canonical` - Only for articles first published elsewhere
+- `seo.noindex` - Public but excluded from search engines and the sitemap
+- **Never add a `readingTime` field.** It is computed on load; a stored value
+  goes stale on the first edit.
+- The byline is *not* a post field. It's a Keystatic singleton at
+  `content/settings/author.json`, read via `lib/author.ts` (`getAuthor()`).
 
 ### Content Loader Architecture
 
@@ -275,18 +317,37 @@ export interface BlogPost {
    - NEVER import content/loader.ts in client components (protected by "server-only")
 ```
 
-**MDX Compilation:**
+**MDX Compilation:** (`content/compile.ts`)
 ```typescript
 // In blog detail page
 const mdxContent = await compileBlogContent(post.body);
 
-// Internally uses next-mdx-remote/rsc
+// Internally uses next-mdx-remote/rsc. Every plugin runs at build time —
+// nothing in this chain ships to the browser.
 compileMDX({
   source: rawBody,
   components: mdxComponents,  // from content/mdx-components.tsx
-  options: { parseFrontmatter: false }
+  options: {
+    parseFrontmatter: false,
+    blockJS: false,           // see below
+    mdxOptions: {
+      remarkPlugins: [remarkGfm],                        // tables, strikethrough
+      rehypePlugins: [
+        [rehypePrettyCode, { theme: "github-dark-default" }],  // Shiki highlighting
+        rehypeImageSize,                                  // intrinsic image dimensions
+      ],
+    },
+  },
 })
 ```
+
+⚠️ **`blockJS: false` is load-bearing.** `next-mdx-remote` v6 defaults to
+stripping *every* JSX attribute expression as a defence against untrusted MDX.
+That silently turns `<Comparison rows={[…]} />` into `<Comparison />`, breaking
+every non-string prop — which is exactly what Keystatic writes for numbers,
+arrays, and objects. Our content is first-party and reviewed in Git.
+`blockDangerousJS` stays on, so expressions still can't reach `eval`, `process`,
+`fs`, or the Function constructor.
 
 ---
 
@@ -379,8 +440,10 @@ Custom typography for MDX content with responsive font sizes, styled code blocks
 ### Reading Experience
 - **Auto-generated Table of Contents** with active section tracking (IntersectionObserver)
 - **Reading progress bar** at top of page
-- **Syntax-highlighted code blocks** with copy-to-clipboard
+- **Syntax-highlighted code blocks** (Shiki, build-time) with copy-to-clipboard,
+  a language label, optional filename bar, and line highlighting
 - **Auto-collapse** for tall code blocks (>460px)
+- **Author byline** and end-of-article bio from the Author singleton
 - **Related posts** at bottom of articles
 - **Anchor links** on h2/h3 headings
 
@@ -390,19 +453,35 @@ Custom typography for MDX content with responsive font sizes, styled code blocks
 - **URL-based filtering** (`?category=AI`)
 - Client-side implementation for instant results
 
-### MDX Component Library (11 Components)
+### MDX Component Library
 
-1. **Callout** - Colored boxes (note/tip/warning/danger)
-2. **YouTube** - Responsive video embeds
-3. **Tweet** - Server-rendered tweets (react-tweet)
-4. **Terminal** - Terminal window styling
-5. **Steps + Step** - Numbered step-by-step guides
-6. **InfoCards + InfoCard** - Highlight card grids
-7. **FileTree + Folder + File** - Folder structure visualization
-8. **Badge** - Inline labels (default/primary/success/warning/danger)
-9. **Tabs + Tab** - Tabbed content (e.g., npm vs pnpm)
-10. **Table** - Scrollable table wrapper
-11. **MdxImage** - Next.js Image wrapper with captions
+Every component has a specific editorial job. **Do not add components that only
+change how text looks** — that belongs in `article.css`.
+
+**Editorial blocks** (`components/mdx/`)
+1. **TLDR** - Skimmable summary at the top of an article
+2. **KeyTakeaway** - The one idea of a section
+3. **ProductionInsight** - What this behaves like at scale
+4. **Verdict** - The closing judgement of a review (score lives in frontmatter)
+5. **ProsCons + Pro + Con** - Strengths and weaknesses, auto-sorted into columns
+6. **Comparison** - Structured comparison table (rows/columns as data)
+7. **PullQuote** - Attributed quote from a person
+8. **RelatedArticles** - Hand-picked further reading; titles resolved at build
+9. **Recommendations + Recommendation** - Awarded picks for buying guides
+10. **Callout** - Colored boxes (note/tip/warning/danger)
+
+**Embeds**
+11. **YouTube**, 12. **Tweet** (react-tweet), 13. **GitHubRepo**,
+14. **CodePen**, 15. **Sandbox** (CodeSandbox/StackBlitz), 16. **LinkCard**
+
+**Structural**
+17. **Steps + Step**, 18. **Tabs + Tab**, 19. **InfoCards + InfoCard**,
+20. **FileTree + Folder + File**, 21. **Terminal**, 22. **CodeFile**,
+23. **Badge**, 24. **Table**, 25. **MdxImage**
+
+**Shared primitive:** `EditorialPanel` backs the panel-shaped blocks. It is
+intentionally *not* exported to MDX — authors pick a block with meaning, not a
+generic box.
 
 **Documentation:** See [docs/mdx-components.md](docs/mdx-components.md) for full reference with examples.
 
@@ -496,10 +575,11 @@ import type { BlogPost } from "@/types/blog";
 ### Adding New Blog Posts
 
 **Via Keystatic (Visual):**
-1. Navigate to `/keystatic`
-2. Click "Posts" → "Create Entry"
+1. Navigate to `/keystatic` (dev only)
+2. Click "Articles" → "Create Article"
 3. Fill in fields, upload images
-4. Save - writes `.mdx` file automatically
+4. Use the preview link to check it on the real site
+5. Save - writes `.mdx` file automatically
 
 **Via Code Editor (Manual):**
 1. Create `.mdx` file in `content/posts/` (e.g., `my-new-post.mdx`)
@@ -512,13 +592,19 @@ import type { BlogPost } from "@/types/blog";
    category: "Programming"  # or "AI" | "Technology" | "Reviews" | "Guides"
    tags: ["nextjs", "typescript"]
    thumbnail: "/content/blog/post-thumbnail.jpg"
-   ogImage: "/content/blog/post-og.jpg"
+   thumbnailAlt: "Describes the hero image"  # optional
    difficulty: "Intermediate"  # optional
    prerequisites: ["Basic React", "TypeScript"]  # optional
    draft: false  # optional (defaults false)
    featured: true  # optional — show in homepage Featured articles
+   seo:  # all optional
+     ogImage: "/content/blog/post-og.jpg"
+     canonical: "https://example.com/original"  # only if first published elsewhere
+     noindex: false
    ---
    ```
+
+   Do **not** add a `readingTime` field — it's computed from the body on load.
 3. Write content in markdown/MDX
 4. Run `npm run dev` to preview
 5. Deploy - Next.js automatically generates route
@@ -557,6 +643,21 @@ the tree — they simply don't render when disabled.
 2. Done! Type, UI filters, Keystatic dropdown, and colors all update automatically
 
 No need to edit types, filter pills, section headers, or color mappings separately.
+
+### Adding an MDX Component
+
+First ask whether it has an editorial job Markdown can't express. If it only
+changes appearance, style it in `article.css` instead.
+
+1. Create it in `components/mdx/`. Reuse `EditorialPanel` for panel-shaped blocks.
+2. Add it to the map in `content/mdx-components.tsx` — this is the render contract.
+3. Register it in `content/keystatic-components.tsx` with the **same key**, using
+   `wrapper` (has rich content inside), `block` (fields only), `repeating`
+   (fixed set of child components), or `inline` (inside a paragraph).
+4. Document it in `docs/mdx-components.md`.
+
+Non-string props (numbers, arrays, objects) work — Keystatic writes them as JSX
+expressions, and `compile.ts` sets `blockJS: false` so they survive.
 
 ### Styling Conventions
 
@@ -700,8 +801,11 @@ vercel deploy --prod
 1. Eliminated duplicate posts (14 files → 7 files)
 2. Consolidated category definitions (4 locations → 1 location)
 3. Added visual CMS without lock-in
-4. Created reusable MDX component library (11 components)
+4. Created reusable MDX component library
 5. Extracted testable pure functions
+6. Made the editor complete: every editorial block, embed, table, and image is
+   insertable from the CMS, with no raw MDX required for normal publishing
+7. Closed the production admin surface — `/keystatic` and `/api/keystatic/*` 404
 
 ---
 
@@ -712,7 +816,10 @@ vercel deploy --prod
 - `react@19.2.4` - UI library
 - `@keystatic/core@0.5.50` - 🆕 CMS core
 - `@keystatic/next@5.0.4` - 🆕 Next.js integration
-- `next-mdx-remote@6.0.0` - MDX rendering
+- `next-mdx-remote@6.0.0` - MDX rendering (needs `blockJS: false`, see above)
+- `remark-gfm@4` - 🆕 Markdown tables, strikethrough, task lists
+- `rehype-pretty-code@0.14` + `shiki@4` - 🆕 Build-time syntax highlighting
+- `image-size@2` - 🆕 Intrinsic image dimensions at compile time
 - `gray-matter@4.0.3` - Frontmatter parsing
 - `framer-motion@12.38.0` - Animations
 - `lucide-react@0.577.0` - Icons
