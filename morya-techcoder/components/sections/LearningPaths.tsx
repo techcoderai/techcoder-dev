@@ -7,7 +7,6 @@ const paths = [
   {
     name: "Frontend Foundations",
     level: "Beginner",
-    modules: "8",
     description: "Go from markup to interactive interfaces with confidence.",
     items: [
       "Semantic HTML & accessibility",
@@ -16,13 +15,12 @@ const paths = [
       "Your first React app",
     ],
     cta: "Start reading",
-    href: "/blog?category=WebDev",
+    href: "/blog/category/webdev",
     featured: false,
   },
   {
     name: "Full-Stack Engineering",
     level: "Intermediate",
-    modules: "14",
     description: "Build and ship complete products, front to back.",
     items: [
       "Everything in Foundations",
@@ -32,13 +30,12 @@ const paths = [
       "Deploying to the edge",
     ],
     cta: "Start reading",
-    href: "/blog?category=WebDev",
+    href: "/blog/category/webdev",
     featured: true,
   },
   {
     name: "Systems & AI",
     level: "Advanced",
-    modules: "10",
     description: "Reach for the frontier — performance, systems, and ML.",
     items: [
       "Everything in Full-Stack",
@@ -48,7 +45,7 @@ const paths = [
       "Architecture deep dives",
     ],
     cta: "Start reading",
-    href: "/blog?category=AI",
+    href: "/blog/category/ai",
     featured: false,
   },
 ];
@@ -87,13 +84,7 @@ export default function LearningPaths() {
                 <span className="chip w-fit py-1 px-3 text-[11px]">{path.level}</span>
                 <h3 className="heading-sm text-lg mt-4">{path.name}</h3>
                 <p className="body-sm mt-2 min-h-[42px]">{path.description}</p>
-                <div className="flex items-end gap-1.5 mt-5 mb-6">
-                  <span className="font-heading text-4xl font-bold text-tc-text tracking-tight">
-                    {path.modules}
-                  </span>
-                  <span className="text-sm text-tc-text-light mb-1.5">articles</span>
-                </div>
-                <ul className="flex flex-col gap-3 mb-8">
+                <ul className="flex flex-col gap-3 mb-8 mt-6">
                   {path.items.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-[13.5px] text-tc-text-muted">
                       <span

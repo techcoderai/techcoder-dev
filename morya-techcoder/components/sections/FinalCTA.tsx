@@ -11,7 +11,7 @@ export default function FinalCTA() {
             {/* Glow layers */}
             <div className="absolute inset-0 -z-10 mesh-glow opacity-90" />
             <div className="absolute inset-0 -z-10 grid-overlay opacity-40" />
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full bg-tc-primary/20 blur-[120px] animate-pulse-glow" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[560px] h-[560px] rounded-full bg-tc-primary/20 blur-[120px]" />
 
             <div className="relative flex flex-col items-center">
               <span className="chip mb-6">
@@ -30,7 +30,7 @@ export default function FinalCTA() {
                   Start reading
                   <ArrowRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
                 </Link>
-                <Link href="/blog?category=WebDev" className="btn-secondary focus-ring px-8 py-4 text-[15px]">
+                <Link href="/blog/category/webdev" className="btn-secondary focus-ring px-8 py-4 text-[15px]">
                   Browse tutorials
                 </Link>
               </div>

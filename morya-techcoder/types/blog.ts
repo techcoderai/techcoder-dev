@@ -1,16 +1,13 @@
 import type { BlogCategory } from "@/lib/categories";
 
-// Re-exported so UI components can import all blog types from one place.
-export type { BlogCategory };
-
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
 /**
- * The shape of a single blog post after it has been loaded from disk and had
- * its frontmatter parsed. This is the contract shared between the content
- * layer (`content/loader.ts`) and every UI component that renders a post.
+ * Everything needed to render a post in a card, list, or related-posts grid.
+ * Deliberately excludes the article body so list views cannot serialize an
+ * entire article into the client payload.
  */
-export interface BlogPost {
+export interface PostSummary {
   id: string;
   title: string;
   slug: string;
@@ -32,6 +29,9 @@ export interface BlogPost {
   draft?: boolean;
   /** Optional SEO overrides. Falls back to `title` / `excerpt` when empty. */
   seo?: { title?: string; description?: string };
-  /** Raw MDX/markdown body of the article. */
+}
+
+/** A summary plus the raw MDX/markdown body. Only used by the article route. */
+export interface PostDetail extends PostSummary {
   body: string;
 }

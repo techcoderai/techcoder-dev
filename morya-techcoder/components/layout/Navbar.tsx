@@ -12,8 +12,8 @@ import ThemeToggle from "@/components/ui/ThemeToggle";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/blog", label: "Blog" },
-  { href: "/blog?category=AI", label: "AI" },
-  { href: "/blog?category=WebDev", label: "Engineering" },
+  { href: "/blog/category/ai", label: "AI" },
+  { href: "/blog/category/webdev", label: "Engineering" },
 ];
 
 export default function Navbar() {
@@ -130,7 +130,7 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95 backdrop-blur-2xl"
+            className="md:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95 backdrop-blur-md"
             onClick={() => setMenuOpen(false)}
           >
             <nav className="flex flex-col gap-1.5 pt-28 px-6" onClick={(e) => e.stopPropagation()}>

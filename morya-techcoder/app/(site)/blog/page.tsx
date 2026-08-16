@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { blogPosts, getCategories } from "@/content/loader";
-import BlogListContent from "@/components/sections/BlogListContent";
+import BlogIndex from "@/components/sections/BlogIndex";
 
 export const metadata: Metadata = {
   title: "Blog | TechCoder",
@@ -10,9 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
-  return (
-    <Suspense>
-      <BlogListContent posts={blogPosts} categories={getCategories()} />
-    </Suspense>
-  );
+  return <BlogIndex />;
 }

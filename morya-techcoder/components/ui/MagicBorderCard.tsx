@@ -1,14 +1,16 @@
-"use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
-import type { BlogPost } from "@/types/blog";
+import { cn, formatDate, isRecent } from "@/lib/utils";
+import type { PostSummary } from "@/types/blog";
 import { categoryColors } from "@/lib/categories";
 
-export default function MagicBorderCard({ post }: { post: BlogPost }) {
-  const isRecent = new Date(post.date) > new Date(Date.now() - 7 * 86400000);
+/**
+ * Post card. Server-rendered: every interaction here is CSS-only, so the card
+ * never crosses a client boundary and post data stays out of the RSC payload.
+ */
+export default function MagicBorderCard({ post }: { post: PostSummary }) {
+  const recent = isRecent(post.date);
 
   return (
     <article className="group h-full">
@@ -49,7 +51,7 @@ export default function MagicBorderCard({ post }: { post: BlogPost }) {
           </span>
 
           {/* New badge */}
-          {isRecent && (
+          {recent && (
             <span className="absolute top-3 right-12 px-2 py-0.5 text-[10px] font-bold rounded-full bg-tc-accent text-white uppercase tracking-wider shadow-sm">
               New
             </span>

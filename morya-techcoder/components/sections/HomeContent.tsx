@@ -1,13 +1,18 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { blogPosts } from "@/content/loader";
-import { CATEGORIES, CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
+import { postSummaries } from "@/content/loader";
+import {
+  CATEGORIES,
+  CATEGORY_KEYS,
+  categorySlug,
+  type BlogCategory,
+} from "@/lib/categories";
 import { getFeaturedPosts, getPostsByCategory } from "@/lib/posts";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 
 function CategorySection({ category, index }: { category: BlogCategory; index: number }) {
   const meta = CATEGORIES[category];
-  const filtered = getPostsByCategory(blogPosts, category, 3);
+  const filtered = getPostsByCategory(postSummaries, category, 3);
   if (filtered.length === 0) return null;
 
   const delayClass = index === 0 ? "animate-delay-2" : index === 1 ? "animate-delay-3" : "animate-delay-4";
@@ -20,7 +25,7 @@ function CategorySection({ category, index }: { category: BlogCategory; index: n
           <p className="text-sm text-tc-text-muted mt-1.5">{meta.description}</p>
         </div>
         <Link
-          href={`/blog?category=${category}`}
+          href={`/blog/category/${categorySlug(category)}`}
           className="focus-ring rounded-lg group inline-flex items-center gap-1.5 text-sm font-semibold text-tc-primary hover:text-tc-primary-dark transition-colors duration-200 shrink-0"
         >
           View all
@@ -37,7 +42,7 @@ function CategorySection({ category, index }: { category: BlogCategory; index: n
 }
 
 export default function HomeContent() {
-  const featured = getFeaturedPosts(blogPosts, 3);
+  const featured = getFeaturedPosts(postSummaries, 3);
 
   return (
     <div className="section-padding">

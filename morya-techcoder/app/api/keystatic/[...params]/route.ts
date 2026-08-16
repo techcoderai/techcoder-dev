@@ -1,9 +1,15 @@
 import { makeRouteHandler } from "@keystatic/next/route-handler";
 import config from "@/keystatic.config";
+import { KEYSTATIC_ENABLED } from "@/lib/keystatic";
 
 /**
  * API routes Keystatic uses to read and write content files. With
- * `storage: { kind: "local" }` these operate on the local filesystem during
- * development. Required for the admin UI at /keystatic to function.
+ * `storage: { kind: "local" }` these read and write the local filesystem with
+ * no authentication, so they are only mounted when the editor is enabled.
  */
-export const { POST, GET } = makeRouteHandler({ config });
+const notFound = () => new Response("Not Found", { status: 404 });
+
+const handlers = KEYSTATIC_ENABLED ? makeRouteHandler({ config }) : null;
+
+export const GET = handlers?.GET ?? notFound;
+export const POST = handlers?.POST ?? notFound;

@@ -1,15 +1,52 @@
 "use client";
 
-import { useReadingProgress } from "@/hooks/useReadingProgress";
+import { useEffect, useRef } from "react";
 
+/**
+ * Scroll progress bar for article pages.
+ *
+ * Writes `transform: scaleX()` straight to the DOM inside a rAF-coalesced
+ * scroll handler: no React state, no per-event re-render, and no layout-
+ * triggering width animation. The bar is purely scroll-linked, so there is no
+ * independent motion to reduce for `prefers-reduced-motion` users.
+ */
 export default function ReadingProgress() {
-  const progress = useReadingProgress();
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const paint = () => {
+      frame = 0;
+      const el = document.scrollingElement || document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    paint();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[60] h-[3px] bg-transparent pointer-events-none">
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-[3px]"
+    >
       <div
-        className="h-full rounded-r-full bg-gradient-to-r from-tc-primary to-tc-secondary shadow-glow transition-[width] duration-100 ease-out"
-        style={{ width: `${progress}%` }}
+        ref={barRef}
+        style={{ transform: "scaleX(0)" }}
+        className="h-full w-full origin-left rounded-r-full bg-gradient-to-r from-tc-primary to-tc-secondary shadow-glow will-change-transform"
       />
     </div>
   );

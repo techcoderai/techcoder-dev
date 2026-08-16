@@ -3,21 +3,20 @@ import TrustedBy from "@/components/sections/TrustedBy";
 import Capabilities from "@/components/sections/Capabilities";
 import ProductShowcase from "@/components/sections/ProductShowcase";
 import HomeContent from "@/components/sections/HomeContent";
-import Testimonials from "@/components/sections/Testimonials";
 import LearningPaths from "@/components/sections/LearningPaths";
 import FAQ from "@/components/sections/FAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 import NewsletterBox from "@/components/ui/NewsletterBox";
+import { postSummaries } from "@/content/loader";
 
 export default function Home() {
   return (
     <>
-      <HeroSection />
+      <HeroSection postCount={postSummaries.length} />
       <TrustedBy />
       <Capabilities />
       <ProductShowcase />
       <HomeContent />
-      <Testimonials />
       <LearningPaths />
 
       <section className="section-padding pt-0">

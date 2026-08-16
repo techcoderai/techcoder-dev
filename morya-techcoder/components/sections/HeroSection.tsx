@@ -2,7 +2,13 @@
 
 import { useRef, type ReactNode } from "react";
 import Link from "next/link";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import {
   ArrowRight,
   Sparkles,
@@ -28,7 +34,7 @@ const C = ({ children }: { children: ReactNode }) => (
 );
 
 const codeLines: ReactNode[] = [
-  <C key="c">{"// usePrefersDark.ts — from 1,200+ snippets"}</C>,
+  <C key="c">{"// usePrefersDark.ts"}</C>,
   <span key="1">
     <K>import</K> {"{ useEffect, useState }"} <K>from</K> <S>&quot;react&quot;</S>;
   </span>,
@@ -62,8 +68,9 @@ const codeLines: ReactNode[] = [
   <span key="12">{"}"}</span>,
 ];
 
-export default function HeroSection() {
+export default function HeroSection({ postCount }: { postCount: number }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const rx = useSpring(useTransform(my, [-0.5, 0.5], [6, -6]), { stiffness: 120, damping: 18 });
@@ -95,66 +102,48 @@ export default function HeroSection() {
       </div>
 
       <div className="container-wide mx-auto flex flex-col items-center text-center">
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        >
+        {/* Above-the-fold content renders immediately: no entrance animation may
+            gate the LCP element behind hydration. */}
+        <div>
           <Link href="/blog" className="chip group hover:border-tc-primary transition-colors">
             <span className="flex items-center justify-center w-4 h-4 rounded-full bg-tc-primary text-white">
               <Sparkles size={9} className="fill-current" />
             </span>
-            New tutorials & deep dives every week
+            New tutorials &amp; deep dives every week
             <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
-        </motion.div>
+        </div>
 
         {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
-          className="display-xl mt-7 max-w-4xl"
-        >
+        <h1 className="display-xl mt-7 max-w-4xl">
           Learn, build, and grow
           <br className="hidden sm:block" /> as a <span className="text-gradient-animated">developer.</span>
-        </motion.h1>
+        </h1>
 
         {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-6 max-w-xl text-base sm:text-lg text-tc-text-muted leading-relaxed"
-        >
+        <p className="mt-6 max-w-xl text-base sm:text-lg text-tc-text-muted leading-relaxed">
           TechCoder is the developer publication for people who build — in-depth articles,
           hands-on tutorials, and copy-paste snippets across AI, web engineering, and tooling.
-        </motion.p>
+        </p>
 
         {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-9 flex flex-col sm:flex-row items-center gap-3.5"
-        >
+        <div className="mt-9 flex flex-col sm:flex-row items-center gap-3.5">
           <Link href="/blog" className="btn-primary focus-ring group px-7 py-3.5 text-[15px]">
             Start reading
             <ArrowRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
           </Link>
-          <Link href="/blog?category=WebDev" className="btn-secondary focus-ring px-7 py-3.5 text-[15px]">
+          <Link href="/blog/category/webdev" className="btn-secondary focus-ring px-7 py-3.5 text-[15px]">
             <Code2 size={15} />
             Browse tutorials
           </Link>
-        </motion.div>
+        </div>
       </div>
 
       {/* Code editor preview */}
       <motion.div
         ref={ref}
-        onMouseMove={onMove}
-        onMouseLeave={onLeave}
+        onMouseMove={reduceMotion ? undefined : onMove}
+        onMouseLeave={reduceMotion ? undefined : onLeave}
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, delay: 0.32, ease: [0.16, 1, 0.3, 1] }}
@@ -256,8 +245,8 @@ export default function HeroSection() {
             <BookOpen size={16} />
           </span>
           <div className="text-left">
-            <p className="text-[11px] text-tc-text-light">Tutorials</p>
-            <p className="heading-sm text-sm">320+ guides</p>
+            <p className="text-[11px] text-tc-text-light">Articles</p>
+            <p className="heading-sm text-sm">{postCount} published</p>
           </div>
         </motion.div>
 
@@ -272,7 +261,7 @@ export default function HeroSection() {
           </span>
           <div className="text-left">
             <p className="text-[11px] text-tc-text-light">Snippets</p>
-            <p className="heading-sm text-sm">1,200+ ready</p>
+            <p className="heading-sm text-sm">Copy-paste ready</p>
           </div>
         </motion.div>
       </motion.div>

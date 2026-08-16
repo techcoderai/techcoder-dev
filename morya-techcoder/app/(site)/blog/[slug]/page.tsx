@@ -3,11 +3,11 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
-import { blogPosts, getBlogBySlug, compileBlogContent } from "@/content/loader";
+import { postSummaries, getAllSlugs, getBlogBySlug, compileBlogContent } from "@/content/loader";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getRelatedPosts } from "@/lib/posts";
 import { categoryColors } from "@/lib/categories";
-import type { BlogPost, Difficulty } from "@/types/blog";
+import type { PostSummary, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 import ReadingProgress from "@/components/ui/ReadingProgress";
@@ -20,7 +20,7 @@ type Props = {
 
 /** Pre-render all known article slugs at build time. */
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+  return getAllSlugs().map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 /** Difficulty defaults derived from the article's category when not set in frontmatter. */
-function resolveDifficulty(post: BlogPost): Difficulty {
+function resolveDifficulty(post: PostSummary): Difficulty {
   if (post.difficulty) return post.difficulty;
   if (post.category === "Tricks") return "Beginner";
   if (post.category === "AI") return "Advanced";
@@ -55,7 +55,7 @@ export default async function BlogDetailPage({ params }: Props) {
   const difficulty = resolveDifficulty(post);
   const showUpdated = post.updated && post.updated !== post.date;
 
-  const related = getRelatedPosts(blogPosts, post, 2);
+  const related = getRelatedPosts(postSummaries, post, 2);
 
   return (
     <>
@@ -75,8 +75,8 @@ export default async function BlogDetailPage({ params }: Props) {
           <div className="mx-auto max-w-[1180px] lg:grid lg:grid-cols-[minmax(0,1fr)_248px] lg:gap-14">
             {/* Article column */}
             <div className="min-w-0">
-              {/* Header */}
-              <header className="max-w-[720px] mb-10 animate-fade-up">
+              {/* Header renders immediately: it holds the article's LCP text. */}
+              <header className="max-w-[720px] mb-10">
                 <div className="flex flex-wrap items-center gap-2.5 mb-5">
                   <span
                     className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${

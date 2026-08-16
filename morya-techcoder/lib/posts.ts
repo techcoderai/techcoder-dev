@@ -1,51 +1,35 @@
-import type { BlogPost } from "@/types/blog";
+import type { PostSummary } from "@/types/blog";
 import type { BlogCategory } from "@/lib/categories";
 
-/** A category value plus the "All" pseudo-category used by the list filter. */
-export type CategoryFilter = BlogCategory | "All";
-
 /**
- * Filters posts by category and a free-text query (matches title, excerpt,
- * and tags). Kept here — not inside a component — so the same logic can back
- * the blog list, a future global search, and tests.
+ * Lowercased text a post can be matched against. Built on the server and sent
+ * to the search island so the client never needs the post objects themselves.
  */
-export function filterPosts(
-  posts: BlogPost[],
-  { query, category }: { query: string; category: CategoryFilter }
-): BlogPost[] {
-  const q = query.trim().toLowerCase();
-  return posts.filter((post) => {
-    const matchesCategory = category === "All" || post.category === category;
-    const matchesSearch =
-      !q ||
-      post.title.toLowerCase().includes(q) ||
-      post.excerpt.toLowerCase().includes(q) ||
-      post.tags.some((tag) => tag.toLowerCase().includes(q));
-    return matchesCategory && matchesSearch;
-  });
+export function searchIndexOf(post: PostSummary): string {
+  return [post.title, post.excerpt, ...post.tags].join(" ").toLowerCase();
 }
 
 /** Returns the N most recent posts (posts arrive already sorted by date). */
-export function getFeaturedPosts(posts: BlogPost[], count = 3): BlogPost[] {
+export function getFeaturedPosts(posts: PostSummary[], count = 3): PostSummary[] {
   return posts.slice(0, count);
 }
 
 /** Returns up to `count` posts in a given category (all of them if omitted). */
 export function getPostsByCategory(
-  posts: BlogPost[],
+  posts: PostSummary[],
   category: BlogCategory,
   count?: number
-): BlogPost[] {
+): PostSummary[] {
   const inCategory = posts.filter((post) => post.category === category);
   return count ? inCategory.slice(0, count) : inCategory;
 }
 
 /** Returns related posts in the same category, excluding the current post. */
 export function getRelatedPosts(
-  posts: BlogPost[],
-  current: BlogPost,
+  posts: PostSummary[],
+  current: PostSummary,
   count = 2
-): BlogPost[] {
+): PostSummary[] {
   return posts
     .filter((post) => post.category === current.category && post.id !== current.id)
     .slice(0, count);

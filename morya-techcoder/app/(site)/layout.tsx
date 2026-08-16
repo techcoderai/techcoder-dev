@@ -1,5 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import MotionProvider from "@/components/ui/MotionProvider";
 
 /**
  * Layout for the public-facing site (home, blog, future tools). Lives in the
@@ -15,23 +16,22 @@ export default function SiteLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="relative flex min-h-screen flex-col">
-      {/* Global ambient background */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <div className="absolute inset-0 grid-overlay opacity-60" />
+    <MotionProvider>
+      <div className="relative flex min-h-screen flex-col">
+        {/* Global ambient background. Static gradients only — see `.ambient-glow`
+            in globals.css for the (desktop-only, opacity-only) motion. */}
         <div
-          className="absolute -top-40 right-[-10%] w-[640px] h-[640px] rounded-full opacity-50 blur-[130px] animate-pulse-glow"
-          style={{ background: "var(--tc-glow)" }}
-        />
-        <div
-          className="absolute top-[40%] left-[-15%] w-[520px] h-[520px] rounded-full opacity-35 blur-[140px] animate-float-slow"
-          style={{ background: "var(--tc-glow-soft)" }}
-        />
-      </div>
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+        >
+          <div className="absolute inset-0 grid-overlay opacity-60" />
+          <div className="absolute inset-0 ambient-glow" />
+        </div>
 
-      <Navbar />
-      <main className="flex-1 relative z-10">{children}</main>
-      <Footer />
-    </div>
+        <Navbar />
+        <main className="flex-1 relative z-10">{children}</main>
+        <Footer />
+      </div>
+    </MotionProvider>
   );
 }

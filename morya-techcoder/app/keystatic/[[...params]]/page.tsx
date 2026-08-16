@@ -1,11 +1,15 @@
-"use client";
-
-import { makePage } from "@keystatic/next/ui/app";
-import config from "@/keystatic.config";
+import { notFound } from "next/navigation";
+import { KEYSTATIC_ENABLED } from "@/lib/keystatic";
+import KeystaticApp from "./keystatic-app";
 
 /**
- * Renders the Keystatic admin UI at `/keystatic` and every sub-route (the
- * optional catch-all `[[...params]]` segment). Must be a client component
- * because the editor runs entirely in the browser.
+ * Server boundary for the Keystatic admin UI at `/keystatic` and every
+ * sub-route (the optional catch-all `[[...params]]` segment).
+ *
+ * The editor itself is a client component, but the decision to serve it is made
+ * here on the server so a production deployment never ships the admin UI.
  */
-export default makePage(config);
+export default function KeystaticPage() {
+  if (!KEYSTATIC_ENABLED) notFound();
+  return <KeystaticApp />;
+}

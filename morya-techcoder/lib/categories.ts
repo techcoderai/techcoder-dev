@@ -51,3 +51,14 @@ export const categoryOptions = CATEGORY_KEYS.map((key) => ({
   label: CATEGORIES[key].label,
   value: key,
 }));
+
+/** URL segment for a category, e.g. "WebDev" -> "webdev". */
+export function categorySlug(category: BlogCategory): string {
+  return category.toLowerCase();
+}
+
+/** Resolves a URL segment back to a category key, or `undefined` if unknown. */
+export function categoryFromSlug(slug: string): BlogCategory | undefined {
+  const normalized = slug.toLowerCase();
+  return CATEGORY_KEYS.find((key) => categorySlug(key) === normalized);
+}

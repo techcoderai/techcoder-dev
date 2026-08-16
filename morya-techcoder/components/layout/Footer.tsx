@@ -8,9 +8,9 @@ const columns = [
     links: [
       { href: "/", label: "Home" },
       { href: "/blog", label: "All Posts" },
-      { href: "/blog?category=AI", label: "AI & ML" },
-      { href: "/blog?category=WebDev", label: "Engineering" },
-      { href: "/blog?category=Tricks", label: "Tips & Tricks" },
+      { href: "/blog/category/ai", label: "AI & ML" },
+      { href: "/blog/category/webdev", label: "Engineering" },
+      { href: "/blog/category/tricks", label: "Tips & Tricks" },
     ],
   },
   {
@@ -18,7 +18,7 @@ const columns = [
     links: [
       { href: "/blog", label: "Tutorials" },
       { href: "/blog", label: "Learning Paths" },
-      { href: "/blog?category=Tricks", label: "Code Snippets" },
+      { href: "/blog/category/tricks", label: "Code Snippets" },
       { href: "/blog", label: "Newsletter" },
     ],
   },

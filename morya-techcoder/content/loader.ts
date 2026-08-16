@@ -4,7 +4,7 @@ import path from "path";
 import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { calcReadingTime } from "@/lib/utils";
-import type { BlogPost, Difficulty } from "@/types/blog";
+import type { PostDetail, PostSummary, Difficulty } from "@/types/blog";
 import type { BlogCategory } from "@/lib/categories";
 import { mdxComponents } from "@/content/mdx-components";
 
@@ -26,6 +26,19 @@ function resolveAsset(value: unknown): string {
   if (typeof value !== "string" || value === "") return "";
   if (/^(https?:)?\/\//.test(value) || value.startsWith("/")) return value;
   return `${IMAGE_PUBLIC_PATH}/${value}`;
+}
+
+/**
+ * Normalizes a frontmatter date to `YYYY-MM-DD`.
+ *
+ * Unquoted YAML dates (which Keystatic writes) are parsed into JS `Date`
+ * objects by gray-matter, while hand-written quoted dates stay strings. Without
+ * this, `<time dateTime>` emits a non-ISO value and a `Date` ends up in the RSC
+ * payload.
+ */
+function toISODate(value: unknown): string {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  return typeof value === "string" ? value : "";
 }
 
 /** Recursively collects every `.md` / `.mdx` file under content/posts. */
@@ -55,10 +68,10 @@ function slugFromPath(filePath: string): string {
  * To add a post, just drop a `.mdx` file in content/posts/ (or use Keystatic
  * at /keystatic) — it is discovered automatically, no registration needed.
  */
-function loadPosts(): BlogPost[] {
+function loadPosts(): PostDetail[] {
   if (!fs.existsSync(POSTS_DIR)) return [];
 
-  const bySlug = new Map<string, BlogPost>();
+  const bySlug = new Map<string, PostDetail>();
 
   findPostFiles(POSTS_DIR)
     // Prefer `.mdx` over a legacy `.md` twin for the same slug.
@@ -73,7 +86,7 @@ function loadPosts(): BlogPost[] {
         title: data.title ?? slug,
         slug,
         excerpt: data.excerpt ?? "",
-        date: data.date ?? "",
+        date: toISODate(data.date),
         category: (data.category as BlogCategory) ?? "WebDev",
         tags: data.tags ?? [],
         readingTime: calcReadingTime(content),
@@ -81,7 +94,7 @@ function loadPosts(): BlogPost[] {
         thumbnail: resolveAsset(data.thumbnail),
         ogImage: resolveAsset(data.ogImage),
         difficulty: (data.difficulty as Difficulty) || undefined,
-        updated: data.updated || undefined,
+        updated: toISODate(data.updated) || undefined,
         prerequisites: data.prerequisites || undefined,
         draft: data.draft ?? false,
         seo: data.seo || undefined,
@@ -95,16 +108,30 @@ function loadPosts(): BlogPost[] {
 }
 
 /** All published (and, in dev, draft) blog posts, sorted newest first. */
-export const blogPosts: BlogPost[] = loadPosts();
+const blogPosts: PostDetail[] = loadPosts();
 
-/** Looks up a single blog post by its URL slug. */
-export function getBlogBySlug(slug: string): BlogPost | undefined {
+/**
+ * Body-free view of every post, for cards, lists, and related-post grids.
+ * Rendering a list from these makes it impossible to leak an article body into
+ * a client component's props.
+ */
+export const postSummaries: PostSummary[] = blogPosts.map(
+  ({ body, ...summary }) => summary
+);
+
+/** Looks up a single blog post, including its body, by URL slug. */
+export function getBlogBySlug(slug: string): PostDetail | undefined {
   return blogPosts.find((post) => post.slug === slug);
+}
+
+/** Every slug that should be pre-rendered at build time. */
+export function getAllSlugs(): string[] {
+  return blogPosts.map((post) => post.slug);
 }
 
 /** Returns all unique categories present in the loaded posts. */
 export function getCategories(): BlogCategory[] {
-  return [...new Set(blogPosts.map((post) => post.category))];
+  return [...new Set(postSummaries.map((post) => post.category))];
 }
 
 /**
