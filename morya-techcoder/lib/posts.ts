@@ -1,18 +1,33 @@
-import type { BlogPost } from "@/types/blog";
+import type { BlogPost, BlogPostSummary } from "@/types/blog";
 import type { BlogCategory } from "@/lib/categories";
 
 /** A category value plus the "All" pseudo-category used by the list filter. */
 export type CategoryFilter = BlogCategory | "All";
+
+/** Removes article-only fields before data crosses a Server/Client boundary. */
+export function toPostSummary(post: BlogPost): BlogPostSummary {
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt,
+    date: post.date,
+    category: post.category,
+    tags: post.tags,
+    readingTime: post.readingTime,
+    thumbnail: post.thumbnail,
+  };
+}
 
 /**
  * Filters posts by category and a free-text query (matches title, excerpt,
  * and tags). Kept here — not inside a component — so the same logic can back
  * the blog list, a future global search, and tests.
  */
-export function filterPosts(
-  posts: BlogPost[],
+export function filterPosts<T extends BlogPostSummary>(
+  posts: T[],
   { query, category }: { query: string; category: CategoryFilter }
-): BlogPost[] {
+): T[] {
   const q = query.trim().toLowerCase();
   return posts.filter((post) => {
     const matchesCategory = category === "All" || post.category === category;
@@ -25,9 +40,15 @@ export function filterPosts(
   });
 }
 
-/** Returns the N most recent posts (posts arrive already sorted by date). */
+/**
+ * Returns posts flagged with `featured: true` (newest first), capped at
+ * `count`. If nothing is flagged yet, falls back to the N most recent posts
+ * so the homepage featured rail never goes blank during content setup.
+ */
 export function getFeaturedPosts(posts: BlogPost[], count = 3): BlogPost[] {
-  return posts.slice(0, count);
+  const flagged = posts.filter((post) => post.featured);
+  const pool = flagged.length > 0 ? flagged : posts;
+  return pool.slice(0, count);
 }
 
 /** Returns up to `count` posts in a given category (all of them if omitted). */

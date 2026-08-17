@@ -1,7 +1,4 @@
-"use client";
-
-import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 type RevealProps = {
   children: ReactNode;
@@ -12,14 +9,16 @@ type RevealProps = {
 
 export default function Reveal({ children, delay = 0, y = 28, className }: RevealProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay, ease: [0.16, 1, 0.3, 1] }}
-      className={className}
+    <div
+      className={`reveal-on-view ${className ?? ""}`}
+      style={
+        {
+          "--reveal-y": `${y}px`,
+          "--reveal-delay": `${Math.min(delay * 100, 12)}%`,
+        } as CSSProperties
+      }
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

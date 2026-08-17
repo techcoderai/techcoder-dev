@@ -2,11 +2,9 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { compileMDX } from "next-mdx-remote/rsc";
 import { calcReadingTime } from "@/lib/utils";
-import type { BlogPost, Difficulty } from "@/types/blog";
-import type { BlogCategory } from "@/lib/categories";
-import { mdxComponents } from "@/content/mdx-components";
+import type { BlogPost, Difficulty, ReviewMeta, SeoMeta } from "@/types/blog";
+import { ACTIVE_CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
 
@@ -26,6 +24,35 @@ function resolveAsset(value: unknown): string {
   if (typeof value !== "string" || value === "") return "";
   if (/^(https?:)?\/\//.test(value) || value.startsWith("/")) return value;
   return `${IMAGE_PUBLIC_PATH}/${value}`;
+}
+
+/**
+ * Normalizes the SEO block. `ogImage` moved under `seo` when the schema was
+ * reorganized; the legacy top-level key is still honoured so older posts (and
+ * anything hand-written against the old shape) keep their share image.
+ */
+function resolveSeo(data: Record<string, unknown>): SeoMeta | undefined {
+  const seo = (data.seo ?? {}) as SeoMeta;
+  const ogImage = resolveAsset(seo.ogImage ?? data.ogImage);
+  const result: SeoMeta = {
+    title: seo.title || undefined,
+    description: seo.description || undefined,
+    ogImage: ogImage || undefined,
+    canonical: seo.canonical || undefined,
+    noindex: seo.noindex || undefined,
+  };
+  return Object.values(result).some(Boolean) ? result : undefined;
+}
+
+/** A review block only counts as present once it carries an actual score. */
+function resolveReview(value: unknown): ReviewMeta | undefined {
+  const review = (value ?? {}) as ReviewMeta;
+  if (typeof review.rating !== "number") return undefined;
+  return {
+    product: review.product || undefined,
+    rating: review.rating,
+    price: review.price || undefined,
+  };
 }
 
 /** Recursively collects every `.md` / `.mdx` file under content/posts. */
@@ -68,23 +95,26 @@ function loadPosts(): BlogPost[] {
       if (bySlug.has(slug)) return; // first (preferred) file wins
 
       const { data, content } = matter(fs.readFileSync(filePath, "utf-8"));
+      const seo = resolveSeo(data);
       bySlug.set(slug, {
         id: String(index + 1),
         title: data.title ?? slug,
         slug,
         excerpt: data.excerpt ?? "",
         date: data.date ?? "",
-        category: (data.category as BlogCategory) ?? "WebDev",
+        category: (data.category as BlogCategory) ?? "Programming",
         tags: data.tags ?? [],
         readingTime: calcReadingTime(content),
-        coverImage: resolveAsset(data.coverImage),
         thumbnail: resolveAsset(data.thumbnail),
-        ogImage: resolveAsset(data.ogImage),
+        thumbnailAlt: data.thumbnailAlt || undefined,
+        ogImage: seo?.ogImage ?? "",
         difficulty: (data.difficulty as Difficulty) || undefined,
         updated: data.updated || undefined,
         prerequisites: data.prerequisites || undefined,
         draft: data.draft ?? false,
-        seo: data.seo || undefined,
+        featured: data.featured ?? false,
+        review: resolveReview(data.review),
+        seo,
         body: content.trim(),
       });
     });
@@ -102,20 +132,12 @@ export function getBlogBySlug(slug: string): BlogPost | undefined {
   return blogPosts.find((post) => post.slug === slug);
 }
 
-/** Returns all unique categories present in the loaded posts. */
-export function getCategories(): BlogCategory[] {
-  return [...new Set(blogPosts.map((post) => post.category))];
-}
-
 /**
- * Compiles an MDX/markdown body string into a renderable React element using
- * the shared component map. Used on the blog detail page (server-rendered).
+ * Returns the categories that actually have posts, in the canonical order
+ * defined by `ACTIVE_CATEGORY_KEYS` (so blog filters read Programming → AI →
+ * Technology … rather than in whatever order the newest posts happen to fall).
  */
-export async function compileBlogContent(rawBody: string) {
-  const { content } = await compileMDX({
-    source: rawBody,
-    components: mdxComponents,
-    options: { parseFrontmatter: false },
-  });
-  return content;
+export function getCategories(): BlogCategory[] {
+  const present = new Set(blogPosts.map((post) => post.category));
+  return ACTIVE_CATEGORY_KEYS.filter((category) => present.has(category));
 }

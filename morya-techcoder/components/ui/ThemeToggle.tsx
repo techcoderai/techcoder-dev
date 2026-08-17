@@ -1,60 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-type Theme = "light" | "dark";
-
-function getInitialTheme(): Theme {
-  if (typeof document !== "undefined" && document.documentElement.classList.contains("dark")) {
-    return "dark";
-  }
-  return "light";
-}
-
 export default function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setTheme(getInitialTheme());
-    setMounted(true);
-  }, []);
-
   const toggle = () => {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
     const root = document.documentElement;
-    root.classList.toggle("dark", next === "dark");
-    try {
-      localStorage.setItem("tc-theme", next);
-    } catch {
-      /* ignore */
-    }
-  };
+    const nextIsDark = !root.classList.contains("dark");
+    const apply = () => {
+      root.classList.toggle("dark", nextIsDark);
+      try {
+        localStorage.setItem("tc-theme", nextIsDark ? "dark" : "light");
+      } catch {
+        /* ignore */
+      }
+    };
 
-  const isDark = theme === "dark";
+    // Cross-fade the theme swap via the View Transitions API where available
+    // (progressive enhancement; respects reduced-motion).
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => void;
+    };
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (doc.startViewTransition && !reduce) doc.startViewTransition(apply);
+    else apply();
+  };
 
   return (
     <button
       type="button"
       onClick={toggle}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      aria-pressed={isDark}
-      className={`focus-ring group relative flex h-9 w-9 items-center justify-center rounded-full border border-tc-border bg-tc-glass-bg text-tc-text-muted transition-colors duration-300 hover:border-tc-primary hover:text-tc-primary ${className}`}
+      aria-label="Toggle color theme"
+      className={`theme-toggle focus-ring flex h-10 w-10 items-center justify-center rounded-full border border-tc-border bg-tc-glass-bg text-tc-text-muted ${className}`}
     >
-      <Sun
-        size={16}
-        className={`absolute transition-all duration-500 ${
-          mounted && isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
-        }`}
-      />
-      <Moon
-        size={16}
-        className={`absolute transition-all duration-500 ${
-          mounted && isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0"
-        }`}
-      />
+      {/* The hover tilt lives on this wrapper because the icons themselves
+          already animate `transform` for the sun/moon crossfade. */}
+      <span className="theme-icon-wrap relative flex h-4 w-4 items-center justify-center">
+        <Sun
+          size={16}
+          className="theme-icon-sun absolute transition-[transform,opacity] duration-[var(--tc-dur)]"
+        />
+        <Moon
+          size={16}
+          className="theme-icon-moon absolute transition-[transform,opacity] duration-[var(--tc-dur)]"
+        />
+      </span>
     </button>
   );
 }

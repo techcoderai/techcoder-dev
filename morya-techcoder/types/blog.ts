@@ -6,6 +6,41 @@ export type { BlogCategory };
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 
 /**
+ * Catalog facts about a reviewed product. Only what the site needs *outside*
+ * the article body lives here — the sidebar summary and the review structured
+ * data. The written judgement is a `<Verdict>` block in the body.
+ */
+export interface ReviewMeta {
+  /** Defaults to the article title when not set. */
+  product?: string;
+  /** 0–5. Drives the sidebar score and the `Review` structured data. */
+  rating?: number;
+  /** Free-form, as displayed — e.g. "$1,049". */
+  price?: string;
+}
+
+/** Optional per-article SEO overrides. Everything falls back to the article. */
+export interface SeoMeta {
+  title?: string;
+  description?: string;
+  /** Social share image. Falls back to the hero image. */
+  ogImage?: string;
+  /** Set only when the article was first published somewhere else. */
+  canonical?: string;
+  /** Keeps the article public but out of search engines and the sitemap. */
+  noindex?: boolean;
+}
+
+/** The person credited on every article. Loaded from `content/settings/author.json`. */
+export interface Author {
+  name: string;
+  role?: string;
+  bio?: string;
+  avatar?: string;
+  url?: string;
+}
+
+/**
  * The shape of a single blog post after it has been loaded from disk and had
  * its frontmatter parsed. This is the contract shared between the content
  * layer (`content/loader.ts`) and every UI component that renders a post.
@@ -18,9 +53,11 @@ export interface BlogPost {
   date: string;
   category: BlogCategory;
   tags: string[];
+  /** Derived from the body at load time — never authored by hand. */
   readingTime: string;
-  coverImage: string;
   thumbnail: string;
+  /** Describes the hero image. Falls back to the title when not set. */
+  thumbnailAlt?: string;
   ogImage: string;
   /** Optional difficulty label. Falls back to a value derived from category. */
   difficulty?: Difficulty;
@@ -30,8 +67,21 @@ export interface BlogPost {
   prerequisites?: string[];
   /** When true, the post is hidden in production but visible in `next dev`. */
   draft?: boolean;
+  /**
+   * When true, the post is eligible for the homepage "Featured articles"
+   * section. Controlled from Keystatic or MDX frontmatter.
+   */
+  featured?: boolean;
+  /** Present only on reviews. Powers the sidebar score and review rich results. */
+  review?: ReviewMeta;
   /** Optional SEO overrides. Falls back to `title` / `excerpt` when empty. */
-  seo?: { title?: string; description?: string };
+  seo?: SeoMeta;
   /** Raw MDX/markdown body of the article. */
   body: string;
 }
+
+/** Compact shape safe to serialize into interactive article lists. */
+export type BlogPostSummary = Pick<
+  BlogPost,
+  "id" | "title" | "slug" | "excerpt" | "date" | "category" | "tags" | "readingTime" | "thumbnail"
+>;

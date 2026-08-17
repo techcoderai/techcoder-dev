@@ -18,12 +18,19 @@
 content/posts/*.mdx
       │  (read + parse frontmatter, at server startup)
       ▼
-content/loader.ts  ──uses──►  content/mdx-components.tsx  ──uses──►  components/mdx/*
-      │  (BlogPost[] data)                    (MDX tag → React component map)
-      ▼
-Server Components (app/(site)/…)  ──props──►  Client Components (islands)
-      ▼
-Static HTML (SSG)
+content/loader.ts  (BlogPost[] data only — no MDX component imports)
+      │
+      ├─► list/home/topic routes (metadata cards)
+      │
+      └─► article route
+            │
+            ▼
+      content/compile.ts  ──uses──►  content/mdx-components.tsx  ──uses──►  components/mdx/*
+            │
+            ▼
+      Server Components  ──props──►  Client Components (islands)
+            ▼
+      Static HTML (SSG)
 ```
 
 Content is **never** fetched in the browser. It is read once on the server and
@@ -34,12 +41,17 @@ and simple to reason about.
 
 - **`content/loader.ts`** — *data only*. Reads every `.mdx` file, parses
   frontmatter, de-duplicates by slug, hides drafts in production, and exposes
-  `blogPosts`, `getBlogBySlug`, `getCategories`, and `compileBlogContent`.
+  `blogPosts`, `getBlogBySlug`, and `getCategories`. Intentionally does **not**
+  import MDX components (so home/list routes never pull `react-tweet` CSS).
+- **`content/compile.ts`** — *MDX compilation only*. `compileBlogContent(body)`
+  used by the article page; isolated so the MDX component graph stays off the
+  homepage critical path.
 - **`content/mdx-components.tsx`** — *presentation only*. Maps MDX tags
   (`img`, `h2`, `Callout`, `YouTube`, …) to React components.
 - **`components/mdx/*`** — the reusable article building blocks.
 - **`lib/`** — pure, framework-agnostic logic: `categories.ts` (single source of
-  truth for categories), `posts.ts` (filtering/related helpers), `utils.ts`
+  truth for categories), `posts.ts` (filtering/related helpers),
+  `featureFlags.ts` (progressive section rollout), `utils.ts`
   (`cn`, `formatDate`, `slugify`, `getHeadings`).
 - **`types/blog.ts`** — the `BlogPost` / `Difficulty` types shared everywhere.
 - **`hooks/`** — reusable client behaviors (`useReadingProgress`, `useActiveHeading`).
@@ -76,9 +88,32 @@ Route groups don't change URLs — `/` and `/blog` are unaffected.
 Posts with `draft: true` are visible in `npm run dev` but filtered out of
 production builds. This gives "preview before publishing" with zero extra infra.
 
+### 7. Feature flags (`lib/featureFlags.ts`)
+Homepage sections that aren't ready to ship (e.g. Testimonials, FAQ) are gated
+behind a typed flag map. Components call `isFeatureEnabled("showFAQ")` instead
+of hardcoding conditions. Flags are compile-time constants today; the lookup can
+later read env/remote config without changing call sites.
+
+### 8. Homepage editorial variety
+The home page rails intentionally use distinct layouts (asymmetric featured,
+infinite carousel, ranked list, editorial two-column, compact grid) so the page
+reads like a magazine. Shared hover language lives in `.card-premium` tokens in
+`globals.css`; the infinite article carousel is `components/ui/CardCarousel.tsx`.
+
+### 9. Route-scoped performance assets
+Inter and Space Grotesk remain global because they are visible above the fold.
+JetBrains Mono and article prose CSS are loaded only by
+`app/(site)/blog/[slug]/layout.tsx`. Interactive article lists receive
+`BlogPostSummary` objects, never raw MDX bodies. This keeps homepage/list
+transfers and non-article font work small without changing presentation.
+
 ## Rendering & caching
 
 - `blogPosts` is computed once when `content/loader.ts` is first imported and
   cached for the process lifetime — perfect for static generation.
 - `/` and `/blog` are static; `/blog/[slug]` is statically generated via
   `generateStaticParams`. `/keystatic` and its API are dynamic (editor only).
+- Long homepage sections use `content-visibility: auto`; the article carousel
+  suspends its animation frame loop off-screen and in background tabs.
+- `app/sitemap.ts` and `app/robots.ts` provide cached metadata routes for
+  crawler discovery while excluding Keystatic administration endpoints.

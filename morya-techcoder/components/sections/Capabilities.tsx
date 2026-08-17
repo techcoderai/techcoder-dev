@@ -29,7 +29,7 @@ export default function Capabilities() {
           {/* Large feature — spans 4 */}
           <Reveal className="md:col-span-4">
             <div className="hover-lift group relative h-full overflow-hidden rounded-[24px] card-surface p-7 sm:p-9">
-              <div className="absolute -top-24 -right-16 w-72 h-72 rounded-full mesh-glow opacity-70 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full mesh-glow opacity-70 transition-opacity duration-[var(--tc-dur-slow)] group-hover:opacity-100" />
               <div className="relative">
                 <span className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-tc-primary to-tc-secondary text-white shadow-glow">
                   <BookOpen size={22} />
