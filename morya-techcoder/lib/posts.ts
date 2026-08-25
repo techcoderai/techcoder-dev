@@ -1,5 +1,14 @@
-import type { PostSummary } from "@/types/blog";
+import type { PostSummary, PostDetail } from "@/types/blog";
 import type { BlogCategory } from "@/lib/categories";
+
+/** A category value plus the "All" pseudo-category used by the list filter. */
+export type CategoryFilter = BlogCategory | "All";
+
+/** Removes article-only fields before data crosses a Server/Client boundary. */
+export function toPostSummary(post: PostDetail): PostSummary {
+  const { body: _body, ...summary } = post;
+  return summary;
+}
 
 /**
  * Lowercased text a post can be matched against. Built on the server and sent
@@ -9,27 +18,54 @@ export function searchIndexOf(post: PostSummary): string {
   return [post.title, post.excerpt, ...post.tags].join(" ").toLowerCase();
 }
 
-/** Returns the N most recent posts (posts arrive already sorted by date). */
-export function getFeaturedPosts(posts: PostSummary[], count = 3): PostSummary[] {
-  return posts.slice(0, count);
+/**
+ * Filters posts by category and a free-text query (matches title, excerpt,
+ * and tags). Kept here — not inside a component — so the same logic can back
+ * the blog list, a future global search, and tests.
+ */
+export function filterPosts<T extends PostSummary>(
+  posts: T[],
+  { query, category }: { query: string; category: CategoryFilter }
+): T[] {
+  const q = query.trim().toLowerCase();
+  return posts.filter((post) => {
+    const matchesCategory = category === "All" || post.category === category;
+    const matchesSearch =
+      !q ||
+      post.title.toLowerCase().includes(q) ||
+      post.excerpt.toLowerCase().includes(q) ||
+      post.tags.some((tag) => tag.toLowerCase().includes(q));
+    return matchesCategory && matchesSearch;
+  });
+}
+
+/**
+ * Returns posts flagged with `featured: true` (newest first), capped at
+ * `count`. If nothing is flagged yet, falls back to the N most recent posts
+ * so the homepage featured rail never goes blank during content setup.
+ */
+export function getFeaturedPosts<T extends PostSummary>(posts: T[], count = 3): T[] {
+  const flagged = posts.filter((post) => post.featured);
+  const pool = flagged.length > 0 ? flagged : posts;
+  return pool.slice(0, count);
 }
 
 /** Returns up to `count` posts in a given category (all of them if omitted). */
-export function getPostsByCategory(
-  posts: PostSummary[],
+export function getPostsByCategory<T extends PostSummary>(
+  posts: T[],
   category: BlogCategory,
   count?: number
-): PostSummary[] {
+): T[] {
   const inCategory = posts.filter((post) => post.category === category);
   return count ? inCategory.slice(0, count) : inCategory;
 }
 
 /** Returns related posts in the same category, excluding the current post. */
-export function getRelatedPosts(
-  posts: PostSummary[],
-  current: PostSummary,
+export function getRelatedPosts<T extends PostSummary>(
+  posts: T[],
+  current: T,
   count = 2
-): PostSummary[] {
+): T[] {
   return posts
     .filter((post) => post.category === current.category && post.id !== current.id)
     .slice(0, count);

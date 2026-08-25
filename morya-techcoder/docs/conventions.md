@@ -36,6 +36,21 @@ Practical rules that keep this codebase consistent and easy to maintain solo.
   (`bg-tc-bg-card`, `text-tc-text-muted`) so light/dark themes both work.
 - Merge conditional classes with `cn()` from `@/lib/utils`.
 
+### Motion and interaction
+
+- Use the shared motion tokens: `--tc-dur-fast` (150ms), `--tc-dur` (250ms),
+  and `--tc-dur-slow` (400ms).
+- Use `--tc-ease` for entrances and elevation, `--tc-ease-soft` for color or
+  highlight movement, and avoid bounce or overshoot.
+- Reuse `card-premium` for article lift, moving border, layered shadow, and
+  media zoom. Use `card-premium-flat` for dense rows that should not lift.
+- Reuse `btn-primary` / `btn-secondary` for tactile press, elevation, and
+  restrained highlight treatments.
+- Use `link-underline` for animated editorial links, `icon-nudge` for a 2px
+  directional cue, and `icon-lift` for a 1px decorative icon movement.
+- Entrance animation must respect reduced-motion preferences. CSS animations
+  are covered globally; Framer Motion components should use `useReducedMotion`.
+
 ## Component guidelines
 
 - One responsibility per component. If a component does data-shaping *and*
@@ -49,28 +64,41 @@ Practical rules that keep this codebase consistent and easy to maintain solo.
 
 - Filtering, sorting, and "which posts to show" logic belongs in `lib/posts.ts`,
   not inside components. This keeps it reusable and testable.
+- Progressive show/hide of sections belongs in `lib/featureFlags.ts`. Prefer
+  `isFeatureEnabled("showFAQ")` over inline booleans so flags stay centralized.
 
 ## Adding a category
 
 Edit **only** `lib/categories.ts`:
 
 ```ts
-export const CATEGORIES = {
+const CATEGORY_DEFS = {
+  Programming: { /* … */ },
   AI: { /* … */ },
-  WebDev: { /* … */ },
-  Tricks: { /* … */ },
+  Technology: { /* … */ },
+  Reviews: { /* … */ },
+  Guides: { /* … */ },
+  DevTools: { /* …, comingSoon: true */ },
   DevOps: {                     // 👈 add here
     label: "DevOps",
+    short: "DevOps",
     description: "CI/CD, infra, and deployment.",
-    badge: "bg-tc-cat-webdev-bg text-tc-cat-webdev-text border border-tc-cat-webdev-border",
-    dot: "bg-tc-cat-webdev-text",
+    icon: "Server",            // a lucide name; register it in lib/category-icons.ts
+    badge: "bg-tc-cat-devops-bg text-tc-cat-devops-text border border-tc-cat-devops-border",
+    dot: "bg-tc-cat-devops-text",
+    accent: "text-tc-cat-devops-text",
+    // comingSoon: true,        // optional — announces the topic without a live link
   },
-} as const;
+} as const satisfies Record<string, CategoryMeta>;
 ```
 
-The type, blog filters, card colors, and Keystatic dropdown update automatically.
-(If you want distinct colors, add matching `--tc-cat-devops-*` tokens in
-`app/globals.css`.)
+The type, blog filters, card colors, topic grid, and Keystatic dropdown update
+automatically. Two follow-ups when adding a topic:
+
+- Add matching `--tc-cat-devops-*` tokens in `app/globals.css` **and** map them in
+  the `@theme inline` block so Tailwind generates the utility classes.
+- Register the icon name in `lib/category-icons.ts` (keeps `lib/categories.ts`
+  framework-agnostic).
 
 ## Commit hygiene
 

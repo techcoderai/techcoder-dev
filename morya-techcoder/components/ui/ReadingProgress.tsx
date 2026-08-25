@@ -12,6 +12,8 @@ import { useEffect, useRef } from "react";
  */
 export default function ReadingProgress() {
   const barRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const lastRoundedRef = useRef(-1);
 
   useEffect(() => {
     let frame = 0;
@@ -22,6 +24,11 @@ export default function ReadingProgress() {
       const max = el.scrollHeight - el.clientHeight;
       const progress = max > 0 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0;
       if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
+      const rounded = Math.round(progress * 100);
+      if (rounded !== lastRoundedRef.current) {
+        progressRef.current?.setAttribute("aria-valuenow", String(rounded));
+        lastRoundedRef.current = rounded;
+      }
     };
 
     const schedule = () => {
@@ -40,7 +47,12 @@ export default function ReadingProgress() {
 
   return (
     <div
-      aria-hidden="true"
+      ref={progressRef}
+      role="progressbar"
+      aria-label="Reading progress"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={0}
       className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-[3px]"
     >
       <div

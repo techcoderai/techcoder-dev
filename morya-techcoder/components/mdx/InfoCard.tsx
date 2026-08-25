@@ -54,7 +54,7 @@ export function InfoCard({
   );
 
   const className = cn(
-    "group block rounded-xl border border-tc-border bg-tc-bg-card p-4 transition-all duration-200",
+    "group block rounded-xl border border-tc-border bg-tc-bg-card p-4 transition-[border-color,transform] duration-[var(--tc-dur)]",
     href && "hover:border-tc-border-strong hover:-translate-y-0.5"
   );
 

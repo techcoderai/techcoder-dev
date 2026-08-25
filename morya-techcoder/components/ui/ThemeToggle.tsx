@@ -21,12 +21,25 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
   );
 
   const toggle = () => {
-    const next = document.documentElement.classList.toggle("dark") ? "dark" : "light";
-    try {
-      localStorage.setItem("tc-theme", next);
-    } catch {
-      /* storage unavailable (private mode) — the class still applies */
-    }
+    const root = document.documentElement;
+    const nextIsDark = !root.classList.contains("dark");
+    const apply = () => {
+      root.classList.toggle("dark", nextIsDark);
+      try {
+        localStorage.setItem("tc-theme", nextIsDark ? "dark" : "light");
+      } catch {
+        /* storage unavailable (private mode) — the class still applies */
+      }
+    };
+
+    // Cross-fade the theme swap via the View Transitions API where available
+    // (progressive enhancement; respects reduced-motion).
+    const doc = document as Document & {
+      startViewTransition?: (cb: () => void) => void;
+    };
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (doc.startViewTransition && !reduce) doc.startViewTransition(apply);
+    else apply();
   };
 
   return (

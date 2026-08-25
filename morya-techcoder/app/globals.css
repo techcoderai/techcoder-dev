@@ -51,31 +51,56 @@
   --tc-glass-border:   rgba(15, 23, 42, 0.08);
   --tc-glass-shadow:   0 8px 32px rgba(15, 23, 42, 0.08);
 
-  /* Premium shadows */
-  --tc-shadow-sm:      0 1px 2px rgba(15, 23, 42, 0.06);
-  --tc-shadow-md:      0 8px 30px rgba(15, 23, 42, 0.08);
-  --tc-shadow-lg:      0 24px 60px -12px rgba(15, 23, 42, 0.16);
-  --tc-shadow-glow:    0 12px 40px -8px rgba(249, 115, 22, 0.35);
+  /* Premium shadows — layered (near · medium · far) so elevation reads as
+     depth, not darkness. Hover swaps to a larger, softer stack, never harsher. */
+  --tc-shadow-sm:      0 1px 2px rgba(15, 23, 42, 0.05);
+  --tc-shadow-md:      0 1px 2px rgba(15, 23, 42, 0.04),
+                       0 6px 16px -8px rgba(15, 23, 42, 0.10),
+                       0 14px 40px -18px rgba(15, 23, 42, 0.12);
+  --tc-shadow-lg:      0 2px 6px rgba(15, 23, 42, 0.05),
+                       0 12px 28px -12px rgba(15, 23, 42, 0.14),
+                       0 30px 64px -24px rgba(15, 23, 42, 0.18);
+  --tc-shadow-glow:    0 10px 34px -10px rgba(249, 115, 22, 0.30);
 
   /* Code surfaces */
   --tc-bg-code:        #0B0B0D;
   --tc-border-code:    rgba(255, 255, 255, 0.08);
   --tc-text-code:      #E5E7EB;
 
-  /* Category badges */
+  /* Category badges — one accent per topic, tuned for light theme */
+  --tc-cat-programming-bg:      #EFF6FF;
+  --tc-cat-programming-text:    #1D4ED8;
+  --tc-cat-programming-border:  rgba(37, 99, 235, 0.20);
   --tc-cat-ai-bg:      #FFF1E7;
   --tc-cat-ai-text:    #C2410C;
   --tc-cat-ai-border:  rgba(249, 115, 22, 0.22);
-  --tc-cat-webdev-bg:      #EFF6FF;
-  --tc-cat-webdev-text:    #1D4ED8;
-  --tc-cat-webdev-border:  rgba(37, 99, 235, 0.20);
-  --tc-cat-tricks-bg:      #ECFDF5;
-  --tc-cat-tricks-text:    #047857;
-  --tc-cat-tricks-border:  rgba(4, 120, 87, 0.20);
+  --tc-cat-technology-bg:      #ECFEFF;
+  --tc-cat-technology-text:    #0E7490;
+  --tc-cat-technology-border:  rgba(14, 116, 144, 0.20);
+  --tc-cat-reviews-bg:      #F5F3FF;
+  --tc-cat-reviews-text:    #6D28D9;
+  --tc-cat-reviews-border:  rgba(109, 40, 217, 0.20);
+  --tc-cat-guides-bg:      #ECFDF5;
+  --tc-cat-guides-text:    #047857;
+  --tc-cat-guides-border:  rgba(4, 120, 87, 0.20);
+  --tc-cat-devtools-bg:      #F1F5F9;
+  --tc-cat-devtools-text:    #475569;
+  --tc-cat-devtools-border:  rgba(71, 85, 105, 0.20);
 
   /* Mesh / grid */
   --tc-grid-line:      rgba(15, 23, 42, 0.05);
   --tc-dot:            rgba(15, 23, 42, 0.14);
+
+  /* ── Motion system (theme-independent) ──
+     One vocabulary for every interaction. Easings mirror the calm, slightly
+     "settled" curves used by Apple / Linear: quick to respond, gentle to land,
+     never bouncing or overshooting. */
+  --tc-ease:        cubic-bezier(0.22, 1, 0.36, 1);   /* standard ease-out */
+  --tc-ease-inout:  cubic-bezier(0.65, 0, 0.35, 1);   /* symmetric */
+  --tc-ease-soft:   cubic-bezier(0.4, 0, 0.2, 1);     /* material-soft */
+  --tc-dur-fast:    150ms;   /* taps, presses, tiny nudges (120–180) */
+  --tc-dur:         250ms;   /* standard hovers & color shifts (220–280) */
+  --tc-dur-slow:    400ms;   /* elevation, reveals, larger moves (350–450) */
 }
 
 /* ─────────────────────────  DARK THEME  ───────────────────────── */
@@ -112,23 +137,36 @@
   --tc-glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.45);
 
   --tc-shadow-sm:      0 1px 2px rgba(0, 0, 0, 0.4);
-  --tc-shadow-md:      0 8px 30px rgba(0, 0, 0, 0.5);
-  --tc-shadow-lg:      0 24px 60px -12px rgba(0, 0, 0, 0.7);
-  --tc-shadow-glow:    0 12px 44px -8px rgba(249, 115, 22, 0.45);
+  --tc-shadow-md:      0 1px 2px rgba(0, 0, 0, 0.4),
+                       0 6px 18px -8px rgba(0, 0, 0, 0.5),
+                       0 16px 44px -18px rgba(0, 0, 0, 0.55);
+  --tc-shadow-lg:      0 2px 8px rgba(0, 0, 0, 0.45),
+                       0 14px 32px -12px rgba(0, 0, 0, 0.6),
+                       0 34px 70px -24px rgba(0, 0, 0, 0.65);
+  --tc-shadow-glow:    0 12px 40px -10px rgba(249, 115, 22, 0.38);
 
   --tc-bg-code:        #0B0B0D;
   --tc-border-code:    rgba(255, 255, 255, 0.08);
   --tc-text-code:      #E5E7EB;
 
+  --tc-cat-programming-bg:      rgba(59, 130, 246, 0.14);
+  --tc-cat-programming-text:    #93C5FD;
+  --tc-cat-programming-border:  rgba(59, 130, 246, 0.28);
   --tc-cat-ai-bg:      rgba(249, 115, 22, 0.14);
   --tc-cat-ai-text:    #FDBA74;
   --tc-cat-ai-border:  rgba(249, 115, 22, 0.28);
-  --tc-cat-webdev-bg:      rgba(59, 130, 246, 0.14);
-  --tc-cat-webdev-text:    #93C5FD;
-  --tc-cat-webdev-border:  rgba(59, 130, 246, 0.28);
-  --tc-cat-tricks-bg:      rgba(16, 185, 129, 0.14);
-  --tc-cat-tricks-text:    #6EE7B7;
-  --tc-cat-tricks-border:  rgba(16, 185, 129, 0.28);
+  --tc-cat-technology-bg:      rgba(6, 182, 212, 0.14);
+  --tc-cat-technology-text:    #67E8F9;
+  --tc-cat-technology-border:  rgba(6, 182, 212, 0.28);
+  --tc-cat-reviews-bg:      rgba(139, 92, 246, 0.14);
+  --tc-cat-reviews-text:    #C4B5FD;
+  --tc-cat-reviews-border:  rgba(139, 92, 246, 0.28);
+  --tc-cat-guides-bg:      rgba(16, 185, 129, 0.14);
+  --tc-cat-guides-text:    #6EE7B7;
+  --tc-cat-guides-border:  rgba(16, 185, 129, 0.28);
+  --tc-cat-devtools-bg:      rgba(148, 163, 184, 0.14);
+  --tc-cat-devtools-text:    #CBD5E1;
+  --tc-cat-devtools-border:  rgba(148, 163, 184, 0.28);
 
   --tc-grid-line:      rgba(255, 255, 255, 0.045);
   --tc-dot:            rgba(255, 255, 255, 0.10);
@@ -152,15 +190,24 @@
   --color-tc-text-light:     var(--tc-text-light);
   --color-tc-border:         var(--tc-border);
   --color-tc-border-strong:  var(--tc-border-strong);
+  --color-tc-cat-programming-bg:      var(--tc-cat-programming-bg);
+  --color-tc-cat-programming-text:    var(--tc-cat-programming-text);
+  --color-tc-cat-programming-border:  var(--tc-cat-programming-border);
   --color-tc-cat-ai-bg:      var(--tc-cat-ai-bg);
   --color-tc-cat-ai-text:    var(--tc-cat-ai-text);
   --color-tc-cat-ai-border:  var(--tc-cat-ai-border);
-  --color-tc-cat-webdev-bg:      var(--tc-cat-webdev-bg);
-  --color-tc-cat-webdev-text:    var(--tc-cat-webdev-text);
-  --color-tc-cat-webdev-border:  var(--tc-cat-webdev-border);
-  --color-tc-cat-tricks-bg:      var(--tc-cat-tricks-bg);
-  --color-tc-cat-tricks-text:    var(--tc-cat-tricks-text);
-  --color-tc-cat-tricks-border:  var(--tc-cat-tricks-border);
+  --color-tc-cat-technology-bg:      var(--tc-cat-technology-bg);
+  --color-tc-cat-technology-text:    var(--tc-cat-technology-text);
+  --color-tc-cat-technology-border:  var(--tc-cat-technology-border);
+  --color-tc-cat-reviews-bg:      var(--tc-cat-reviews-bg);
+  --color-tc-cat-reviews-text:    var(--tc-cat-reviews-text);
+  --color-tc-cat-reviews-border:  var(--tc-cat-reviews-border);
+  --color-tc-cat-guides-bg:      var(--tc-cat-guides-bg);
+  --color-tc-cat-guides-text:    var(--tc-cat-guides-text);
+  --color-tc-cat-guides-border:  var(--tc-cat-guides-border);
+  --color-tc-cat-devtools-bg:      var(--tc-cat-devtools-bg);
+  --color-tc-cat-devtools-text:    var(--tc-cat-devtools-text);
+  --color-tc-cat-devtools-border:  var(--tc-cat-devtools-border);
 
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -178,6 +225,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
   }
 
   h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--tc-text); }
@@ -203,6 +251,17 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  .reveal-on-view {
+    animation: none !important;
+  }
+  .mobile-menu-item {
+    animation-delay: 0ms !important;
+  }
+  .hero-enter,
+  .hero-enter-fade,
+  .hero-browser-enter {
+    animation: none !important;
+  }
 }
 
 /* ═══════════════════════  ANIMATIONS  ═══════════════════════ */
@@ -210,7 +269,6 @@
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-8px); }
@@ -227,27 +285,115 @@
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes spinSlow { to { transform: rotate(360deg); } }
 @keyframes ambientBreathe { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 0.85; transform: scale(1.05); }
+}
+/* Conic angle for the soft orange gradient border on article cards */
+@property --tc-border-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes borderAngle {
+  to { --tc-border-angle: 360deg; }
+}
+@keyframes highlightSweep {
+  0%, 68% { transform: translateX(-160%) skewX(-18deg); opacity: 0; }
+  74%     { opacity: 0.28; }
+  88%, 100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
+}
+@keyframes badgeShimmer {
+  0%, 72% { transform: translateX(-180%) skewX(-18deg); opacity: 0; }
+  78%     { opacity: 0.18; }
+  94%, 100% { transform: translateX(260%) skewX(-18deg); opacity: 0; }
+}
+@keyframes browserFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
+}
+@keyframes revealOnView {
+  from { opacity: 0; transform: translateY(var(--reveal-y, 28px)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes navLogoEnter {
+  from { transform: translateY(-8px); }
+  to   { transform: translateY(0); }
+}
+@keyframes navTitleEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes mobileMenuEnter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes mobileMenuItemEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroEnter {
+  from { transform: translateY(16px); }
+  to   { transform: translateY(0); }
+}
+@keyframes heroEnterFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroBrowserEnter {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* Everything below is layered so Tailwind utilities always win a conflict.
    Unlayered rules outrank layered ones regardless of specificity, which is why
    these component classes previously overrode utilities like `rounded-[26px]`. */
 @layer components {
 
-.animate-fade-up { animation: fadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.animate-fade-in { animation: fadeIn 0.5s ease-out both; }
+/* Progressive enhancement: section reveals need no observer or hydration. */
+@supports (animation-timeline: view()) {
+  .reveal-on-view {
+    animation: revealOnView linear both;
+    animation-timeline: view();
+    animation-range:
+      entry var(--reveal-delay, 0%)
+      entry calc(34% + var(--reveal-delay, 0%));
+  }
+}
+
+.animate-fade-up { animation: fadeUp var(--tc-dur-slow) var(--tc-ease) both; }
+.nav-logo-enter { animation: navLogoEnter var(--tc-dur-slow) var(--tc-ease) both; }
+.nav-title-enter { animation: navTitleEnter var(--tc-dur) var(--tc-ease) both; }
+.mobile-menu-enter { animation: mobileMenuEnter var(--tc-dur) var(--tc-ease) both; }
+.mobile-menu-item {
+  animation: mobileMenuItemEnter var(--tc-dur-slow) var(--tc-ease) both;
+}
+.hero-enter { animation: heroEnter var(--tc-dur-slow) var(--tc-ease) both; }
+.hero-enter-fade { animation: heroEnterFade var(--tc-dur-slow) var(--tc-ease) both; }
+.hero-browser-enter { animation: heroBrowserEnter var(--tc-dur-slow) var(--tc-ease) both; }
 .animate-float { animation: float 4s ease-in-out infinite; }
 .animate-float-delay { animation: float 4s ease-in-out 0.6s infinite; }
 .animate-float-delay-2 { animation: float 4s ease-in-out 1.2s infinite; }
 .animate-marquee { animation: marquee 32s linear infinite; }
 .animate-blink { animation: blink 1.1s step-end infinite; }
 .animate-spin-slow { animation: spinSlow 14s linear infinite; }
+.animate-pulse-glow { animation: pulseGlow 5s ease-in-out infinite; }
 
-.animate-delay-1 { animation-delay: 0.10s; }
-.animate-delay-2 { animation-delay: 0.20s; }
-.animate-delay-3 { animation-delay: 0.30s; }
-.animate-delay-4 { animation-delay: 0.40s; }
-.animate-delay-5 { animation-delay: 0.55s; }
-.animate-delay-6 { animation-delay: 0.70s; }
+/* Reading-complete reward: a single calm ring pulse (no confetti) */
+@keyframes readPulse {
+  0%   { transform: scale(0.9); opacity: 0.5; }
+  80%  { transform: scale(1.9); opacity: 0; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+.animate-read-pulse { animation: readPulse 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+/* Gentle "pop" for the completion checkmark */
+@keyframes readPop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-read-pop { animation: readPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
 /* ═══════════════════════  TYPOGRAPHY  ═══════════════════════ */
 .display-xl {
@@ -272,9 +418,9 @@
 .heading-lg {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 1.75rem;
+  font-size: 2rem; /* mobile-first: 32px section titles */
   letter-spacing: -0.025em;
-  line-height: 1.15;
+  line-height: 1.12;
   color: var(--tc-text);
 }
 @media (min-width: 768px) { .heading-lg { font-size: 2.25rem; } }
@@ -306,9 +452,12 @@
   letter-spacing: 0.18em;
 }
 
-.body-lg { font-family: var(--font-body); font-size: 1.125rem; line-height: 1.75; color: var(--tc-text-muted); }
-.body-base { font-family: var(--font-body); font-size: 1rem; line-height: 1.75; color: var(--tc-text-muted); }
-.body-sm { font-family: var(--font-body); font-size: 0.875rem; line-height: 1.7; color: var(--tc-text-muted); }
+.body-lg { font-family: var(--font-body); font-size: 1.125rem; line-height: 1.75; color: var(--tc-text-muted); text-wrap: pretty; }
+.body-base { font-family: var(--font-body); font-size: 1rem; line-height: 1.75; color: var(--tc-text-muted); text-wrap: pretty; }
+.body-sm { font-family: var(--font-body); font-size: 0.875rem; line-height: 1.7; color: var(--tc-text-muted); text-wrap: pretty; }
+
+/* Balanced wrapping keeps headlines from leaving an orphan word on the last line */
+.display-xl, .heading-xl, .heading-lg, .heading-md { text-wrap: balance; }
 
 /* Gradient text signature */
 .text-gradient {
@@ -318,23 +467,7 @@
   -webkit-text-fill-color: transparent;
   color: transparent;
 }
-.text-gradient-animated {
-  background: linear-gradient(120deg, var(--tc-primary), var(--tc-primary-light), var(--tc-primary));
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: gradientMove 6s linear infinite;
-}
-
 /* ═══════════════════════  SURFACES & GLASS  ═══════════════════════ */
-.glass {
-  background: var(--tc-glass-bg);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid var(--tc-glass-border);
-}
 .glass-strong {
   background: var(--tc-glass-bg);
   backdrop-filter: blur(28px) saturate(180%);
@@ -350,6 +483,12 @@
     -webkit-backdrop-filter: blur(12px);
   }
 }
+.nav-shell-scrolled {
+  background: color-mix(in srgb, var(--tc-bg-card) 88%, transparent);
+  backdrop-filter: blur(32px) saturate(185%);
+  -webkit-backdrop-filter: blur(32px) saturate(185%);
+  border: 1px solid var(--tc-glass-border);
+}
 .card-surface {
   background: var(--tc-bg-card);
   border: 1px solid var(--tc-border);
@@ -359,35 +498,139 @@
 .shadow-premium { box-shadow: var(--tc-shadow-lg); }
 .shadow-glow { box-shadow: var(--tc-shadow-glow); }
 
-/* Hover-lift interaction */
+/* Hover-lift interaction — calm elevation on the unified motion curve */
 .hover-lift {
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.35s ease;
+  transition: transform var(--tc-dur-slow) var(--tc-ease),
+              box-shadow var(--tc-dur-slow) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease);
 }
 .hover-lift:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow: var(--tc-shadow-lg);
   border-color: var(--tc-border-strong);
 }
+.hover-lift:active {
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: var(--tc-dur-fast);
+}
 
-/* Animated gradient border (spotlight) */
-.border-glow { position: relative; }
-.border-glow::before {
+/*
+ * Premium article-card interaction — soft moving orange border, gentle lift,
+ * and image zoom. GPU-friendly (transform/opacity only). Pause the border
+ * spin when hover ends; disabled entirely under prefers-reduced-motion.
+ */
+.card-premium {
+  position: relative;
+  isolation: isolate;
+  transform: translateZ(0);
+  transition:
+    transform var(--tc-dur-slow) var(--tc-ease),
+    box-shadow var(--tc-dur-slow) var(--tc-ease),
+    border-color var(--tc-dur) var(--tc-ease);
+}
+.card-premium::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(130deg, var(--tc-primary), transparent 40%, transparent 60%, var(--tc-primary-light));
+  background: conic-gradient(
+    from var(--tc-border-angle),
+    transparent 0%,
+    transparent 38%,
+    rgba(249, 115, 22, 0.15) 46%,
+    var(--tc-primary-light) 52%,
+    var(--tc-primary) 56%,
+    rgba(249, 115, 22, 0.15) 62%,
+    transparent 70%,
+    transparent 100%
+  );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
   pointer-events: none;
+  z-index: 2;
 }
-.border-glow:hover::before { opacity: 1; }
+.card-premium:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: var(--tc-shadow-lg);
+  border-color: transparent;
+}
+.card-premium:active {
+  transform: translateY(-1px) scale(0.998);
+  transition-duration: var(--tc-dur-fast);
+}
+.card-premium:hover::before {
+  opacity: 1;
+  animation: borderAngle 3.2s linear infinite;
+}
+/* Zoom only the image node — scaling both the wrapper and the img felt jerky. */
+.card-premium .card-premium-media img {
+  transition: transform var(--tc-dur-slow) var(--tc-ease);
+}
+.card-premium:hover .card-premium-media img {
+  transform: scale(1.04);
+}
+/* Metadata recedes a touch on hover so the title leads the eye */
+.card-premium-meta {
+  transition: opacity var(--tc-dur) var(--tc-ease);
+}
+.card-premium:hover .card-premium-meta {
+  opacity: 0.72;
+}
+.card-premium-title {
+  transition: color var(--tc-dur) var(--tc-ease);
+}
+
+/* Dense list rows: keep the border + type cues, skip lift/scale */
+.card-premium-flat:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/*
+ * Full-bleed cover cards (featured lead): calm hover — soft lift only, no
+ * card scale (avoids layout jank), keep title white over the photo, and let
+ * the image drift gently underneath.
+ */
+.card-premium-cover {
+  transition:
+    transform var(--tc-dur-slow) var(--tc-ease),
+    box-shadow var(--tc-dur-slow) var(--tc-ease),
+    border-color var(--tc-dur) var(--tc-ease);
+}
+.card-premium-cover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--tc-shadow-lg);
+}
+.card-premium-cover:hover .card-premium-title {
+  color: #fff;
+}
+.card-premium-cover:hover .card-premium-media img {
+  transform: scale(1.03);
+}
+
+/* Soft edge fade for the infinite editorial carousel */
+.carousel-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-premium,
+  .card-premium::before,
+  .card-premium .card-premium-media,
+  .card-premium .card-premium-media img {
+    transition: none !important;
+    animation: none !important;
+  }
+  .card-premium:hover {
+    transform: none;
+  }
+}
 
 /* ═══════════════════════  BACKGROUND EFFECTS  ═══════════════════════ */
 .grid-overlay {
@@ -419,10 +662,47 @@
   /* Opacity-only, desktop-only: compositor work with no repaint or re-raster. */
   .ambient-glow { animation: ambientBreathe 14s ease-in-out infinite; }
 }
+.hero-browser-glow {
+  position: absolute;
+  z-index: 0;
+  inset: -18% -12% -22%;
+  background: radial-gradient(
+    ellipse at 50% 48%,
+    rgba(249, 115, 22, 0.12) 0%,
+    rgba(249, 115, 22, 0.05) 38%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+.hero-browser-float {
+  position: relative;
+  z-index: 1;
+  animation: browserFloat 7s var(--tc-ease-inout) 1.1s infinite;
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-browser-tilt {
+    transition: transform var(--tc-dur) var(--tc-ease);
+  }
+}
+.ambient-orb {
+  border-radius: 9999px;
+  pointer-events: none;
+}
+.ambient-orb-primary {
+  background: radial-gradient(circle, var(--tc-glow) 0%, transparent 68%);
+}
+.ambient-orb-soft {
+  background: radial-gradient(circle, var(--tc-glow-soft) 0%, transparent 68%);
+}
+@media (max-width: 767px) {
+  .ambient-orb,
+  .hero-browser-float {
+    animation: none;
+  }
+}
 .noise {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
-
 /* Marquee mask */
 .marquee-mask {
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
@@ -442,17 +722,36 @@
   background: linear-gradient(120deg, var(--tc-primary), var(--tc-secondary));
   border-radius: 9999px;
   box-shadow: 0 6px 20px -6px var(--tc-glow), inset 0 1px 0 rgba(255,255,255,0.25);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, filter 0.25s ease;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease);
   overflow: hidden;
+  isolation: isolate;
+}
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: -45% auto -45% -35%;
+  width: 28%;
+  z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: highlightSweep 5.8s var(--tc-ease-soft) 1.4s infinite;
+  pointer-events: none;
 }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 30px -6px var(--tc-glow), inset 0 1px 0 rgba(255,255,255,0.3);
-  filter: brightness(1.04);
 }
-.btn-primary:active { transform: translateY(0); }
+/* Press — instant, scales down, sheds shadow for a physical "give" */
+.btn-primary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 3px 10px -6px var(--tc-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+  transition-duration: var(--tc-dur-fast);
+}
 
 .btn-secondary {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -465,24 +764,48 @@
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--tc-border-strong);
   border-radius: 9999px;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, background 0.25s ease;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease),
+              background var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease);
+}
+.btn-secondary::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--tc-border-angle),
+    transparent 0 36%,
+    var(--tc-primary-light) 48%,
+    var(--tc-primary) 54%,
+    transparent 66% 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--tc-dur) var(--tc-ease);
+  pointer-events: none;
+}
+.btn-secondary:hover::before {
+  opacity: 0.75;
+  animation: borderAngle 3.2s linear infinite;
 }
 .btn-secondary:hover {
   transform: translateY(-2px);
   border-color: var(--tc-primary);
   background: var(--tc-glow-soft);
+  box-shadow: var(--tc-shadow-md);
 }
-.btn-secondary:active { transform: translateY(0); }
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-weight: 600;
-  color: var(--tc-text-muted);
-  transition: color 0.2s ease;
+.btn-secondary:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: none;
+  transition-duration: var(--tc-dur-fast);
 }
-.btn-ghost:hover { color: var(--tc-primary); }
 
 /* Focus ring */
 .focus-ring:focus-visible {
@@ -490,8 +813,28 @@
   outline-offset: 2px;
 }
 
+.theme-icon-sun {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+.theme-icon-moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0);
+}
+.dark .theme-icon-sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0);
+}
+.dark .theme-icon-moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
 /* Chip / pill label */
 .chip {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -503,47 +846,479 @@
   background: var(--tc-glow-soft);
   border: 1px solid var(--tc-glass-border);
   color: var(--tc-primary-dark);
+  transition: background var(--tc-dur) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.hero-badge::after {
+  content: "";
+  position: absolute;
+  inset: -55% auto -55% -25%;
+  width: 18%;
+  z-index: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);
+  transform: translateX(-180%) skewX(-18deg);
+  animation: badgeShimmer 7s var(--tc-ease-soft) 1.8s infinite;
+  pointer-events: none;
+}
+/* Interactive chips (links) get a gently animated background on hover */
+a.chip:hover,
+button.chip:hover {
+  background: var(--tc-glow);
+  border-color: var(--tc-primary);
+}
+
+/* Category pill — rounded, airy label for cards & rails */
+.category-pill,
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* ═══════════════════════  MICRO-INTERACTIONS  ═══════════════════════ */
+
+/*
+ * Reusable moving gradient border.
+ *
+ * Add `moving-border` to any rounded element: a soft orange gradient sweeps
+ * continuously around the edge on hover, then stops smoothly on leave. Pure
+ * CSS (conic-gradient masked to a 1px ring) — no WebGL, no glow, no neon.
+ * Shares the `--tc-border-angle` @property + `borderAngle` keyframe used by
+ * article cards so the whole site speaks one border language.
+ */
+.moving-border { position: relative; isolation: isolate; }
+.moving-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--tc-border-angle),
+    transparent 0%,
+    transparent 38%,
+    rgba(249, 115, 22, 0.15) 46%,
+    var(--tc-primary-light) 52%,
+    var(--tc-primary) 56%,
+    rgba(249, 115, 22, 0.15) 62%,
+    transparent 70%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
+  pointer-events: none;
+  z-index: 2;
+}
+.moving-border:hover::before {
+  opacity: 1;
+  animation: borderAngle 3.2s linear infinite;
+}
+
+/*
+ * Animated underline for inline links & card titles. Grows from the left on
+ * hover (of the element or its parent `.group`) instead of a flat fade.
+ */
+.link-underline {
+  background-image: linear-gradient(var(--tc-primary), var(--tc-primary));
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.link-underline:hover,
+.group:hover .link-underline {
+  background-size: 100% 1.5px;
+}
+
+/* Shared icon movement: 2px for directional cues, 1px for decorative icons. */
+.icon-nudge,
+.icon-lift {
+  transition: transform var(--tc-dur) var(--tc-ease);
+}
+.group:hover .icon-nudge,
+a:hover > .icon-nudge,
+button:hover > .icon-nudge {
+  transform: translateX(2px);
+}
+.group:hover .icon-lift,
+a:hover > .icon-lift,
+button:hover > .icon-lift {
+  transform: translateY(-1px);
+}
+
+/* Oversized, faintly-inked index number for imageless card placeholders */
+.article-stamp {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--tc-text);
+  opacity: 0.06;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moving-border::before,
+  .btn-primary::after,
+  .btn-secondary::before,
+  .hero-badge::after,
+  .hero-browser-float {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 
 /* ═══════════════════════  LAYOUT  ═══════════════════════ */
-.section-padding { padding: 5rem 1.5rem; }
+/* Mobile-first vertical rhythm: 56px sections keep discovery tight & scannable */
+.section-padding { padding: 3.5rem 1.25rem; }
 @media (min-width: 768px) { .section-padding { padding: 7rem 2rem; } }
 @media (min-width: 1024px) { .section-padding { padding: 8.75rem 2rem; } }
 
-.container-narrow { max-width: 768px; margin-inline: auto; }
 .container-wide { max-width: 1400px; margin-inline: auto; }
 
-/* ═══════════════════════  BLOG PROSE  ═══════════════════════ */
-.prose-tc { font-family: var(--font-body); max-width: 48rem; }
-.prose-tc h1 { font-family: var(--font-heading); font-weight: 700; font-size: 1.75rem; line-height: 1.2; margin-top: 2.5rem; margin-bottom: 1rem; color: var(--tc-text); letter-spacing: -0.02em; }
-.prose-tc h2 { font-family: var(--font-heading); font-weight: 700; font-size: 1.5rem; line-height: 1.25; margin-top: 2rem; margin-bottom: 0.75rem; color: var(--tc-text); letter-spacing: -0.015em; }
-.prose-tc h3 { font-family: var(--font-heading); font-weight: 600; font-size: 1.25rem; line-height: 1.3; margin-top: 1.75rem; margin-bottom: 0.5rem; color: var(--tc-text); letter-spacing: -0.01em; }
-.prose-tc h4 { font-family: var(--font-heading); font-weight: 600; font-size: 1.125rem; line-height: 1.4; margin-top: 1.5rem; margin-bottom: 0.5rem; color: var(--tc-text); }
-@media (min-width: 768px) {
-  .prose-tc h1 { font-size: 2.25rem; }
-  .prose-tc h2 { font-size: 1.75rem; }
-  .prose-tc h3 { font-size: 1.375rem; }
-  .prose-tc h4 { font-size: 1.25rem; }
+/*
+ * Skip layout and paint for long homepage sections until they approach the
+ * viewport. The intrinsic size reserves space, while `auto` lets the browser
+ * remember each section's measured height after first render.
+ */
+.render-deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
 }
-.prose-tc p { font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.8; margin-bottom: 1.5rem; color: var(--tc-text-muted); }
-.prose-tc ul, .prose-tc ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
-.prose-tc li { font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.8; margin-bottom: 0.5rem; color: var(--tc-text-muted); }
-.prose-tc ul li { list-style-type: disc; }
-.prose-tc ol li { list-style-type: decimal; }
-.prose-tc blockquote { border-left: 3px solid var(--tc-primary); padding: 0.75rem 1.25rem; margin: 1.5rem 0; background: var(--tc-bg-elevated); border-radius: 0 12px 12px 0; }
-.prose-tc blockquote p { color: var(--tc-text); font-style: italic; margin-bottom: 0; }
-.prose-tc code { font-family: var(--font-mono); background: var(--tc-bg-elevated); padding: 0.15rem 0.45rem; border-radius: 6px; font-size: 0.875rem; color: var(--tc-text); border: 1px solid var(--tc-border); }
-.prose-tc pre { font-family: var(--font-mono); background: var(--tc-bg-code); color: var(--tc-text-code); padding: 1.25rem; border-radius: 14px; overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid var(--tc-border-code); }
-.prose-tc pre code { font-family: var(--font-mono); background: none; padding: 0; font-size: 0.875rem; line-height: 1.7; color: inherit; border: none; }
-.prose-tc a { color: var(--tc-primary-dark); text-decoration: none; background-image: linear-gradient(var(--tc-primary), var(--tc-primary)); background-size: 0% 1.5px; background-position: 0% 100%; background-repeat: no-repeat; transition: background-size 200ms ease-in-out, color 200ms ease-in-out; }
-.prose-tc a:hover { color: var(--tc-primary); background-size: 100% 1.5px; }
-.prose-tc img { border-radius: 14px; margin: 1.5rem 0; }
-.prose-tc hr { border: none; border-top: 1px solid var(--tc-border); margin: 2.5rem 0; }
-.prose-tc strong { color: var(--tc-text); font-weight: 600; }
-.prose-tc table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9375rem; display: block; overflow-x: auto; }
-.prose-tc th, .prose-tc td { border: 1px solid var(--tc-border); padding: 0.6rem 0.9rem; text-align: left; vertical-align: top; }
-.prose-tc th { background: var(--tc-bg-elevated); font-weight: 600; color: var(--tc-text); }
-.prose-tc td { color: var(--tc-text-muted); }
+
+/* Hide scrollbars on horizontal carousels while keeping them scrollable */
+.scrollbar-none { scrollbar-width: none; -ms-overflow-style: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ═══════════════════════  MOBILE INTERACTIONS  ═══════════════════════ */
+/* Tactile press — used on touch for cards & pill buttons. GPU transform only. */
+.press { transition: transform var(--tc-dur-fast) var(--tc-ease); }
+.press:active { transform: scale(0.97); }
+
+/* On touch (no hover), give article cards a subtle press instead of hover-lift */
+@media (hover: none) {
+  .card-premium:active {
+    transform: scale(0.985);
+    transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press:active,
+  .card-premium:active { transform: none; }
+}
+
+/* ═══════════════════════  PREMIUM POLISH  ═══════════════════════ */
+
+/* ─────────────────────  DESKTOP NAVIGATION  ─────────────────────
+   Three layers, deliberately quiet:
+     · a pointer-following ambient wash across the whole group
+     · a per-item hover treatment (lift + center-out underline)
+     · one shared indicator that travels to the active item
+   Everything animates transform, opacity, or paint — never layout. */
+
+.nav-links {
+  position: relative;
+  /* Smooths the pointer highlight without a JS interpolation loop: the
+     variable is registered below, so the browser tweens it for us. */
+  transition: --nav-mx 200ms var(--tc-ease-soft);
+}
+
+/* Registered so --nav-mx is a real length the browser can interpolate,
+   rather than an opaque string that would snap between frames. */
+@property --nav-mx {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+/* Ambient warm highlight trailing the pointer. Written on rAF from
+   components/layout/NavLinks.tsx — no React state, no layout reads.
+   The ellipse is short vertically so it fades out well before the group's
+   top and bottom edges, which is what keeps it from showing a cut edge.
+
+   Uses the --tc-glow-soft token rather than color-mix on purpose: the build
+   emits a solid-color fallback ahead of every color-mix, which for a wash this
+   large would mean a solid orange blob in any browser that lacks it. The token
+   is already an rgba, so every browser renders this identically — and it's
+   warmer in dark mode, where a fainter wash would disappear. */
+.nav-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
+  background: radial-gradient(
+    110px 26px at var(--nav-mx) 50%,
+    var(--tc-glow-soft),
+    transparent 70%
+  );
+}
+/* Lands the peak around 7% (light) / 11% (dark). */
+.nav-links[data-glow="true"] .nav-glow { opacity: 0.7; }
+
+.nav-link {
+  position: relative;
+  z-index: 1;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--tc-text-muted);
+  transition: color var(--tc-dur) var(--tc-ease);
+}
+.nav-link:hover { color: var(--tc-text); }
+
+/* Per-item wash. Kept faint on hover so it reads as a highlight rather than a
+   button, and only marginally stronger — plus a hairline — when active.
+   Opacity does double duty here: it fades the wash in *and* sets how strong it
+   lands, which keeps this on the shared warm tokens instead of hardcoded
+   percentages that would need a color-mix fallback. */
+.nav-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--tc-glow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-link:hover::before,
+.nav-link:focus-visible::before { opacity: 0.6; }
+
+/* Active: located, not shouting. The weight stays at 500 on purpose — bolding
+   the current item would change its width and shove the whole row sideways. */
+.nav-link[data-active="true"] { color: var(--tc-text); }
+.nav-link[data-active="true"]::before {
+  opacity: 0.75;
+  /* inset shadow rather than a border: same hairline, no box-model effect */
+  box-shadow: inset 0 0 0 1px var(--tc-glow);
+}
+
+.nav-link-label {
+  display: inline-block;
+  transition: transform var(--tc-dur) var(--tc-ease);
+}
+.nav-link:hover .nav-link-label,
+.nav-link:focus-visible .nav-link-label { transform: translateY(-1px); }
+
+/* Hover underline — grows from the center outward via scaleX, so no width
+   is animated and the rounded ends survive. */
+.nav-link-underline {
+  position: absolute;
+  left: 50%;
+  bottom: 0.25rem;
+  width: 20px;
+  height: 2px;
+  margin-left: -10px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--tc-primary), var(--tc-primary-light));
+  opacity: 0;
+  transform: scaleX(0);
+  pointer-events: none;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              opacity var(--tc-dur) var(--tc-ease);
+}
+/* Keyboard focus gets the same treatment as hover — the focus ring says
+   "you're here", this says "and this is what it does". */
+.nav-link:hover .nav-link-underline,
+.nav-link:focus-visible .nav-link-underline { opacity: 0.55; transform: scaleX(1); }
+/* The travelling indicator already marks the active item — don't stack two. */
+.nav-link[data-active="true"]:hover .nav-link-underline,
+.nav-link[data-active="true"]:focus-visible .nav-link-underline {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+/* The shared indicator. One node, moved with transform, so a route change
+   reads as a single object gliding to its new home. */
+.nav-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 0.25rem;
+  width: 20px;
+  height: 2px;
+  margin-left: -10px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--tc-primary), var(--tc-primary-light));
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(var(--nav-ind-x, 0px), 0, 0) scaleX(var(--nav-ind-s, 1));
+}
+/* Enabled after the first measurement (see NavLinks) so it fades in in place. */
+.nav-links[data-ready="true"] .nav-indicator {
+  transition: transform 240ms var(--tc-ease),
+              opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-links[data-ready="true"][data-has-active="true"] .nav-indicator {
+  opacity: 0.95;
+}
+/* Hovering (or focusing) the current item widens its own indicator instead of
+   drawing a second underline underneath it. */
+.nav-links:has(a[data-active="true"]:hover),
+.nav-links:has(a[data-active="true"]:focus-visible) { --nav-ind-s: 1.3; }
+
+/* ── Logo ──
+   A lift and a degree of tilt. Enough to feel alive, not enough to bounce. */
+.nav-logo-mark { transition: transform var(--tc-dur) var(--tc-ease); }
+.nav-logo:hover .nav-logo-mark { transform: translateY(-1.5px) rotate(-3deg); }
+.nav-logo-halo {
+  opacity: 0;
+  transition: opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-logo:hover .nav-logo-halo { opacity: 0.6; }
+.nav-logo-word { transition: filter var(--tc-dur) var(--tc-ease); }
+.nav-logo:hover .nav-logo-word { filter: saturate(1.15) brightness(1.06); }
+
+/* ── Read Articles CTA ──
+   Refines .btn-primary for the navbar only: a shallower lift than a page CTA
+   (the bar is already close to the viewport edge) and a slow gradient drift. */
+.nav-cta {
+  background-size: 165% 100%;
+  background-position: 0% 50%;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease),
+              background-position var(--tc-dur-slow) var(--tc-ease);
+}
+.nav-cta:hover {
+  transform: translateY(-1px);
+  background-position: 100% 50%;
+  box-shadow: 0 10px 26px -8px var(--tc-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+.nav-cta:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: var(--tc-dur-fast);
+}
+.nav-cta-arrow { transition: transform var(--tc-dur) var(--tc-ease); }
+.nav-cta:hover .nav-cta-arrow { transform: translateX(3px); }
+
+/* ── Theme toggle ──
+   The icons already own a transform for the sun/moon swap, so the hover tilt
+   lives on a wrapper to avoid the two fighting over the same property. */
+.theme-toggle {
+  transition: transform var(--tc-dur-fast) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.theme-toggle:hover {
+  border-color: color-mix(in srgb, var(--tc-primary) 55%, transparent);
+  color: var(--tc-primary);
+}
+.theme-toggle:active { transform: scale(0.96); }
+.theme-icon-wrap { transition: transform var(--tc-dur) var(--tc-ease); }
+.theme-toggle:hover .theme-icon-wrap { transform: rotate(12deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  /* The pointer highlight never activates under reduced motion (NavLinks skips
+     attaching its listeners), but pin it off in CSS too in case it was already
+     showing when the preference changed. */
+  .nav-glow { opacity: 0 !important; }
+  .nav-logo:hover .nav-logo-mark,
+  .nav-link:hover .nav-link-label,
+  .theme-toggle:hover .theme-icon-wrap { transform: none; }
+}
+
+/* Skeleton shimmer — a calm sweep, GPU transform only */
+@keyframes skeletonSweep {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--tc-bg-elevated);
+  border-radius: 12px;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--tc-text) 6%, transparent),
+    transparent
+  );
+  animation: skeletonSweep 1.4s var(--tc-ease-soft) infinite;
+}
+
+/* Reading Mode — calm focus: dim the periphery, ease the measure a touch */
+html.reading-focus .reading-dim {
+  opacity: 0.32;
+  filter: saturate(0.85);
+  transition: opacity var(--tc-dur-slow) var(--tc-ease),
+              filter var(--tc-dur-slow) var(--tc-ease);
+}
+html.reading-focus .prose-tc p,
+html.reading-focus .prose-tc li {
+  font-size: 1.125rem;
+  line-height: 1.85;
+}
+
+/* Soft spotlight cursor — a faint warm glow trailing the pointer (desktop) */
+.spotlight-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
+  background: radial-gradient(
+    260px circle at var(--sx, 50%) var(--sy, 50%),
+    color-mix(in srgb, var(--tc-primary) 8%, transparent),
+    transparent 68%
+  );
+}
+.spotlight-layer[data-active="true"] { opacity: 1; }
+
+/* Floating utility button entrance (scroll-to-top) */
+@keyframes floatBtnIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.9); }
+  to   { opacity: 1; transform: none; }
+}
+.float-btn-in { animation: floatBtnIn var(--tc-dur) var(--tc-ease) both; }
+
+/* Bookmark confirmation pop */
+@keyframes bookmarkPop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+.animate-bookmark-pop { animation: bookmarkPop var(--tc-dur-slow) var(--tc-ease); }
+
+/* View Transitions — quick, calm cross-fade for navigations & theme swap */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 220ms;
+  animation-timing-function: var(--tc-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none !important; }
+  .spotlight-layer { display: none !important; }
+  .animate-bookmark-pop { animation: none !important; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
 
 }
 /* end @layer components */

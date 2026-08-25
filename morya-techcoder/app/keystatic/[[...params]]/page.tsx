@@ -1,15 +1,20 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { KEYSTATIC_ENABLED } from "@/lib/keystatic";
-import KeystaticApp from "./keystatic-app";
 
 /**
- * Server boundary for the Keystatic admin UI at `/keystatic` and every
- * sub-route (the optional catch-all `[[...params]]` segment).
+ * Mounts the Keystatic admin UI at `/keystatic` and every sub-route (the
+ * optional catch-all `[[...params]]` segment) — but only outside production,
+ * where the file-based editor can actually write.
  *
- * The editor itself is a client component, but the decision to serve it is made
- * here on the server so a production deployment never ships the admin UI.
+ * The editor is imported lazily so that a production build never pulls the
+ * admin bundle into a route it refuses to serve.
  */
-export default function KeystaticPage() {
+export const metadata: Metadata = { robots: { index: false, follow: false } };
+
+export default async function KeystaticAdminPage() {
   if (!KEYSTATIC_ENABLED) notFound();
+
+  const { default: KeystaticApp } = await import("./keystatic-app");
   return <KeystaticApp />;
 }

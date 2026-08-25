@@ -4,8 +4,8 @@ import path from "path";
 import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import { calcReadingTime } from "@/lib/utils";
-import type { PostDetail, PostSummary, Difficulty } from "@/types/blog";
-import type { BlogCategory } from "@/lib/categories";
+import type { PostDetail, PostSummary, Difficulty, ReviewMeta, SeoMeta } from "@/types/blog";
+import { ACTIVE_CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
 import { mdxComponents } from "@/content/mdx-components";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
@@ -39,6 +39,35 @@ function resolveAsset(value: unknown): string {
 function toISODate(value: unknown): string {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
   return typeof value === "string" ? value : "";
+}
+
+/**
+ * Normalizes the SEO block. `ogImage` moved under `seo` when the schema was
+ * reorganized; the legacy top-level key is still honoured so older posts (and
+ * anything hand-written against the old shape) keep their share image.
+ */
+function resolveSeo(data: Record<string, unknown>): SeoMeta | undefined {
+  const seo = (data.seo ?? {}) as SeoMeta;
+  const ogImage = resolveAsset(seo.ogImage ?? data.ogImage);
+  const result: SeoMeta = {
+    title: seo.title || undefined,
+    description: seo.description || undefined,
+    ogImage: ogImage || undefined,
+    canonical: seo.canonical || undefined,
+    noindex: seo.noindex || undefined,
+  };
+  return Object.values(result).some(Boolean) ? result : undefined;
+}
+
+/** A review block only counts as present once it carries an actual score. */
+function resolveReview(value: unknown): ReviewMeta | undefined {
+  const review = (value ?? {}) as ReviewMeta;
+  if (typeof review.rating !== "number") return undefined;
+  return {
+    product: review.product || undefined,
+    rating: review.rating,
+    price: review.price || undefined,
+  };
 }
 
 /** Recursively collects every `.md` / `.mdx` file under content/posts. */
@@ -81,23 +110,27 @@ function loadPosts(): PostDetail[] {
       if (bySlug.has(slug)) return; // first (preferred) file wins
 
       const { data, content } = matter(fs.readFileSync(filePath, "utf-8"));
+      const seo = resolveSeo(data);
       bySlug.set(slug, {
         id: String(index + 1),
         title: data.title ?? slug,
         slug,
         excerpt: data.excerpt ?? "",
         date: toISODate(data.date),
-        category: (data.category as BlogCategory) ?? "WebDev",
+        category: (data.category as BlogCategory) ?? "Programming",
         tags: data.tags ?? [],
         readingTime: calcReadingTime(content),
         coverImage: resolveAsset(data.coverImage),
         thumbnail: resolveAsset(data.thumbnail),
-        ogImage: resolveAsset(data.ogImage),
+        thumbnailAlt: data.thumbnailAlt || undefined,
+        ogImage: seo?.ogImage ?? resolveAsset(data.ogImage),
         difficulty: (data.difficulty as Difficulty) || undefined,
         updated: toISODate(data.updated) || undefined,
         prerequisites: data.prerequisites || undefined,
         draft: data.draft ?? false,
-        seo: data.seo || undefined,
+        featured: data.featured ?? false,
+        review: resolveReview(data.review),
+        seo,
         body: content.trim(),
       });
     });
@@ -116,8 +149,11 @@ const blogPosts: PostDetail[] = loadPosts();
  * a client component's props.
  */
 export const postSummaries: PostSummary[] = blogPosts.map(
-  ({ body, ...summary }) => summary
+  ({ body: _body, ...summary }) => summary
 );
+
+// Named export used by main-branch code that expects `blogPosts`.
+export { blogPosts };
 
 /** Looks up a single blog post, including its body, by URL slug. */
 export function getBlogBySlug(slug: string): PostDetail | undefined {
@@ -129,9 +165,14 @@ export function getAllSlugs(): string[] {
   return blogPosts.map((post) => post.slug);
 }
 
-/** Returns all unique categories present in the loaded posts. */
+/**
+ * Returns the categories that actually have posts, in the canonical order
+ * defined by `ACTIVE_CATEGORY_KEYS` (so blog filters read Programming → AI →
+ * Technology … rather than in whatever order the newest posts happen to fall).
+ */
 export function getCategories(): BlogCategory[] {
-  return [...new Set(postSummaries.map((post) => post.category))];
+  const present = new Set(postSummaries.map((post) => post.category));
+  return ACTIVE_CATEGORY_KEYS.filter((category) => present.has(category));
 }
 
 /**

@@ -10,7 +10,12 @@ morya-techcoder/
 │   │   ├── page.tsx          # Home page  →  /
 │   │   └── blog/
 │   │       ├── page.tsx      # Blog list  →  /blog
-│   │       └── [slug]/page.tsx  # Article  →  /blog/:slug (SSG)
+│   │       └── [slug]/
+│   │           ├── layout.tsx # Article-only mono font + ReadingLayer (Framer)
+│   │           ├── article.css # Route-scoped prose styles
+│   │           └── page.tsx   # Article  →  /blog/:slug (SSG)
+│   ├── sitemap.ts             # Static sitemap for routes, topics, posts, images
+│   ├── robots.ts              # Crawler policy; excludes CMS/API routes
 │   ├── keystatic/[[...params]]/page.tsx   # Keystatic admin UI  →  /keystatic
 │   └── api/keystatic/[...params]/route.ts # Keystatic read/write API
 │
@@ -22,7 +27,8 @@ morya-techcoder/
 │
 ├── content/
 │   ├── posts/*.mdx           # The blog posts themselves
-│   ├── loader.ts             # Reads/parses posts → BlogPost[]  (DATA)
+│   ├── loader.ts             # Reads/parses posts → BlogPost[]  (DATA only)
+│   ├── compile.ts            # compileBlogContent — MDX → React (article routes)
 │   ├── mdx-components.tsx     # MDX tag → React component map    (PRESENTATION)
 │   └── keystatic-components.tsx  # Insertable components for the Keystatic editor
 │
@@ -32,6 +38,8 @@ morya-techcoder/
 │
 ├── lib/                      # Pure logic (no React, no I/O side effects)
 │   ├── categories.ts         # SINGLE SOURCE OF TRUTH for categories
+│   ├── category-icons.ts     # lucide icon name → component map
+│   ├── featureFlags.ts       # Progressive feature rollout (Testimonials, FAQ, …)
 │   ├── posts.ts              # filterPosts / getFeaturedPosts / getRelatedPosts …
 │   └── utils.ts              # cn, formatDate, slugify, getHeadings
 │
@@ -39,6 +47,7 @@ morya-techcoder/
 │   └── blog.ts               # BlogPost, Difficulty (shared types)
 │
 ├── public/
+│   ├── hero_preview.svg      # Hero browser-mockup featured image
 │   └── content/blog/         # Blog images (Keystatic uploads land here)
 │
 ├── docs/                     # You are here

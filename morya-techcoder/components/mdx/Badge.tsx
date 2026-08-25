@@ -13,15 +13,22 @@ const VARIANTS: Record<BadgeVariant, string> = {
 /**
  * A small inline label/pill.
  *
+ * Accepts its label either as children (natural in hand-written MDX) or as a
+ * `text` prop, which is what the Keystatic editor writes — inline components
+ * there carry fields rather than nested content.
+ *
  * MDX usage:
  *   <Badge variant="success">New</Badge>
+ *   <Badge variant="success" text="New" />
  */
 export default function Badge({
   variant = "default",
+  text,
   children,
 }: {
   variant?: BadgeVariant;
-  children: React.ReactNode;
+  text?: string;
+  children?: React.ReactNode;
 }) {
   return (
     <span
@@ -30,7 +37,7 @@ export default function Badge({
         VARIANTS[variant] ?? VARIANTS.default
       )}
     >
-      {children}
+      {children ?? text}
     </span>
   );
 }
