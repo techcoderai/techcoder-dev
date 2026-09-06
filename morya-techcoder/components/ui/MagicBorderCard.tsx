@@ -26,7 +26,7 @@ export default function MagicBorderCard({ post, size = "default", className }: P
         href={`/blog/${post.slug}`}
         aria-label={`Read: ${post.title}`}
         className={cn(
-          "card-premium focus-ring flex flex-col h-full rounded-xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-sm)]",
+          "card-premium focus-ring flex flex-col h-full rounded-xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-sm)] cursor-pointer",
           isLg && "rounded-2xl"
         )}
       >
