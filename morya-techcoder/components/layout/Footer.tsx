@@ -23,19 +23,26 @@ const columns = [
       { href: "/blog", label: "Newsletter" },
     ],
   },
+  {
+    title: "Company",
+    links: [
+      { href: "/about", label: "About Us" },
+      { href: "/contact", label: "Contact Us" },
+    ],
+  },
 ];
 
 const socials = [
   { icon: Github, href: "#", label: "GitHub" },
   { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Mail, href: "#", label: "Email" },
+  { icon: Mail, href: "mailto:mailtechcoder@gmail.com", label: "Email" },
 ];
 
 export default function Footer() {
   return (
     <footer className="relative z-10 mt-4 border-t border-tc-border bg-tc-bg-secondary">
       <div className="container-wide mx-auto px-4 sm:px-6 md:px-8 py-16 md:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10 md:gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-2 max-w-sm">
             <Link href="/" className="focus-ring rounded-lg inline-flex items-center gap-2.5 mb-5 group">
