@@ -41,11 +41,11 @@ export interface Author {
 }
 
 /**
- * The shape of a single blog post after it has been loaded from disk and had
- * its frontmatter parsed. This is the contract shared between the content
- * layer (`content/loader.ts`) and every UI component that renders a post.
+ * Everything needed to render a post in a card, list, or related-posts grid.
+ * Deliberately excludes the article body so list views cannot serialize an
+ * entire article into the client payload.
  */
-export interface BlogPost {
+export interface PostSummary {
   id: string;
   title: string;
   slug: string;
@@ -53,8 +53,8 @@ export interface BlogPost {
   date: string;
   category: BlogCategory;
   tags: string[];
-  /** Derived from the body at load time — never authored by hand. */
   readingTime: string;
+  coverImage?: string;
   thumbnail: string;
   /** Describes the hero image. Falls back to the title when not set. */
   thumbnailAlt?: string;
@@ -76,12 +76,15 @@ export interface BlogPost {
   review?: ReviewMeta;
   /** Optional SEO overrides. Falls back to `title` / `excerpt` when empty. */
   seo?: SeoMeta;
-  /** Raw MDX/markdown body of the article. */
+}
+
+/** A summary plus the raw MDX/markdown body. Only used by the article route. */
+export interface PostDetail extends PostSummary {
   body: string;
 }
 
-/** Compact shape safe to serialize into interactive article lists. */
-export type BlogPostSummary = Pick<
-  BlogPost,
-  "id" | "title" | "slug" | "excerpt" | "date" | "category" | "tags" | "readingTime" | "thumbnail"
->;
+// Aliases so auto-merged files that use the main-branch naming continue to compile.
+/** @deprecated Use PostDetail */
+export type BlogPost = PostDetail;
+/** @deprecated Use PostSummary */
+export type BlogPostSummary = PostSummary;

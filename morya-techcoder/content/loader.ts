@@ -2,9 +2,11 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { compileMDX } from "next-mdx-remote/rsc";
 import { calcReadingTime } from "@/lib/utils";
-import type { BlogPost, Difficulty, ReviewMeta, SeoMeta } from "@/types/blog";
+import type { PostDetail, PostSummary, Difficulty, ReviewMeta, SeoMeta } from "@/types/blog";
 import { ACTIVE_CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
+import { mdxComponents } from "@/content/mdx-components";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
 
@@ -24,6 +26,19 @@ function resolveAsset(value: unknown): string {
   if (typeof value !== "string" || value === "") return "";
   if (/^(https?:)?\/\//.test(value) || value.startsWith("/")) return value;
   return `${IMAGE_PUBLIC_PATH}/${value}`;
+}
+
+/**
+ * Normalizes a frontmatter date to `YYYY-MM-DD`.
+ *
+ * Unquoted YAML dates (which Keystatic writes) are parsed into JS `Date`
+ * objects by gray-matter, while hand-written quoted dates stay strings. Without
+ * this, `<time dateTime>` emits a non-ISO value and a `Date` ends up in the RSC
+ * payload.
+ */
+function toISODate(value: unknown): string {
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  return typeof value === "string" ? value : "";
 }
 
 /**
@@ -82,10 +97,10 @@ function slugFromPath(filePath: string): string {
  * To add a post, just drop a `.mdx` file in content/posts/ (or use Keystatic
  * at /keystatic) — it is discovered automatically, no registration needed.
  */
-function loadPosts(): BlogPost[] {
+function loadPosts(): PostDetail[] {
   if (!fs.existsSync(POSTS_DIR)) return [];
 
-  const bySlug = new Map<string, BlogPost>();
+  const bySlug = new Map<string, PostDetail>();
 
   findPostFiles(POSTS_DIR)
     // Prefer `.mdx` over a legacy `.md` twin for the same slug.
@@ -101,15 +116,16 @@ function loadPosts(): BlogPost[] {
         title: data.title ?? slug,
         slug,
         excerpt: data.excerpt ?? "",
-        date: data.date ?? "",
+        date: toISODate(data.date),
         category: (data.category as BlogCategory) ?? "Programming",
         tags: data.tags ?? [],
         readingTime: calcReadingTime(content),
+        coverImage: resolveAsset(data.coverImage),
         thumbnail: resolveAsset(data.thumbnail),
         thumbnailAlt: data.thumbnailAlt || undefined,
-        ogImage: seo?.ogImage ?? "",
+        ogImage: seo?.ogImage ?? resolveAsset(data.ogImage),
         difficulty: (data.difficulty as Difficulty) || undefined,
-        updated: data.updated || undefined,
+        updated: toISODate(data.updated) || undefined,
         prerequisites: data.prerequisites || undefined,
         draft: data.draft ?? false,
         featured: data.featured ?? false,
@@ -125,11 +141,28 @@ function loadPosts(): BlogPost[] {
 }
 
 /** All published (and, in dev, draft) blog posts, sorted newest first. */
-export const blogPosts: BlogPost[] = loadPosts();
+const blogPosts: PostDetail[] = loadPosts();
 
-/** Looks up a single blog post by its URL slug. */
-export function getBlogBySlug(slug: string): BlogPost | undefined {
+/**
+ * Body-free view of every post, for cards, lists, and related-post grids.
+ * Rendering a list from these makes it impossible to leak an article body into
+ * a client component's props.
+ */
+export const postSummaries: PostSummary[] = blogPosts.map(
+  ({ body: _body, ...summary }) => summary
+);
+
+// Named export used by main-branch code that expects `blogPosts`.
+export { blogPosts };
+
+/** Looks up a single blog post, including its body, by URL slug. */
+export function getBlogBySlug(slug: string): PostDetail | undefined {
   return blogPosts.find((post) => post.slug === slug);
+}
+
+/** Every slug that should be pre-rendered at build time. */
+export function getAllSlugs(): string[] {
+  return blogPosts.map((post) => post.slug);
 }
 
 /**
@@ -138,6 +171,19 @@ export function getBlogBySlug(slug: string): BlogPost | undefined {
  * Technology … rather than in whatever order the newest posts happen to fall).
  */
 export function getCategories(): BlogCategory[] {
-  const present = new Set(blogPosts.map((post) => post.category));
+  const present = new Set(postSummaries.map((post) => post.category));
   return ACTIVE_CATEGORY_KEYS.filter((category) => present.has(category));
+}
+
+/**
+ * Compiles an MDX/markdown body string into a renderable React element using
+ * the shared component map. Used on the blog detail page (server-rendered).
+ */
+export async function compileBlogContent(rawBody: string) {
+  const { content } = await compileMDX({
+    source: rawBody,
+    components: mdxComponents,
+    options: { parseFrontmatter: false },
+  });
+  return content;
 }

@@ -3,8 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
-import { blogPosts, getBlogBySlug } from "@/content/loader";
-import { compileBlogContent } from "@/content/compile";
+import { postSummaries, getBlogBySlug, getAllSlugs, compileBlogContent } from "@/content/loader";
 import { getAuthor } from "@/lib/author";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getRelatedPosts } from "@/lib/posts";
@@ -24,7 +23,7 @@ type Props = {
 
 /** Pre-render all known article slugs at build time. */
 export async function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }));
+  return getAllSlugs().map((slug) => ({ slug }));
 }
 
 /**
@@ -90,7 +89,7 @@ export default async function BlogDetailPage({ params }: Props) {
   const showUpdated = post.updated && post.updated !== post.date;
   const author = getAuthor();
 
-  const related = getRelatedPosts(blogPosts, post, 2);
+  const related = getRelatedPosts(postSummaries, post, 2);
   const authorJsonLd = {
     "@type": "Person",
     name: author.name,

@@ -16,6 +16,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${SITE_URL}/about`,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${SITE_URL}/contact`,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
   // "Coming soon" topics render a placeholder and have nothing to index yet.

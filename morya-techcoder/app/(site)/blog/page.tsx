@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { blogPosts, getCategories } from "@/content/loader";
+import { postSummaries, getCategories } from "@/content/loader";
 import BlogListContent from "@/components/sections/BlogListContent";
-import { toPostSummary } from "@/lib/posts";
-
-const postSummaries = blogPosts.map(toPostSummary);
 
 export const metadata: Metadata = {
   title: "Blog | TechCoder",

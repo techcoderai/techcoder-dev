@@ -4,7 +4,6 @@ import TrustedBy from "@/components/sections/TrustedBy";
 import TopicGrid from "@/components/sections/TopicGrid";
 import HomeContent from "@/components/sections/HomeContent";
 import Capabilities from "@/components/sections/Capabilities";
-import Testimonials from "@/components/sections/Testimonials";
 import FAQ from "@/components/sections/FAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 import NewsletterBox from "@/components/ui/NewsletterBox";
@@ -46,8 +45,6 @@ export default function Home() {
       <div className="render-deferred">
         <Capabilities />
       </div>
-      {isFeatureEnabled("showTestimonials") && <Testimonials />}
-
       <section className="render-deferred section-padding pt-0">
         <div className="container-wide mx-auto">
           <NewsletterBox />

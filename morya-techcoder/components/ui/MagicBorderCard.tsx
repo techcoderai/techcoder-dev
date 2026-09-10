@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
-import type { BlogPostSummary } from "@/types/blog";
+import type { PostSummary } from "@/types/blog";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 
 const RECENT_POST_CUTOFF = Date.now() - 7 * 86400000;
@@ -10,7 +10,7 @@ const RECENT_POST_CUTOFF = Date.now() - 7 * 86400000;
 type Size = "default" | "lg";
 
 type Props = {
-  post: BlogPostSummary;
+  post: PostSummary;
   /** `lg` uses a taller media area — intended for premium carousels. */
   size?: Size;
   className?: string;
@@ -26,7 +26,7 @@ export default function MagicBorderCard({ post, size = "default", className }: P
         href={`/blog/${post.slug}`}
         aria-label={`Read: ${post.title}`}
         className={cn(
-          "card-premium focus-ring flex flex-col h-full rounded-xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-sm)]",
+          "card-premium focus-ring flex flex-col h-full rounded-xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-sm)] cursor-pointer",
           isLg && "rounded-2xl"
         )}
       >

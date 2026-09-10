@@ -88,7 +88,7 @@ export default function HeroSection() {
       <div
         aria-hidden="true"
         style={{ perspective: 1400, animationDelay: "400ms" }}
-        className="hero-browser-enter container-wide relative mx-auto mt-10 w-[calc(100%-1rem)] max-w-3xl sm:mt-16 sm:w-full md:mt-20"
+        className="hero-browser-enter container-wide relative mx-auto mt-10 w-[calc(100%-1rem)] max-w-5xl sm:mt-16 sm:w-full md:mt-20"
       >
         <div className="hero-browser-glow" aria-hidden="true" />
         <TiltSurface
@@ -159,9 +159,9 @@ export default function HeroSection() {
 
         {/* Floating cards — z-10 so they sit above .hero-browser-float (z-1) */}
         <div
-          className="pointer-events-none hidden md:flex absolute z-10 -left-6 lg:-left-12 top-20 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float"
+          className="pointer-events-none hidden md:flex absolute z-10 -left-6 lg:-left-12 top-20 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float whitespace-nowrap"
         >
-          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-tc-primary to-tc-secondary text-white">
+          <span className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-tc-primary to-tc-secondary text-white">
             <Compass size={16} />
           </span>
           <div className="text-left">
@@ -171,9 +171,9 @@ export default function HeroSection() {
         </div>
 
         <div
-          className="pointer-events-none hidden md:flex absolute z-10 -right-6 lg:-right-12 bottom-14 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay"
+          className="pointer-events-none hidden md:flex absolute z-10 -right-6 lg:-right-12 bottom-14 items-center gap-2.5 px-4 py-3 rounded-2xl glass-strong animate-float-delay whitespace-nowrap"
         >
-          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-tc-primary/12 text-tc-primary">
+          <span className="flex shrink-0 items-center justify-center w-9 h-9 rounded-xl bg-tc-primary/12 text-tc-primary">
             <Star size={16} className="fill-current" />
           </span>
           <div className="text-left">
@@ -183,9 +183,9 @@ export default function HeroSection() {
         </div>
 
         <div
-          className="pointer-events-none hidden lg:flex absolute z-10 -right-8 top-8 items-center gap-2 px-3.5 py-2.5 rounded-2xl glass-strong animate-float-delay-2"
+          className="pointer-events-none hidden lg:flex absolute z-10 -right-8 top-8 items-center gap-2 px-3.5 py-2.5 rounded-2xl glass-strong animate-float-delay-2 whitespace-nowrap"
         >
-          <span className="flex items-center justify-center w-8 h-8 rounded-lg bg-tc-primary/12 text-tc-primary">
+          <span className="flex shrink-0 items-center justify-center w-8 h-8 rounded-lg bg-tc-primary/12 text-tc-primary">
             <TrendingUp size={15} />
           </span>
           <div className="text-left">

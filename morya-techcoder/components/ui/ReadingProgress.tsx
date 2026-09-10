@@ -1,44 +1,64 @@
 "use client";
 
-import { useCallback, useRef } from "react";
-import { useScrollProgress } from "@/hooks/useScrollProgress";
+import { useEffect, useRef } from "react";
 
 /**
- * Top reading progress bar — 3px, orange gradient, rounded ends, soft glow.
+ * Scroll progress bar for article pages.
  *
- * Updated imperatively with a compositor-only scale transform, avoiding layout
- * recalculation while the page scrolls.
+ * Writes `transform: scaleX()` straight to the DOM inside a rAF-coalesced
+ * scroll handler: no React state, no per-event re-render, and no layout-
+ * triggering width animation. The bar is purely scroll-linked, so there is no
+ * independent motion to reduce for `prefers-reduced-motion` users.
  */
 export default function ReadingProgress() {
-  const fillRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const lastRoundedRef = useRef(-1);
 
-  const onProgress = useCallback((p: number) => {
-    if (fillRef.current) fillRef.current.style.transform = `scaleX(${p / 100})`;
-    const rounded = Math.round(p);
-    if (rounded !== lastRoundedRef.current) {
-      progressRef.current?.setAttribute("aria-valuenow", String(rounded));
-      lastRoundedRef.current = rounded;
-    }
-  }, []);
+  useEffect(() => {
+    let frame = 0;
 
-  useScrollProgress(onProgress);
+    const paint = () => {
+      frame = 0;
+      const el = document.scrollingElement || document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
+      const rounded = Math.round(progress * 100);
+      if (rounded !== lastRoundedRef.current) {
+        progressRef.current?.setAttribute("aria-valuenow", String(rounded));
+        lastRoundedRef.current = rounded;
+      }
+    };
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    paint();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule, { passive: true });
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, []);
 
   return (
     <div
       ref={progressRef}
-      className="fixed top-0 left-0 right-0 z-[70] h-[3px] bg-transparent pointer-events-none"
       role="progressbar"
       aria-label="Reading progress"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={0}
+      className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-[3px]"
     >
       <div
-        ref={fillRef}
-        className="h-full origin-left rounded-full bg-gradient-to-r from-tc-primary to-tc-secondary shadow-glow will-change-transform"
+        ref={barRef}
         style={{ transform: "scaleX(0)" }}
+        className="h-full w-full origin-left rounded-r-full bg-gradient-to-r from-tc-primary to-tc-secondary shadow-glow will-change-transform"
       />
     </div>
   );

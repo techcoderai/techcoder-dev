@@ -1,8 +1,25 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { Moon, Sun } from "lucide-react";
 
+/** The theme lives on <html>, so read it from the DOM instead of mirroring it in state. */
+function subscribe(onChange: () => void): () => void {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+  return () => observer.disconnect();
+}
+
 export default function ThemeToggle({ className = "" }: { className?: string }) {
+  const isDark = useSyncExternalStore(
+    subscribe,
+    () => document.documentElement.classList.contains("dark"),
+    () => false
+  );
+
   const toggle = () => {
     const root = document.documentElement;
     const nextIsDark = !root.classList.contains("dark");
@@ -11,7 +28,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
       try {
         localStorage.setItem("tc-theme", nextIsDark ? "dark" : "light");
       } catch {
-        /* ignore */
+        /* storage unavailable (private mode) — the class still applies */
       }
     };
 
@@ -29,21 +46,21 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
     <button
       type="button"
       onClick={toggle}
-      aria-label="Toggle color theme"
-      className={`theme-toggle focus-ring flex h-10 w-10 items-center justify-center rounded-full border border-tc-border bg-tc-glass-bg text-tc-text-muted ${className}`}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={isDark}
+      className={`focus-ring group relative flex h-9 w-9 items-center justify-center rounded-full border border-tc-border bg-tc-glass-bg text-tc-text-muted transition-colors duration-300 hover:border-tc-primary hover:text-tc-primary ${className}`}
     >
-      {/* The hover tilt lives on this wrapper because the icons themselves
-          already animate `transform` for the sun/moon crossfade. */}
-      <span className="theme-icon-wrap relative flex h-4 w-4 items-center justify-center">
-        <Sun
-          size={16}
-          className="theme-icon-sun absolute transition-[transform,opacity] duration-[var(--tc-dur)]"
-        />
-        <Moon
-          size={16}
-          className="theme-icon-moon absolute transition-[transform,opacity] duration-[var(--tc-dur)]"
-        />
-      </span>
+      {/* Icon state is CSS-driven so it is correct on first paint, before hydration. */}
+      <Sun
+        size={16}
+        aria-hidden="true"
+        className="absolute rotate-0 scale-100 opacity-100 transition-all duration-500 dark:rotate-90 dark:scale-0 dark:opacity-0"
+      />
+      <Moon
+        size={16}
+        aria-hidden="true"
+        className="absolute -rotate-90 scale-0 opacity-0 transition-all duration-500 dark:rotate-0 dark:scale-100 dark:opacity-100"
+      />
     </button>
   );
 }

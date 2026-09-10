@@ -8,8 +8,11 @@ import {
 } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { postSummaries } from "@/content/loader";
 
 export default function Capabilities() {
+  const publishedCount = postSummaries.length;
+
   return (
     <section className="section-padding relative">
       <div className="container-wide mx-auto">
@@ -124,7 +127,7 @@ export default function Capabilities() {
               </div>
               <div className="flex items-center gap-6 sm:gap-10">
                 {[
-                  { v: "500+", l: "Articles published" },
+                  { v: String(publishedCount), l: "Articles published" },
                   { v: "0", l: "Paywalls" },
                 ].map((s) => (
                   <div key={s.l} className="text-left">

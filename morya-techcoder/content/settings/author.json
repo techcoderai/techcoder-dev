@@ -1,7 +1,16 @@
-{
-  "name": "Atharva Yadav",
-  "role": "Founder, TechCoder",
-  "bio": "Writes about the systems behind modern software — what they promise, and what they actually do in production.",
-  "avatar": null,
-  "url": null
-}
+[
+  {
+    "name": "Atharva Yadav",
+    "role": "Team, TechCoder",
+    "bio": "Writes about software systems, developer tooling",
+    "avatar": null,
+    "url": null
+  },
+  {
+    "name": "Aaditya Yadav",
+    "role": "Team, TechCoder",
+    "bio": "Writes about AI trends, gadgets, developer tooling.",
+    "avatar": null,
+    "url": null
+  }
+]

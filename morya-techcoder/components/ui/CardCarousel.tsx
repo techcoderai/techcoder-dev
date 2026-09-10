@@ -171,14 +171,22 @@ export default function CardCarousel({
     lastTRef.current = performance.now();
     velocityRef.current = 0;
     setPaused(true);
-    e.currentTarget.setPointerCapture(e.pointerId);
+    // Pointer capture is deferred to the first real move (see onPointerMove):
+    // capturing on every press retargets the resulting `click` event to this
+    // div instead of the link the user pressed, which silently breaks
+    // navigation on a plain tap/click.
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (!draggingRef.current) return;
     const now = performance.now();
     const dx = e.clientX - lastXRef.current;
-    if (Math.abs(dx) > 2) dragMovedRef.current = true;
+    if (Math.abs(dx) > 6 && !dragMovedRef.current) {
+      dragMovedRef.current = true;
+      // Now that this is a genuine drag (not a click), capture the pointer so
+      // move/up events keep arriving even if the cursor leaves the viewport.
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
     const dt = Math.max(1, now - lastTRef.current);
     offsetRef.current += dx;
     velocityRef.current = (dx / dt) * 1000;
@@ -275,13 +283,18 @@ export default function CardCarousel({
         >
           {[0, 1].map((copy) =>
             loopPosts.map((post, i) => {
-              const isClone = copy === 1 || i >= posts.length;
+              // The track scrolls continuously and wraps seamlessly, so both
+              // copies (and any padding repeats used to fill out fewer than 4
+              // unique posts) are real, visible, clickable cards at different
+              // points in the animation — never disable pointer events on them.
+              // `aria-hidden` on repeats just avoids the same title being
+              // announced more than once to assistive tech.
+              const isDuplicateContent = copy === 1 || i >= posts.length;
               return (
                 <div
                   key={`${copy}-${post.id}-${i}`}
                   className={cn("shrink-0", cardWidth)}
-                  aria-hidden={isClone || undefined}
-                  inert={isClone || undefined}
+                  aria-hidden={isDuplicateContent || undefined}
                 >
                   <MagicBorderCard post={post} size={size} />
                 </div>

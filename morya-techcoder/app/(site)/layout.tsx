@@ -24,7 +24,10 @@ export default function SiteLayout({
     <ReadingChromeProvider>
       <div className="relative flex min-h-screen flex-col">
         {/* Global ambient background */}
-        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
+        >
           <div className="absolute inset-0 grid-overlay opacity-60" />
           <div className="ambient-orb ambient-orb-primary absolute -top-40 right-[-10%] h-[640px] w-[640px] opacity-50 animate-pulse-glow" />
           <div className="ambient-orb ambient-orb-soft absolute top-[40%] left-[-15%] h-[520px] w-[520px] opacity-35 animate-float-slow" />

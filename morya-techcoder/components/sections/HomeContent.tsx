@@ -2,14 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { ArrowRight, Clock } from "lucide-react";
-import { blogPosts } from "@/content/loader";
+import { postSummaries as blogPosts } from "@/content/loader";
 import { categoryHref, type BlogCategory } from "@/lib/categories";
-import { getFeaturedPosts, getPostsByCategory, toPostSummary } from "@/lib/posts";
+import { getFeaturedPosts, getPostsByCategory } from "@/lib/posts";
 import { cn, formatDate } from "@/lib/utils";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 import ArticleCard from "@/components/ui/ArticleCard";
 import CategoryBadge from "@/components/ui/CategoryBadge";
-import type { BlogPost } from "@/types/blog";
+import type { PostSummary } from "@/types/blog";
 
 /** Code-split the infinite carousel so its client JS isn't in the homepage critical path. */
 const CardCarousel = dynamic(() => import("@/components/ui/CardCarousel"), {
@@ -90,7 +90,7 @@ function RailHeader({
 }
 
 /* ── Featured: asymmetric hero + supporting stack ─────────────────────────── */
-function FeaturedAsymmetric({ posts }: { posts: BlogPost[] }) {
+function FeaturedAsymmetric({ posts }: { posts: PostSummary[] }) {
   if (posts.length === 0) return null;
   const [lead, ...rest] = posts;
   const supporting = rest.slice(0, 3);
@@ -163,7 +163,7 @@ function FeaturedAsymmetric({ posts }: { posts: BlogPost[] }) {
 }
 
 /* ── Ranked dense list (Technology) ───────────────────────────────────────── */
-function RankedList({ posts }: { posts: BlogPost[] }) {
+function RankedList({ posts }: { posts: PostSummary[] }) {
   return (
     <div className="rounded-2xl border border-tc-border bg-tc-bg-card overflow-hidden divide-y divide-tc-border">
       {posts.map((post, i) => (
@@ -221,7 +221,7 @@ function RankedList({ posts }: { posts: BlogPost[] }) {
 }
 
 /* ── Editorial two-column (Programming) ───────────────────────────────────── */
-function EditorialGrid({ posts }: { posts: BlogPost[] }) {
+function EditorialGrid({ posts }: { posts: PostSummary[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
       {posts.map((post) => (
@@ -274,7 +274,7 @@ function EditorialGrid({ posts }: { posts: BlogPost[] }) {
 }
 
 /* ── Compact horizontal stack (Reviews) ───────────────────────────────────── */
-function CompactStack({ posts }: { posts: BlogPost[] }) {
+function CompactStack({ posts }: { posts: PostSummary[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {posts.map((post) => (
@@ -313,7 +313,7 @@ function Rail({
             }}
             aria-hidden
           />
-          <CardCarousel posts={posts.map(toPostSummary)} size="lg" speed={24} />
+          <CardCarousel posts={posts} size="lg" speed={24} />
         </div>
       )}
 

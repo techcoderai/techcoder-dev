@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { isKeystaticEnabled } from "@/lib/keystatic-mode";
+import { KEYSTATIC_ENABLED } from "@/lib/keystatic";
 
 /**
  * Mounts the Keystatic admin UI at `/keystatic` and every sub-route (the
@@ -13,7 +13,7 @@ import { isKeystaticEnabled } from "@/lib/keystatic-mode";
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 export default async function KeystaticAdminPage() {
-  if (!isKeystaticEnabled) notFound();
+  if (!KEYSTATIC_ENABLED) notFound();
 
   const { default: KeystaticApp } = await import("./keystatic-app");
   return <KeystaticApp />;

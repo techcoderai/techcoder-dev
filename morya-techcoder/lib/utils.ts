@@ -30,6 +30,14 @@ export function calcReadingTime(text: string): string {
   return `${minutes} min read`;
 }
 
+const RECENT_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+/** Whether a post date falls inside the "New" badge window. Server-evaluated only. */
+export function isRecent(dateString: string, now = Date.now()): boolean {
+  const published = new Date(dateString).getTime();
+  return Number.isFinite(published) && now - published < RECENT_WINDOW_MS;
+}
+
 /**
  * Converts heading text into a URL-safe slug used for anchor links and the TOC.
  * @example slugify("Reading Experience!") → "reading-experience"

@@ -151,3 +151,4 @@ export const categoryOptions = ACTIVE_CATEGORY_KEYS.map((key) => ({
   label: CATEGORIES[key].label,
   value: key,
 }));
+
