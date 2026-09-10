@@ -90,6 +90,9 @@
   /* Mesh / grid */
   --tc-grid-line:      rgba(15, 23, 42, 0.05);
   --tc-dot:            rgba(15, 23, 42, 0.14);
+  /* Same hue as the grid line — added on top near the pointer, never alone */
+  --tc-grid-line-hi:   rgba(15, 23, 42, 0.075);
+  --tc-grid-node:      rgba(15, 23, 42, 0.13);
 
   /* ── Motion system (theme-independent) ──
      One vocabulary for every interaction. Easings mirror the calm, slightly
@@ -170,6 +173,8 @@
 
   --tc-grid-line:      rgba(255, 255, 255, 0.045);
   --tc-dot:            rgba(255, 255, 255, 0.10);
+  --tc-grid-line-hi:   rgba(255, 255, 255, 0.095);
+  --tc-grid-node:      rgba(255, 255, 255, 0.16);
 }
 
 /* ─── Tailwind v4 theme mapping — reference vars so `.dark` re-themes ─── */
@@ -650,6 +655,14 @@
     radial-gradient(closest-side at 50% 80%, var(--tc-glow-soft), transparent);
 }
 
+/* Newsletter — the homepage's calmer closing section: a warm cream/charcoal
+   wash (an existing surface token, not a new color) plus a barely-there
+   orange fade at the top. No blob, no blur, no animation. */
+.newsletter-atmosphere {
+  background-color: var(--tc-bg-secondary);
+  background-image: radial-gradient(64rem 26rem at 50% -15%, var(--tc-glow-soft), transparent 72%);
+}
+
 /* Site-wide atmosphere. Painted gradients rather than animated `filter: blur()`
    surfaces, so it costs one raster instead of per-frame re-rasterization. */
 .ambient-glow {
@@ -804,6 +817,67 @@
 .btn-secondary:active {
   transform: translateY(0) scale(0.97);
   box-shadow: none;
+  transition-duration: var(--tc-dur-fast);
+}
+
+/* ── Hero CTAs ──
+   Scoped overrides of the shared buttons for the homepage hero only: flat fill,
+   no sweep/conic-border decoration, and hover limited to a colour shift plus a
+   3px arrow travel — the button body itself never lifts or grows. */
+.hero-cta-primary {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  background: var(--tc-primary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16),
+              0 1px 2px rgba(15, 23, 42, 0.10);
+  transition: background-color var(--tc-dur) var(--tc-ease),
+              box-shadow var(--tc-dur) var(--tc-ease);
+}
+.hero-cta-primary::after { content: none; }
+.hero-cta-primary:hover {
+  transform: none;
+  background: var(--tc-primary-dark);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16),
+              0 2px 8px -3px var(--tc-glow);
+}
+.hero-cta-primary:active {
+  transform: none;
+  background: var(--tc-primary-dark);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10),
+              0 1px 2px rgba(15, 23, 42, 0.10);
+  transition-duration: var(--tc-dur-fast);
+}
+.hero-cta-primary:hover .icon-nudge { transform: translateX(3px); }
+
+.hero-cta-secondary {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  background: var(--tc-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: var(--tc-border-strong);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: background-color var(--tc-dur) var(--tc-ease),
+              border-color var(--tc-dur) var(--tc-ease);
+}
+.hero-cta-secondary::before { content: none; }
+.hero-cta-secondary .icon-lift {
+  color: var(--tc-text-light);
+  transition: transform var(--tc-dur) var(--tc-ease),
+              color var(--tc-dur) var(--tc-ease);
+}
+.hero-cta-secondary:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--tc-text) 4%, var(--tc-surface));
+  border-color: color-mix(in srgb, var(--tc-text) 26%, transparent);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+.hero-cta-secondary:hover .icon-lift {
+  color: var(--tc-text-muted);
+  transform: translateY(-1px);
+}
+.hero-cta-secondary:active {
+  transform: none;
   transition-duration: var(--tc-dur-fast);
 }
 
@@ -1029,7 +1103,7 @@ button:hover > .icon-lift {
    Three layers, deliberately quiet:
      · a pointer-following ambient wash across the whole group
      · a per-item hover treatment (lift + center-out underline)
-     · one shared indicator that travels to the active item
+     · one shared underline that travels to the active item
    Everything animates transform, opacity, or paint — never layout. */
 
 .nav-links {
@@ -1076,7 +1150,6 @@ button:hover > .icon-lift {
 .nav-link {
   position: relative;
   z-index: 1;
-  border-radius: 9999px;
   padding: 0.5rem 1rem;
   font-size: 13.5px;
   font-weight: 500;
@@ -1085,33 +1158,10 @@ button:hover > .icon-lift {
 }
 .nav-link:hover { color: var(--tc-text); }
 
-/* Per-item wash. Kept faint on hover so it reads as a highlight rather than a
-   button, and only marginally stronger — plus a hairline — when active.
-   Opacity does double duty here: it fades the wash in *and* sets how strong it
-   lands, which keeps this on the shared warm tokens instead of hardcoded
-   percentages that would need a color-mix fallback. */
-.nav-link::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: var(--tc-glow-soft);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--tc-dur) var(--tc-ease);
-}
-.nav-link:hover::before,
-.nav-link:focus-visible::before { opacity: 0.6; }
-
-/* Active: located, not shouting. The weight stays at 500 on purpose — bolding
-   the current item would change its width and shove the whole row sideways. */
+/* Active: located, not shouting — the travelling underline is the only marker.
+   The weight stays at 500 on purpose: bolding the current item would change its
+   width and shove the whole row sideways. */
 .nav-link[data-active="true"] { color: var(--tc-text); }
-.nav-link[data-active="true"]::before {
-  opacity: 0.75;
-  /* inset shadow rather than a border: same hairline, no box-model effect */
-  box-shadow: inset 0 0 0 1px var(--tc-glow);
-}
 
 .nav-link-label {
   display: inline-block;
@@ -1140,7 +1190,7 @@ button:hover > .icon-lift {
 /* Keyboard focus gets the same treatment as hover — the focus ring says
    "you're here", this says "and this is what it does". */
 .nav-link:hover .nav-link-underline,
-.nav-link:focus-visible .nav-link-underline { opacity: 0.55; transform: scaleX(1); }
+.nav-link:focus-visible .nav-link-underline { opacity: 0.75; transform: scaleX(1); }
 /* The travelling indicator already marks the active item — don't stack two. */
 .nav-link[data-active="true"]:hover .nav-link-underline,
 .nav-link[data-active="true"]:focus-visible .nav-link-underline {
@@ -1189,26 +1239,41 @@ button:hover > .icon-lift {
 .nav-logo:hover .nav-logo-word { filter: saturate(1.15) brightness(1.06); }
 
 /* ── Read Articles CTA ──
-   Refines .btn-primary for the navbar only: a shallower lift than a page CTA
-   (the bar is already close to the viewport edge) and a slow gradient drift. */
+   Refines .btn-primary for the navbar only. The brand gradient stays and drifts
+   on hover; the shine sweep and the lift do not — the bar sits at the viewport
+   edge, so the only things that move are the gradient and the arrow. */
 .nav-cta {
+  font-weight: 500;
+  letter-spacing: -0.005em;
   background-size: 165% 100%;
   background-position: 0% 50%;
-  transition: transform var(--tc-dur) var(--tc-ease),
-              box-shadow var(--tc-dur) var(--tc-ease),
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+              0 1px 2px rgba(15, 23, 42, 0.12);
+  transition: box-shadow var(--tc-dur) var(--tc-ease),
               background-position var(--tc-dur-slow) var(--tc-ease);
 }
+.nav-cta::after { content: none; }
 .nav-cta:hover {
-  transform: translateY(-1px);
+  transform: none;
   background-position: 100% 50%;
-  box-shadow: 0 10px 26px -8px var(--tc-glow), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22),
+              0 2px 8px -3px var(--tc-glow);
 }
 .nav-cta:active {
-  transform: translateY(0) scale(0.98);
+  transform: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12),
+              0 1px 2px rgba(15, 23, 42, 0.12);
   transition-duration: var(--tc-dur-fast);
 }
-.nav-cta-arrow { transition: transform var(--tc-dur) var(--tc-ease); }
-.nav-cta:hover .nav-cta-arrow { transform: translateX(3px); }
+.nav-cta-arrow {
+  opacity: 0.9;
+  transition: transform var(--tc-dur) var(--tc-ease),
+              opacity var(--tc-dur) var(--tc-ease);
+}
+.nav-cta:hover .nav-cta-arrow {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
 
 /* ── Theme toggle ──
    The icons already own a transform for the sun/moon swap, so the hover tilt
@@ -1290,6 +1355,43 @@ html.reading-focus .prose-tc li {
 }
 .spotlight-layer[data-active="true"] { opacity: 1; }
 
+/* Cursor-reactive grid (homepage) — kept for possible future use, currently
+   unmounted. A second copy of the 64px grid, revealed only around the pointer
+   by a mask. The radial is a proximity function, not a visible shape: nothing
+   is painted except grid lines and intersection nodes, so lines firm up
+   slightly as the cursor passes instead of a glow following it. Sits at
+   z-index -1 inside `main`, i.e. above the ambient grid, under content. */
+.grid-cursor-field {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--tc-dur-slow) var(--tc-ease);
+  background-image:
+    linear-gradient(to right, var(--tc-grid-line-hi) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tc-grid-line-hi) 1px, transparent 1px),
+    radial-gradient(circle, var(--tc-grid-node) 1.4px, transparent 1.9px);
+  background-size: 64px 64px;
+  /* Half-tile offset puts the node dots on the line intersections */
+  background-position: 0 0, 0 0, 32px 32px;
+  -webkit-mask-image: radial-gradient(
+    210px 210px at var(--cursor-x, -50vw) var(--cursor-y, -50vh),
+    #000 0%, rgba(0, 0, 0, 0.45) 42%, transparent 70%
+  );
+  mask-image: radial-gradient(
+    210px 210px at var(--cursor-x, -50vw) var(--cursor-y, -50vh),
+    #000 0%, rgba(0, 0, 0, 0.45) 42%, transparent 70%
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+.grid-cursor-field[data-active="true"] { opacity: 1; }
+
+@media (hover: none), (pointer: coarse) {
+  .grid-cursor-field { display: none; }
+}
+
 /* Floating utility button entrance (scroll-to-top) */
 @keyframes floatBtnIn {
   from { opacity: 0; transform: translateY(10px) scale(0.9); }
@@ -1315,6 +1417,7 @@ html.reading-focus .prose-tc li {
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after { animation: none !important; }
   .spotlight-layer { display: none !important; }
+  .grid-cursor-field { display: none !important; }
   .animate-bookmark-pop { animation: none !important; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none !important; }

@@ -1,39 +1,41 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/ui/Reveal";
 
+/**
+ * Closing CTA. Deliberately flat and compact (no giant glowing card) — it
+ * floats over the footer via a negative bottom margin so its lower edge
+ * overlaps the dark footer band, matching that boundary treatment.
+ */
 export default function FinalCTA() {
   return (
-    <section className="px-4 sm:px-6 pb-24 md:pb-32">
+    <section className="relative z-10 px-4 sm:px-6">
       <div className="container-wide mx-auto">
         <Reveal>
-          <div className="relative overflow-hidden rounded-[32px] border border-tc-border bg-tc-bg-card px-6 sm:px-12 py-16 sm:py-24 text-center shadow-premium">
-            {/* Glow layers */}
-            <div className="absolute inset-0 -z-10 mesh-glow opacity-90" />
-            <div className="absolute inset-0 -z-10 grid-overlay opacity-40" />
-            <div className="ambient-orb ambient-orb-primary absolute -top-24 left-1/2 h-[560px] w-[560px] -translate-x-1/2 opacity-70 animate-pulse-glow" />
-
-            <div className="relative flex flex-col items-center">
-              <span className="chip mb-6">
-                <Sparkles size={12} className="text-tc-primary" />
+          <div className="card-surface shadow-premium -mb-16 sm:-mb-20 md:-mb-24 flex flex-col gap-8 px-6 py-10 sm:px-10 sm:py-12 md:flex-row md:items-center md:justify-between md:px-14">
+            <div className="max-w-lg">
+              <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">
+                <span className="h-px w-6 bg-tc-primary" />
                 Free to read — no account required
               </span>
-              <h2 className="display-xl max-w-3xl">
-                Start building. <span className="text-gradient">Keep learning.</span>
+              <h2 className="heading-lg mt-3">
+                Start building. <span className="text-tc-primary">Keep learning.</span>
               </h2>
-              <p className="mt-6 max-w-lg body-lg">
-                Join the curious minds who learn something new here every week. Your next
-                article, deep dive, or review is one click away.
+              <p className="body-base mt-3 max-w-md">
+                Join the curious minds who learn something new here every week.
               </p>
-              <div className="mt-9 flex flex-col sm:flex-row items-center gap-3.5">
-                <Link href="/blog" className="btn-primary focus-ring group px-8 py-4 text-[15px]">
-                  Start reading
-                  <ArrowRight size={17} className="group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-                <Link href="/#topics" className="btn-secondary focus-ring px-8 py-4 text-[15px]">
-                  Explore topics
-                </Link>
-              </div>
+            </div>
+            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center shrink-0">
+              <Link
+                href="/blog"
+                className="btn-primary focus-ring group justify-center px-7 py-3.5 text-[15px]"
+              >
+                Start reading
+                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+              <Link href="/#topics" className="btn-secondary focus-ring justify-center px-7 py-3.5 text-[15px]">
+                Explore topics
+              </Link>
             </div>
           </div>
         </Reveal>
@@ -41,3 +43,4 @@ export default function FinalCTA() {
     </section>
   );
 }
+

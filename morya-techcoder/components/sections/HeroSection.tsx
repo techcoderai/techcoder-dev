@@ -70,14 +70,14 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <div
-          className="hero-enter mt-6 flex w-full flex-col items-stretch gap-3 sm:mt-9 sm:w-auto sm:flex-row sm:items-center"
+          className="hero-enter mt-6 flex w-full flex-row items-center gap-2.5 sm:mt-9 sm:w-auto sm:gap-3"
           style={{ animationDelay: "320ms" }}
         >
-          <Link href="/blog" className="btn-primary focus-ring group w-full sm:w-auto justify-center px-7 py-3.5 text-[15px]">
+          <Link href="/blog" className="btn-primary hero-cta-primary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
             Start exploring
-            <ArrowRight size={17} className="icon-nudge" />
+            <ArrowRight size={16} className="icon-nudge" />
           </Link>
-          <Link href="/#topics" className="btn-secondary focus-ring group w-full sm:w-auto justify-center px-7 py-3.5 text-[15px]">
+          <Link href="/#topics" className="btn-secondary hero-cta-secondary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
             <Compass size={15} className="icon-lift" />
             Browse topics
           </Link>

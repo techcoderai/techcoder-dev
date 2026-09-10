@@ -4,7 +4,6 @@ import { CATEGORIES, CATEGORY_KEYS, categoryHref } from "@/lib/categories";
 import { categoryIcon } from "@/lib/category-icons";
 import { cn } from "@/lib/utils";
 import Reveal from "@/components/ui/Reveal";
-import SectionHeading from "@/components/ui/SectionHeading";
 
 /**
  * On-page content discovery: a reusable grid of every topic TechCoder covers.
@@ -14,25 +13,32 @@ import SectionHeading from "@/components/ui/SectionHeading";
  */
 export default function TopicGrid() {
   return (
-    <section id="topics" className="section-padding relative scroll-mt-24">
+    <section id="topics" className="section-padding pt-0 relative scroll-mt-24">
       <div className="container-wide mx-auto">
-        <SectionHeading
-          eyebrow="Explore by topic"
-          title={
-            <>
-              Everything tech, <span className="text-gradient">worth understanding</span>
-            </>
-          }
-          description="From code and AI to the gadgets on your desk — pick a topic and start exploring."
-          className="mb-8 sm:mb-14"
-        />
+        <Reveal>
+          <div className="border-t border-tc-border pt-10 md:pt-14">
+            <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">
+              <span className="h-px w-6 bg-tc-primary" />
+              Explore by topic
+            </span>
+
+            <div className="mt-6 grid gap-5 md:grid-cols-12 md:gap-10">
+              <h2 className="heading-lg md:col-span-7">
+                Everything tech, <span className="text-tc-primary">worth understanding</span>
+              </h2>
+              <p className="body-base max-w-lg md:col-span-5 md:pt-2">
+                From code and AI to the gadgets on your desk — pick a topic and start exploring.
+              </p>
+            </div>
+          </div>
+        </Reveal>
 
         {/*
           Mobile-first: compact, thumb-friendly rows (~96px tall) — icon left,
           label + one-line description right. At sm+ this unfolds into the
           roomier vertical card treatment the desktop layout expects.
         */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 md:gap-6">
+        <div className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:mt-16 lg:grid-cols-3 md:gap-6">
           {CATEGORY_KEYS.map((key, i) => {
             const meta = CATEGORIES[key];
             const Icon = categoryIcon(key);

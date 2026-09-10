@@ -1,17 +1,24 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 /**
  * Soft spotlight cursor — a faint, warm radial glow that trails the pointer.
  * Deliberately barely-there (you feel it more than see it). Desktop fine-pointer
  * only, disabled under reduced motion, and painted behind content so it never
  * competes with reading. Updated on rAF via a CSS variable — no re-renders.
+ *
+ * Skipped on `/blog` routes — the reading experience stays free of any cursor
+ * decoration there.
  */
 export default function SpotlightCursor() {
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isBlog = pathname?.startsWith("/blog");
 
   useEffect(() => {
+    if (isBlog) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
@@ -43,7 +50,10 @@ export default function SpotlightCursor() {
       document.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [isBlog]);
+
+  if (isBlog) return null;
 
   return <div ref={ref} aria-hidden className="spotlight-layer" data-active="false" />;
 }
+

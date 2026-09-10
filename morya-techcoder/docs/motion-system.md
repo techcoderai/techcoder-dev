@@ -144,7 +144,8 @@ shows section progress. Headings nest (h3 indented under h2).
   (clear of the reading indicator), bottom-right on desktop.
 - **Spotlight cursor** (`SpotlightCursor`) — a barely-there warm radial that
   trails the pointer via a CSS var on rAF. Desktop fine-pointer only; hidden
-  under reduced motion and painted behind content.
+  under reduced motion and painted behind content. A cursor-reactive grid
+  variant (`GridCursorField`) also exists, unmounted, for possible future use.
 - **Skeletons** (`app/(site)/blog/loading.tsx`, `.../[slug]/loading.tsx`) — layout-
   matched shimmer (`.skeleton`) so route swaps don't jump.
 - **View Transitions** — `ThemeToggle` cross-fades the theme swap via

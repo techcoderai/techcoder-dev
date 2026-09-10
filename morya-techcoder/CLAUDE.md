@@ -81,6 +81,7 @@ morya-techcoder/
 │   │   ├── FadeInImage.tsx           # next/image drop-in: eases from opacity/scale on load
 │   │   ├── ScrollToTop.tsx           # 🆕 Global fade-in scroll-to-top affordance
 │   │   ├── SpotlightCursor.tsx       # 🆕 Subtle warm cursor glow (desktop, reduced-motion aware)
+│   │   ├── GridCursorField.tsx       # Cursor-reactive grid variant, built but currently unmounted
 │   │   ├── NewsletterBox.tsx         # Email subscription form
 │   │   ├── ThemeToggle.tsx           # Light/dark switch (View Transitions cross-fade)
 │   │   ├── DifficultyBadge.tsx       # Visual difficulty indicators

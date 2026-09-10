@@ -45,16 +45,16 @@ export default function Home() {
       <div className="render-deferred">
         <Capabilities />
       </div>
-      <section className="render-deferred section-padding pt-0">
+      <section className="render-deferred section-padding pt-0 newsletter-atmosphere">
         <div className="container-wide mx-auto">
           <NewsletterBox />
         </div>
       </section>
 
       {isFeatureEnabled("showFAQ") && <FAQ />}
-      <div className="render-deferred">
-        <FinalCTA />
-      </div>
+      {/* Not render-deferred: its card overlaps the footer via a negative
+          margin, which `content-visibility`'s paint containment would clip. */}
+      <FinalCTA />
     </>
   );
 }

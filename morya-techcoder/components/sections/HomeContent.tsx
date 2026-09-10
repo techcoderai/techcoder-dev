@@ -43,12 +43,12 @@ const RAILS: {
     category: "Technology",
     layout: "ranked",
   },
-  {
-    title: "For the builders",
-    subtitle: "Programming deep dives, patterns, and hands-on guides.",
-    category: "Programming",
-    layout: "editorial",
-  },
+  // {
+  //   title: "For the builders",
+  //   subtitle: "Programming deep dives, patterns, and hands-on guides.",
+  //   category: "Programming",
+  //   layout: "editorial",
+  // },
   {
     title: "Reviews",
     subtitle: "Honest, hands-on verdicts on the products worth your attention.",
@@ -73,9 +73,13 @@ function RailHeader({
   category: BlogCategory;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2.5 mb-5 sm:mb-6">
+    <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6 sm:mb-8">
       <div>
-        <h3 className="heading-lg text-[1.375rem] md:text-2xl">{title}</h3>
+        <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">
+          <span className="h-px w-6 bg-tc-primary" />
+          {category}
+        </span>
+        <h3 className="heading-lg mt-3 text-[1.375rem] md:text-2xl">{title}</h3>
         <p className="text-sm text-tc-text-muted mt-1.5 max-w-lg">{subtitle}</p>
       </div>
       <Link
@@ -165,12 +169,12 @@ function FeaturedAsymmetric({ posts }: { posts: PostSummary[] }) {
 /* ── Ranked dense list (Technology) ───────────────────────────────────────── */
 function RankedList({ posts }: { posts: PostSummary[] }) {
   return (
-    <div className="rounded-2xl border border-tc-border bg-tc-bg-card overflow-hidden divide-y divide-tc-border">
+    <div className="border-t border-b border-tc-border divide-y divide-tc-border">
       {posts.map((post, i) => (
         <article key={post.id} className="group">
           <Link
             href={`/blog/${post.slug}`}
-            className="card-premium card-premium-flat focus-ring flex items-center gap-4 sm:gap-5 px-4 sm:px-5 py-4 sm:py-4.5 border-0 rounded-none shadow-none hover:bg-tc-bg-elevated/50"
+            className="card-premium card-premium-flat focus-ring flex items-center gap-4 sm:gap-5 px-1 py-4 sm:py-5 border-0 rounded-none shadow-none hover:bg-tc-bg-elevated/40"
           >
             <span
               className={cn(
@@ -229,7 +233,7 @@ function EditorialGrid({ posts }: { posts: PostSummary[] }) {
           <Link
             href={`/blog/${post.slug}`}
             aria-label={`Read: ${post.title}`}
-            className="card-premium focus-ring flex flex-col sm:flex-row gap-0 h-full rounded-2xl border border-tc-border bg-tc-bg-card overflow-hidden shadow-[var(--tc-shadow-sm)]"
+            className="card-premium focus-ring flex flex-col sm:flex-row gap-0 h-full rounded-xl border border-tc-border bg-tc-bg-card overflow-hidden"
           >
             <div className="card-premium-media relative sm:w-[42%] aspect-[16/10] sm:aspect-auto sm:min-h-[200px] bg-tc-bg-elevated overflow-hidden shrink-0">
               {post.thumbnail ? (
@@ -339,13 +343,13 @@ export default function HomeContent() {
       <div className="container-wide mx-auto">
         {/* Featured — large editorial + supporting stack */}
         <div className="mb-14 sm:mb-20">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6 sm:mb-8 animate-fade-up">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-8 sm:mb-10 animate-fade-up">
             <div>
-              <span className="chip mb-5">
-                <span className="w-1.5 h-1.5 rounded-full bg-tc-primary" />
+              <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">
+                <span className="h-px w-6 bg-tc-primary" />
                 Editor&apos;s picks
               </span>
-              <h2 className="heading-lg mb-3">Featured articles</h2>
+              <h2 className="heading-lg mt-3 mb-3">Featured articles</h2>
               <p className="body-lg max-w-xl">
                 Hand-picked reads worth your time — the stories and guides we&apos;re proudest of.
               </p>
