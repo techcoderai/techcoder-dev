@@ -11,6 +11,7 @@
 | CMS | **Keystatic** (Git-based) | Visual editor at `/keystatic`, writes `.mdx`. |
 | Icons | `lucide-react` | |
 | Embeds | `react-tweet` | Server-rendered tweets. |
+| Newsletter | Resend (REST API, no SDK) | `lib/newsletter.ts`; optional — the form fails closed without `RESEND_API_KEY`. |
 
 ## Core principle: one-way content flow
 
@@ -51,10 +52,15 @@ and simple to reason about.
 - **`components/mdx/*`** — the reusable article building blocks.
 - **`lib/`** — pure, framework-agnostic logic: `categories.ts` (single source of
   truth for categories), `posts.ts` (filtering/related helpers),
-  `featureFlags.ts` (progressive section rollout), `utils.ts`
-  (`cn`, `formatDate`, `slugify`, `getHeadings`).
-- **`types/blog.ts`** — the `BlogPost` / `Difficulty` types shared everywhere.
-- **`hooks/`** — reusable client behaviors (`useReadingProgress`, `useActiveHeading`).
+  `author.ts` (resolves a post's `author` slug to a full record),
+  `assets.ts` (normalizes a stored image value to a usable `src`),
+  `newsletter.ts` (talks to the Resend API), `keystatic.ts` (the one flag
+  gating both admin routes), `featureFlags.ts` (progressive section rollout),
+  `utils.ts` (`cn`, `formatDate`, `slugify`, `getHeadings`, `calcReadingTime`).
+- **`types/blog.ts`** — the `Author` / `PostSummary` / `PostDetail` /
+  `Difficulty` types shared everywhere.
+- **`hooks/`** — reusable client behaviors (`useScrollProgress`, `useReadingState`,
+  `useActiveHeading`).
 
 ## Major decisions and why
 
@@ -106,6 +112,24 @@ JetBrains Mono and article prose CSS are loaded only by
 `app/(site)/blog/[slug]/layout.tsx`. Interactive article lists receive
 `BlogPostSummary` objects, never raw MDX bodies. This keeps homepage/list
 transfers and non-article font work small without changing presentation.
+
+### 10. Authors are a Keystatic collection, not a post field
+`content/authors/*.json` holds each byline (name, role, bio, avatar, url). A
+post's `author` frontmatter field is an *optional* slug into that collection —
+leaving it unset falls back to a default author (`lib/author.ts`), so existing
+posts never needed editing when a second and third writer joined. This mirrors
+the categories decision: one registry, referenced by slug, instead of copying
+name/bio/avatar into every post.
+
+### 11. Every managed image path includes its own entry's slug
+`thumbnail`, `seo.ogImage`, and author `avatar` values are always the full
+public path *including the entry's own slug as a subfolder* —
+`/content/blog/<post-slug>/<file>` or `/content/authors/<author-slug>/<file>`
+— matching a real file at `public/content/blog/<post-slug>/<file>`. This is
+not a stylistic choice: it's how Keystatic's `fields.image()` locates the file
+on disk (it strips exactly `<publicPath>/<slug>/` from the stored value), and
+getting it wrong causes a specific, easy-to-hit bug — see
+[troubleshooting.md](./troubleshooting.md#an-image-disappears-from-frontmatter-after-editing-in-keystatic).
 
 ## Rendering & caching
 

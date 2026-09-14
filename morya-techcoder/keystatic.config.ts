@@ -23,7 +23,7 @@ const IMAGE_PUBLIC_PATH = "/content/blog";
  *
  * Storage is `local`: the editor reads and writes files directly in this repo,
  * and you commit them with Git. No database, no external service. The admin UI
- * and its API are only mounted outside production (see `lib/keystatic-mode.ts`),
+ * and its API are only mounted outside production (see `lib/keystatic.ts`),
  * so the deployed site has no editing surface at all.
  *
  * Each post is a single `.mdx` file in `content/posts/`. The fields below
