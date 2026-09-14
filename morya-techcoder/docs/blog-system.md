@@ -41,8 +41,9 @@ excerpt: "A short summary for cards."     # required — also the meta descripti
 date: 2026-01-15                          # required — publish date (sorts posts)
 category: Programming                     # Programming | AI | Technology | Reviews | Guides
 tags: ["nextjs", "tailwind"]
-thumbnail: /content/blog/hero.png         # hero / card image
+thumbnail: /content/blog/nextjs-16-tailwind-v4/hero.png  # hero / card image
 thumbnailAlt: "The Next.js logo"          # optional; falls back to the title
+author: atharva-yadav                     # optional slug into content/authors/*; falls back to the primary author
 difficulty: Intermediate                  # Beginner | Intermediate | Advanced
 updated: 2026-02-01                       # optional "last updated" date
 prerequisites: ["Basic React"]            # optional; shown as a callout
@@ -55,7 +56,7 @@ review:                                   # Reviews only — see below
 seo:                                      # all optional
   title: "Custom <title>"
   description: "Custom meta description"
-  ogImage: /content/blog/og.png           # falls back to thumbnail
+  ogImage: /content/blog/nextjs-16-tailwind-v4/og.png   # falls back to thumbnail
   canonical: "https://example.com/original"
   noindex: false
 ---
@@ -67,8 +68,21 @@ sensible fallback (e.g. `difficulty` is derived from `category` when omitted).
 **Reading time is not a field** — it's computed from the body on every load
 (`calcReadingTime`, 238 wpm). A stored word count goes stale on the first edit.
 
-`ogImage` used to sit at the top level and moved under `seo`. The loader still
-honours the old position, so existing posts keep working.
+**Image paths are the full public path, including the post's own slug as a
+subfolder**: `/content/blog/<slug>/<filename>`, backed by a real file at
+`public/content/blog/<slug>/<filename>`. This is not optional — Keystatic's
+image field derives the on-disk filename by stripping exactly that prefix
+(`publicPath/slug/`) from the stored value. A path missing the slug segment
+(or a bare filename) can't be resolved back to a file: Keystatic silently
+treats the field as unset, and the *next* save from the editor deletes the
+reference from frontmatter — even though the article was only edited for
+unrelated text. Get the path wrong and the image still shows on the site
+(the loader is more lenient) right up until someone edits that post in
+Keystatic and saves.
+
+`ogImage` also used to sit at the top level before moving under `seo`; the
+loader still honours that old position, so hand-edited posts keep working
+either way.
 
 ## Reviews
 
@@ -89,13 +103,15 @@ with itself.
 
 ## Authors
 
-The byline is a Keystatic **singleton** at `content/settings/author.json`, read
-through `lib/author.ts`. Posts carry no author field, because there is nothing
-to choose per article and copying the same name into every file invites drift.
+Authors are a Keystatic **collection** at `content/authors/*.json`
+(`name`, `role`, `bio`, `avatar`, `url`), read through `lib/author.ts`. Each
+post has an optional `author` field holding another author's slug; leaving it
+unset falls back to `DEFAULT_AUTHOR_SLUG` in `lib/author.ts`.
 
-When a second writer joins, this becomes a collection and posts gain an optional
-`author` field defaulting to this record. Every consumer already goes through
-`getAuthor()`, so nothing else has to change.
+`content/loader.ts` resolves that slug to a full `Author` record at load time,
+so every consumer — the byline, the JSON-LD `author`/`Person`, `generateMetadata`
+— just reads `post.author`. Add a teammate from `/keystatic` → **Team →
+Authors**; nothing else needs to change.
 
 ## Routing
 
@@ -119,8 +135,8 @@ search engines happily index.
 1. Create `content/posts/my-new-post.mdx`.
 2. Paste the frontmatter block above and edit the values.
 3. Write your article below the closing `---`.
-4. Put images in `public/content/blog/` and reference them as
-   `/content/blog/your-image.png`.
+4. Put images in `public/content/blog/my-new-post/` (the slug from step 1) and
+   reference them as `/content/blog/my-new-post/your-image.png`.
 5. Run `npm run dev` and visit `/blog/my-new-post`. Done — no registration step.
 
 > Prefer the visual editor? See [keystatic.md](./keystatic.md).

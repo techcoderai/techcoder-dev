@@ -117,7 +117,7 @@ morya-techcoder/
 │   ├── rehype-image-size.ts          # 🆕 Reads intrinsic dimensions at compile time
 │   ├── mdx-components.tsx            # Presentation layer (MDX → React mapping)
 │   ├── keystatic-components.tsx      # Keystatic editor component config
-│   ├── settings/author.json          # 🆕 Author singleton (the byline)
+│   ├── authors/*.json                # 🆕 Authors collection (name, role, bio, avatar, url)
 │   └── posts/*.mdx                   # Blog posts (MDX only, no .md duplicates)
 │
 ├── lib/                              # 🔄 Pure logic (framework-agnostic)
@@ -125,7 +125,8 @@ morya-techcoder/
 │   ├── category-icons.ts             # 🆕 Maps category icon names → lucide components
 │   ├── featureFlags.ts               # 🆕 Progressive section rollout (Testimonials, FAQ, …)
 │   ├── keystatic-mode.ts             # 🆕 Single flag gating both Keystatic routes
-│   ├── author.ts                     # 🆕 Reads the Author singleton (getAuthor)
+│   ├── assets.ts                     # 🆕 Resolves a stored image value (bare filename or URL) to a src
+│   ├── author.ts                     # 🆕 Resolves a post's `author` slug to a full record (getAuthor/getAuthors)
 │   ├── posts.ts                      # 🆕 Business logic (filtering, featured, related)
 │   └── utils.ts                      # Helpers (cn, formatDate, calcReadingTime)
 │
@@ -281,8 +282,9 @@ export interface BlogPost {
 - `seo.noindex` - Public but excluded from search engines and the sitemap
 - **Never add a `readingTime` field.** It is computed on load; a stored value
   goes stale on the first edit.
-- The byline is *not* a post field. It's a Keystatic singleton at
-  `content/settings/author.json`, read via `lib/author.ts` (`getAuthor()`).
+- The byline comes from `content/authors/*.json` (a Keystatic collection),
+  resolved via `lib/author.ts` (`getAuthor()`). A post's optional `author`
+  field holds another author's slug; unset falls back to the default author.
 
 ### Content Loader Architecture
 
@@ -444,7 +446,7 @@ Custom typography for MDX content with responsive font sizes, styled code blocks
 - **Syntax-highlighted code blocks** (Shiki, build-time) with copy-to-clipboard,
   a language label, optional filename bar, and line highlighting
 - **Auto-collapse** for tall code blocks (>460px)
-- **Author byline** and end-of-article bio from the Author singleton
+- **Author byline** and end-of-article bio, resolved per post from the Authors collection
 - **Related posts** at bottom of articles
 - **Anchor links** on h2/h3 headings
 
@@ -840,7 +842,6 @@ vercel deploy --prod
 
 - **Newsletter Backend:** Form component ready in [NewsletterBox.tsx](components/ui/NewsletterBox.tsx)
 - **Comments System:** Blog detail page structure supports comment section
-- **Author Profiles:** Schema can be extended with author field
 - **RSS Feed:** Blog posts array can be serialized to RSS/Atom
 - **Sitemap:** Can be auto-generated from `blogPosts` array
 - **Analytics:** Add Vercel Analytics or Google Analytics in layout

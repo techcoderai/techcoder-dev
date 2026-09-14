@@ -1,8 +1,20 @@
-import { config, collection, singleton, fields } from "@keystatic/core";
+import { config, collection, fields } from "@keystatic/core";
 import { categoryOptions } from "@/lib/categories";
 import { mdxEditorComponents } from "@/content/keystatic-components";
 
-/** Where uploaded blog images are written and served from. */
+/**
+ * Where uploaded blog images are written and served from.
+ *
+ * Keystatic always nests an entry's images under its own slug — the stored
+ * frontmatter value is `${IMAGE_PUBLIC_PATH}/<slug>/<filename>`, and it
+ * strips exactly that prefix to find the file on disk. A value missing the
+ * slug segment (or a bare filename) can't be resolved, so Keystatic treats
+ * the field as unset — and the next save from the editor deletes it, even
+ * if that save only touched unrelated text. This isn't a config option; any
+ * post whose thumbnail/ogImage/avatar might ever be opened in Keystatic must
+ * use the full `<publicPath>/<slug>/<filename>` form, including hand-written
+ * posts predating Keystatic.
+ */
 const IMAGE_DIR = "public/content/blog";
 const IMAGE_PUBLIC_PATH = "/content/blog";
 
@@ -30,7 +42,7 @@ export default config({
     brand: { name: "TechCoder" },
     navigation: {
       Publishing: ["posts"],
-      Settings: ["author"],
+      Team: ["authors"],
     },
   },
   collections: {
@@ -92,6 +104,11 @@ export default config({
           label: "Hero image alt text",
           description:
             "Describe the image for screen readers and when it fails to load. Falls back to the title.",
+        }),
+        author: fields.relationship({
+          label: "Author",
+          description: "Who wrote it. Defaults to the primary author when left unset.",
+          collection: "authors",
         }),
         date: fields.date({
           label: "Publish date",
@@ -219,17 +236,18 @@ export default config({
         }),
       },
     }),
-  },
-  singletons: {
-    author: singleton({
-      label: "Author",
-      path: "content/settings/author",
+    authors: collection({
+      label: "Authors",
+      slugField: "name",
+      path: "content/authors/*",
       format: { data: "json" },
+      columns: ["name", "role"],
       schema: {
-        name: fields.text({
-          label: "Name",
-          defaultValue: "Atharva Yadav",
-          validation: { length: { min: 1 } },
+        name: fields.slug({
+          name: {
+            label: "Name",
+            validation: { length: { min: 1 } },
+          },
         }),
         role: fields.text({
           label: "Role",

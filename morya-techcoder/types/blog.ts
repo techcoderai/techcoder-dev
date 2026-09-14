@@ -31,8 +31,10 @@ export interface SeoMeta {
   noindex?: boolean;
 }
 
-/** The person credited on every article. Loaded from `content/settings/author.json`. */
+/** A person who can be credited on an article. Loaded from `content/authors/*`. */
 export interface Author {
+  /** Derived from the filename — stable even if `name` is edited later. */
+  slug: string;
   name: string;
   role?: string;
   bio?: string;
@@ -76,6 +78,8 @@ export interface PostSummary {
   review?: ReviewMeta;
   /** Optional SEO overrides. Falls back to `title` / `excerpt` when empty. */
   seo?: SeoMeta;
+  /** Who wrote it. Defaults to the primary author when the post doesn't specify one. */
+  author: Author;
 }
 
 /** A summary plus the raw MDX/markdown body. Only used by the article route. */

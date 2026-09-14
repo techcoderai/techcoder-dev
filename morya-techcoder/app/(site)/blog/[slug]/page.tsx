@@ -4,7 +4,6 @@ import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
 import { postSummaries, getBlogBySlug, getAllSlugs, compileBlogContent } from "@/content/loader";
-import { getAuthor } from "@/lib/author";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getRelatedPosts } from "@/lib/posts";
 import type { BlogPost, Difficulty } from "@/types/blog";
@@ -43,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getBlogBySlug(slug);
   if (!post) return { title: "Article Not Found | TechCoder" };
   const ogImage = post.ogImage || post.thumbnail;
-  const author = getAuthor();
+  const author = post.author;
   return {
     title: `${post.seo?.title || post.title} | TechCoder`,
     description: post.seo?.description || post.excerpt,
@@ -87,7 +86,7 @@ export default async function BlogDetailPage({ params }: Props) {
   const headings = getHeadings(post.body);
   const difficulty = resolveDifficulty(post);
   const showUpdated = post.updated && post.updated !== post.date;
-  const author = getAuthor();
+  const author = post.author;
 
   const related = getRelatedPosts(postSummaries, post, 2);
   const authorJsonLd = {

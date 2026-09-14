@@ -102,10 +102,19 @@ matter.
 
 ```mdx
 <ProsCons>
-<Pro>Genuinely repairable — every part has a QR code to its spare.</Pro>
-<Con>Battery life still trails the competition by two hours.</Con>
+<Pro>
+Genuinely repairable — every part has a QR code to its spare.
+</Pro>
+<Con>
+Battery life still trails the competition by two hours.
+</Con>
 </ProsCons>
 ```
+
+`<Pro>`/`<Con>` must be multi-line as shown — the open tag, text, and close tag
+each on their own line. Written as a single line (`<Pro>text</Pro>`), MDX
+parses it as inline JSX instead of a block element, which Keystatic's editor
+can't read back and fails to open the whole article.
 
 ---
 
@@ -385,10 +394,17 @@ A grid of highlight cards.
 
 ```mdx
 <InfoCards>
-<InfoCard title="Fast" icon="Zap">Ships static HTML.</InfoCard>
-<InfoCard title="Docs" icon="BookOpen" href="/blog">Read the guide.</InfoCard>
+<InfoCard title="Fast" icon="Zap">
+Ships static HTML.
+</InfoCard>
+<InfoCard title="Docs" icon="BookOpen" href="/blog">
+Read the guide.
+</InfoCard>
 </InfoCards>
 ```
+
+Same rule as Pro/Con above: `<InfoCard>` must be multi-line, or MDX parses it
+as inline JSX and the article fails to open in Keystatic.
 
 - `icon`: any [lucide-react](https://lucide.dev/icons) icon name (optional).
 - `href`: makes the card a link (optional).
@@ -455,6 +471,13 @@ For a grid of short values you may want to restyle later, use
 Visualize a folder structure. Not in the editor's insert menu, because
 arbitrarily nested folders don't map to Keystatic's flat children model.
 
+**Do not use this in a post you also want to edit in Keystatic.** The editor
+parses a post's entire body to open it — an unregistered tag anywhere in that
+body (not just at the insertion point) fails the whole document with a
+"Missing component definition" error, so the article becomes unopenable in
+`/keystatic` until the tag is removed. It's safe in posts that are always
+hand-edited as files.
+
 ```mdx
 <FileTree>
 <Folder name="app">
@@ -472,6 +495,9 @@ arbitrarily nested folders don't map to Keystatic's flat children model.
 
 An explicit scroll container. Rarely needed now that Markdown tables get one
 automatically; kept for hand-written MDX that wraps unusual content.
+
+Same caveat as FileTree above: using `<Table>` anywhere in a post's body makes
+that post unopenable in Keystatic.
 
 ---
 

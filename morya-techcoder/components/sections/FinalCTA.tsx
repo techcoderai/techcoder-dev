@@ -16,7 +16,7 @@ export default function FinalCTA() {
             <div className="max-w-lg">
               <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">
                 <span className="h-px w-6 bg-tc-primary" />
-                Free to read — no account required
+                Free to read — currently no subscription required
               </span>
               <h2 className="heading-lg mt-3">
                 Start building. <span className="text-tc-primary">Keep learning.</span>

@@ -24,7 +24,7 @@ const columns = [
     ],
   },
   {
-    title: "Company",
+    title: "Team TechCoder",
     links: [
       { href: "/about", label: "About Us" },
       { href: "/contact", label: "Contact Us" },
@@ -84,7 +84,7 @@ export default function Footer() {
 
         <div className="mt-14 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-3">
           <p className="text-xs text-white/35">
-            &copy; {new Date().getFullYear()} TechCoder. Crafted with Next.js & Tailwind CSS.
+            Copyright &copy; {new Date().getFullYear()} techcoder.tech | All rights reserved.
           </p>
           <nav className="flex items-center gap-5">
             <Link

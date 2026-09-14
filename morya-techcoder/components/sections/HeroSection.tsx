@@ -59,13 +59,20 @@ export default function HeroSection() {
         </h1>
 
         {/* Subtitle */}
-        <p
+        {/* <p
           className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
           style={{ animationDelay: "240ms" }}
         >
           From breakthrough AI and honest gadget reviews to deep programming guides —
           TechCoder is where curious minds find clear, trustworthy takes on the technology
           that actually matters.
+        </p> */}
+
+                <p
+          className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+          style={{ animationDelay: "240ms" }}
+        >
+          Clear thinking on the technology shaping how we build, work, and live  <span className="font-bold"> without the noise.</span>
         </p>
 
         {/* CTAs */}

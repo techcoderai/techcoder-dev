@@ -27,7 +27,9 @@ Then open **http://localhost:3000/keystatic**.
 The sidebar has two sections:
 
 - **Publishing → Articles** — every post.
-- **Settings → Author** — the byline shown on every article.
+- **Team → Authors** — everyone who can be credited on an article. Each post
+  has an optional Author field that picks one; leaving it unset falls back to
+  the primary author (see `lib/author.ts`).
 
 ## The publishing workflow
 
@@ -49,7 +51,7 @@ The sidebar is ordered the way an article actually gets made:
 | --- | --- |
 | Identity | Title, Slug, Excerpt, Category, Tags |
 | Artwork | Hero image, Hero image alt text |
-| Publishing | Publish date, Last updated, Draft, Featured |
+| Publishing | Author, Publish date, Last updated, Draft, Featured |
 | Reader context | Difficulty, Prerequisites |
 | Reviews | Product reviewed, Rating, Price |
 | SEO | SEO title, SEO description, Social share image, Canonical URL, Hide from search engines |
@@ -173,11 +175,12 @@ Until you need that, `local` is simpler and safer.
 
 ## How it's wired (for reference)
 
-- `keystatic.config.ts` — the schema (collections, singletons, fields, image directories).
+- `keystatic.config.ts` — the schema (collections, fields, image directories).
 - `content/keystatic-components.tsx` — the components you can insert in the editor.
 - `content/mdx-components.tsx` — how those same components render on the site.
 - `app/keystatic/[[...params]]/page.tsx` — server route that 404s outside dev.
 - `app/keystatic/[[...params]]/keystatic-app.tsx` — the editor itself (client).
 - `app/api/keystatic/[...params]/route.ts` — read/write API, gated the same way.
 - `lib/keystatic-mode.ts` — the single flag both routes consult.
-- `content/settings/author.json` — the Author singleton.
+- `content/authors/*.json` — the Authors collection.
+- `lib/author.ts` — resolves a post's Author field to a full record, falling back to a default author when unset.
