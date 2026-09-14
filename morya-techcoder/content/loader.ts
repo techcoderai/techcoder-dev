@@ -7,6 +7,8 @@ import { calcReadingTime } from "@/lib/utils";
 import type { PostDetail, PostSummary, Difficulty, ReviewMeta, SeoMeta } from "@/types/blog";
 import { ACTIVE_CATEGORY_KEYS, type BlogCategory } from "@/lib/categories";
 import { mdxComponents } from "@/content/mdx-components";
+import { getAuthor } from "@/lib/author";
+import { resolveAsset } from "@/lib/assets";
 
 const POSTS_DIR = path.join(process.cwd(), "content", "posts");
 
@@ -15,18 +17,6 @@ const SHOW_DRAFTS = process.env.NODE_ENV !== "production";
 
 /** Public path where Keystatic writes uploaded blog images. */
 const IMAGE_PUBLIC_PATH = "/content/blog";
-
-/**
- * Normalizes an image reference from frontmatter into a usable `src`.
- * Absolute URLs and root-relative paths pass through unchanged; a bare
- * filename (as some Keystatic image fields store) is resolved under the
- * public image directory.
- */
-function resolveAsset(value: unknown): string {
-  if (typeof value !== "string" || value === "") return "";
-  if (/^(https?:)?\/\//.test(value) || value.startsWith("/")) return value;
-  return `${IMAGE_PUBLIC_PATH}/${value}`;
-}
 
 /**
  * Normalizes a frontmatter date to `YYYY-MM-DD`.
@@ -48,7 +38,7 @@ function toISODate(value: unknown): string {
  */
 function resolveSeo(data: Record<string, unknown>): SeoMeta | undefined {
   const seo = (data.seo ?? {}) as SeoMeta;
-  const ogImage = resolveAsset(seo.ogImage ?? data.ogImage);
+  const ogImage = resolveAsset(seo.ogImage ?? data.ogImage, IMAGE_PUBLIC_PATH);
   const result: SeoMeta = {
     title: seo.title || undefined,
     description: seo.description || undefined,
@@ -120,10 +110,10 @@ function loadPosts(): PostDetail[] {
         category: (data.category as BlogCategory) ?? "Programming",
         tags: data.tags ?? [],
         readingTime: calcReadingTime(content),
-        coverImage: resolveAsset(data.coverImage),
-        thumbnail: resolveAsset(data.thumbnail),
+        coverImage: resolveAsset(data.coverImage, IMAGE_PUBLIC_PATH),
+        thumbnail: resolveAsset(data.thumbnail, IMAGE_PUBLIC_PATH),
         thumbnailAlt: data.thumbnailAlt || undefined,
-        ogImage: seo?.ogImage ?? resolveAsset(data.ogImage),
+        ogImage: seo?.ogImage ?? resolveAsset(data.ogImage, IMAGE_PUBLIC_PATH),
         difficulty: (data.difficulty as Difficulty) || undefined,
         updated: toISODate(data.updated) || undefined,
         prerequisites: data.prerequisites || undefined,
@@ -131,6 +121,7 @@ function loadPosts(): PostDetail[] {
         featured: data.featured ?? false,
         review: resolveReview(data.review),
         seo,
+        author: getAuthor(typeof data.author === "string" ? data.author : undefined),
         body: content.trim(),
       });
     });

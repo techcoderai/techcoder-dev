@@ -694,6 +694,9 @@ export const mdxEditorComponents = {
 
   // Not registered on purpose: FileTree (arbitrarily nested folders don't map
   // to Keystatic's flat children model) and Table (Markdown tables now render
-  // natively — see content/compile.ts). Both stay available in hand-written
-  // MDX; see docs/mdx-components.md.
+  // natively — see content/compile.ts). Both still render on the live site
+  // when hand-written, but Keystatic parses a post's whole body to open it in
+  // the editor — so using either one anywhere in an article's MDX makes that
+  // article fail to open in Keystatic at all, not just lose an insert button.
+  // See docs/mdx-components.md.
 };

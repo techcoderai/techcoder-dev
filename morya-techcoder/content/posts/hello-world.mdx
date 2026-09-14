@@ -5,8 +5,9 @@ date: "2026-03-21"
 category: Programming
 featured: true
 tags: [MDX, TechCoder, Guide, Markdown, Blogging]
-thumbnail: /content/blog/hello-world.svg
-ogImage: /content/blog/hello-world.svg
+thumbnail: /content/blog/hello-world/hello-world.svg
+seo:
+  ogImage: /content/blog/hello-world/hello-world.svg
 ---
 
 ## Welcome to TechCoder
@@ -17,9 +18,13 @@ This is a sample blog post demonstrating everything you can do with the **TechCo
 
 You can include images using standard markdown syntax. Images are automatically optimized with Next.js:
 
-![Hello World Thumbnail](/content/blog/hello-world.svg)
+![Hello World Thumbnail](/content/blog/hello-world/hello-world.svg)
 
-Store your blog images in `public/content/blog/` and reference them with `/content/blog/your-image.svg`.
+Store each post's images under `public/content/blog/<slug>/` — matching the
+post's own slug — and reference them as `/content/blog/<slug>/your-image.svg`.
+This is the same convention Keystatic uses when you upload an image from the
+editor, so hand-written and editor-uploaded images stay consistent, and images
+you add by hand can still be edited from `/keystatic` later without breaking.
 
 ## Code Blocks
 
@@ -68,9 +73,9 @@ print(greet("Developer"))
 - Done — it appears on the site
 
 ### Ordered
-1. Create your image in `public/content/blog/`
-2. Reference it in frontmatter as `thumbnail: /content/blog/my-image.svg`
-3. Use `![alt text](/content/blog/my-image.svg)` for in-body images
+1. Create your image in `public/content/blog/<slug>/`
+2. Reference it in frontmatter as `thumbnail: /content/blog/<slug>/my-image.svg`
+3. Use `![alt text](/content/blog/<slug>/my-image.svg)` for in-body images
 
 ## Tables
 
@@ -87,7 +92,7 @@ print(greet("Developer"))
 ## How to Add a New Post
 
 1. Create a new `.mdx` file in `content/posts/` — the filename becomes the URL slug
-2. Add this frontmatter template at the top:
+2. Add this frontmatter template at the top (image paths include the slug from step 1):
 
 ```yaml
 ---
@@ -96,8 +101,9 @@ excerpt: "A brief description for cards and SEO."
 date: "2026-03-21"
 category: AI
 tags: [Tag1, Tag2]
-thumbnail: /content/blog/your-thumbnail.svg
-ogImage: /content/blog/your-og-image.svg
+thumbnail: /content/blog/your-post-slug/your-thumbnail.svg
+seo:
+  ogImage: /content/blog/your-post-slug/your-og-image.svg
 ---
 ```
 

@@ -4,7 +4,6 @@ excerpt: "A living reference of every editorial component available in TechCoder
 date: 2026-07-08
 category: Programming
 tags: ["mdx", "reference", "components"]
-thumbnail: ""
 difficulty: Beginner
 draft: true
 review:
@@ -18,7 +17,7 @@ appears only in `npm run dev` — never in production. Full docs:
 `docs/mdx-components.md`.
 
 <TLDR>
-- Everything below is insertable from the Keystatic editor at `/keystatic`.
+- Everything below except File tree is insertable from the Keystatic editor at `/keystatic`.
 - Each block has an editorial job — none of them are decoration.
 - The generated MDX stays readable and diffable in Git.
 </TLDR>
@@ -41,9 +40,15 @@ hold the whole set in your head.
 </Verdict>
 
 <ProsCons>
-<Pro>Every block is available from the editor's insert menu.</Pro>
-<Pro>Output is plain MDX — no proprietary format to migrate off.</Pro>
-<Con>More components means more decisions while writing.</Con>
+<Pro>
+Every block is available from the editor's insert menu.
+</Pro>
+<Pro>
+Output is plain MDX — no proprietary format to migrate off.
+</Pro>
+<Con>
+More components means more decisions while writing.
+</Con>
 </ProsCons>
 
 <PullQuote author="Kelsey Hightower" role="Distinguished Engineer">
@@ -119,12 +124,20 @@ Run `npm run dev` and open the browser.
 ## Info cards
 
 <InfoCards>
-<InfoCard title="Fast" icon="Zap">Ships static HTML by default.</InfoCard>
-<InfoCard title="Docs" icon="BookOpen" href="/blog">Read the full guide.</InfoCard>
+<InfoCard title="Fast" icon="Zap">
+Ships static HTML by default.
+</InfoCard>
+<InfoCard title="Docs" icon="BookOpen" href="/blog">
+Read the full guide.
+</InfoCard>
 </InfoCards>
 
 ## File tree
 
+Not registered in the editor — arbitrarily nested folders don't fit
+Keystatic's flat children model — but still available in hand-written MDX:
+
+```mdx
 <FileTree>
 <Folder name="app">
 <File name="layout.tsx" />
@@ -133,6 +146,7 @@ Run `npm run dev` and open the browser.
 </Folder>
 </Folder>
 </FileTree>
+```
 
 ## Tabs
 

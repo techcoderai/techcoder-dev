@@ -6,10 +6,16 @@ import { cn } from "@/lib/utils";
 /**
  * A grid of highlight cards. Wrap `<InfoCard>` items in `<InfoCards>`.
  *
- * MDX usage:
+ * MDX usage — `<InfoCard>` must be multi-line (open tag, text, close tag on
+ * separate lines). A single-line `<InfoCard>text</InfoCard>` parses as inline
+ * MDX JSX, which Keystatic's editor can't read back as this wrapper component:
  *   <InfoCards>
- *   <InfoCard title="Fast" icon="Zap">Ships static HTML.</InfoCard>
- *   <InfoCard title="Docs" icon="BookOpen" href="/docs">Read more.</InfoCard>
+ *   <InfoCard title="Fast" icon="Zap">
+ *   Ships static HTML.
+ *   </InfoCard>
+ *   <InfoCard title="Docs" icon="BookOpen" href="/docs">
+ *   Read more.
+ *   </InfoCard>
  *   </InfoCards>
  */
 export function InfoCards({ children }: { children: React.ReactNode }) {

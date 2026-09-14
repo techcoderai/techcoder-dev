@@ -6,10 +6,16 @@ import { Check, X } from "lucide-react";
  * `<Con>` items in `<ProsCons>` — order doesn't matter, they're sorted into the
  * two columns automatically.
  *
- * MDX usage:
+ * MDX usage — `<Pro>`/`<Con>` must be multi-line (open tag, text, close tag on
+ * separate lines). A single-line `<Pro>text</Pro>` parses as inline MDX JSX,
+ * which Keystatic's editor can't read back as this wrapper component:
  *   <ProsCons>
- *   <Pro>Genuinely repairable — every part has a QR code to its spare.</Pro>
- *   <Con>Battery life still trails the competition by two hours.</Con>
+ *   <Pro>
+ *   Genuinely repairable — every part has a QR code to its spare.
+ *   </Pro>
+ *   <Con>
+ *   Battery life still trails the competition by two hours.
+ *   </Con>
  *   </ProsCons>
  */
 export function ProsCons({ children }: { children: ReactNode }) {
