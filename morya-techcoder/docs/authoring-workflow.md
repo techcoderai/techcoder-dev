@@ -8,7 +8,9 @@ without ever needing to understand the MDX underneath.
 1. `npm run dev`
 2. Open `http://localhost:3000/keystatic`
 3. **Articles → Create Article**
-4. Fill Title, Excerpt, Category, Tags, and upload a **Hero image**
+4. Fill Title, Excerpt, Category, Tags, and upload a **Hero image**. Leave
+   **Author** unset unless this piece is by someone other than the default
+   author — see **Team → Authors** to add a new byline.
 5. Write the body. Press `/` or click **+** to insert:
    - images (with alt text and a caption), code blocks, tables
    - editorial blocks: **TL;DR, Key takeaway, Verdict, Pros/Cons, Comparison,
@@ -29,11 +31,17 @@ For hand-written Markdown, or the two components the editor doesn't expose
 1. Create `content/posts/my-post.mdx`
 2. Copy the frontmatter template from [blog-system.md](./blog-system.md#frontmatter-fields)
 3. Write MDX; use any component from [mdx-components.md](./mdx-components.md)
-4. Drop images in `public/content/blog/`
+4. Drop images in `public/content/blog/my-post/` — the slug subfolder is
+   mandatory, not just tidy; see [keystatic.md](./keystatic.md#uploading-images)
 5. Preview with `npm run dev`, then commit
 
 Both paths produce identical files. Mix and match freely — a post created in the
-editor can be finished in a code editor and vice versa.
+editor can be finished in a code editor and vice versa, **with one exception**:
+if you hand-write a wrapper component (`Pro`, `Con`, `InfoCard`, and similar —
+see [mdx-components.md](./mdx-components.md)) on a single line, e.g.
+`<Pro>text</Pro>`, the post can no longer be opened in Keystatic afterward.
+Write them multi-line (open tag, text, close tag on separate lines) if there's
+any chance this post gets edited in the visual editor later.
 
 ## Previewing before publishing
 

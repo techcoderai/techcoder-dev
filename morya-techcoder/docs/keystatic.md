@@ -93,6 +93,18 @@ same `next/image` pipeline renders the hero, body images, and product shots.
 Intrinsic dimensions are read from the file at build time, so images never shift
 the page as they load.
 
+**If you hand-place an image instead of uploading it through the editor** (e.g.
+writing a post by hand, per [authoring-workflow.md](./authoring-workflow.md)),
+the frontmatter value *must* be the full path including the post's own slug —
+`/content/blog/<slug>/<filename>` — matching a real file at
+`public/content/blog/<slug>/<filename>`. This isn't cosmetic: Keystatic finds
+the file by stripping exactly that prefix from the stored value. Get it wrong
+(a bare filename, or a path missing the slug) and the site still renders the
+image fine — the loader is lenient — but the *next* time that post is opened
+and saved in Keystatic, the field reads as empty and gets silently deleted from
+frontmatter, even if the edit was unrelated body text. See
+[troubleshooting.md](./troubleshooting.md#an-image-disappears-from-frontmatter-after-editing-in-keystatic).
+
 External image URLs are deliberately not supported: keeping every asset in the
 repository is what makes optimization and offline builds reliable.
 
@@ -149,9 +161,11 @@ perfectly on your laptop and cannot work on a deployed host, where the
 filesystem is read-only and ephemeral.
 
 So **both `/keystatic` and `/api/keystatic/*` return 404 in production.** The
-check lives in `lib/keystatic-mode.ts` and keys off `NODE_ENV`, which Next
-inlines at build time — so the branch is eliminated and the admin bundle is
-never served.
+check lives in `lib/keystatic.ts` (`KEYSTATIC_ENABLED`) and keys off `NODE_ENV`,
+which Next inlines at build time — so the branch is eliminated and the admin
+bundle is never served. Set `ENABLE_KEYSTATIC=true` to opt back in temporarily
+— only for exercising a production build locally (`next build && next start`);
+never set it on a real deployment while storage is `local`.
 
 This is access control, not SEO. `robots.txt` still disallows those paths, but
 that only asks crawlers not to look; it does nothing about anyone typing the
@@ -166,7 +180,7 @@ files.
    ```
 2. Follow Keystatic's GitHub app setup — it walks you through connecting the
    repo and adds the required environment variables.
-3. Change `isKeystaticEnabled` to gate on **authentication** rather than the
+3. Change `KEYSTATIC_ENABLED` to gate on **authentication** rather than the
    environment. Do not simply set it to `true`: with GitHub storage the API
    proxies writes to your repository, so an ungated route is a public write
    endpoint.
@@ -181,6 +195,6 @@ Until you need that, `local` is simpler and safer.
 - `app/keystatic/[[...params]]/page.tsx` — server route that 404s outside dev.
 - `app/keystatic/[[...params]]/keystatic-app.tsx` — the editor itself (client).
 - `app/api/keystatic/[...params]/route.ts` — read/write API, gated the same way.
-- `lib/keystatic-mode.ts` — the single flag both routes consult.
+- `lib/keystatic.ts` — the single flag (`KEYSTATIC_ENABLED`) both routes consult.
 - `content/authors/*.json` — the Authors collection.
 - `lib/author.ts` — resolves a post's Author field to a full record, falling back to a default author when unset.
