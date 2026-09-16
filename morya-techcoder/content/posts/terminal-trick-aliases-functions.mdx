@@ -1,8 +1,8 @@
 ---
-title: The Terminal Trick That Saves Me 30 Minutes Every Day
+title: 'Useful Shell Aliases for Developers: Bash, Zsh and Terminal Shortcuts'
 excerpt: >-
-  Custom shell aliases and functions that eliminate repetitive commands. Simple
-  setup, massive productivity gains.
+  Speed up your development workflow with useful Bash and Zsh aliases, shell
+  functions, Git shortcuts, fzf and practical terminal automation.
 category: Programming
 tags:
   - Terminal
@@ -10,78 +10,237 @@ tags:
   - Productivity
   - DevOps
 thumbnail: /content/blog/terminal-trick-aliases-functions/terminal-post-thumbnail.png
+thumbnailAlt: Terminal trips and tricks
+author: team-techcoder
 date: 2026-03-05
 draft: false
 featured: true
-difficulty: Intermediate
+difficulty: Beginner
 prerequisites: []
 review: {}
 seo:
-  ogImage: /content/blog/terminal-trick-aliases-functions/seo/ogImage.svg
+  title: 'Useful Shell Aliases for Developers: Bash, Zsh and Terminal Shortcuts'
   noindex: false
 ---
-## Stop Typing the Same Commands
+Stop Typing the Same Commands
 
-If you type `git add . && git commit -m "..." && git push` more than once a day, you're wasting time.
+If you run the same terminal commands dozens of times a week, you don't need to become a faster typist. You need to stop typing them.
 
-### Essential Aliases
+Shell aliases and functions are one of the simplest ways to make your development workflow faster. They take a few minutes to configure and can remove a surprising amount of repetitive typing from everyday work.
 
-Add these to your `.zshrc` or `.bashrc`:
+The idea is simple: give frequently used commands shorter names.
 
-```bash
-# Git shortcuts
+## Start With Simple Aliases
+
+Your shell configuration is usually stored in `~/.zshrc` for Zsh or `~/.bashrc` for Bash.
+
+Here are a few useful starting points:
+
+```
+# Git
 alias gs="git status"
 alias gp="git push"
 alias gl="git log --oneline -20"
-alias gc="git commit -m"
-alias gac="git add . && git commit -m"
+alias gd="git diff"
 
 # Navigation
 alias ..="cd .."
 alias ...="cd ../.."
-alias dev="cd ~/Developer"
 
-# Development
+# npm
 alias nr="npm run"
 alias nrd="npm run dev"
 alias nrb="npm run build"
+alias nrt="npm test"
+
 ```
 
-### Power Functions
+Now instead of typing:
 
-Aliases are great for simple commands. Functions handle the complex ones:
+```
+git status
 
-```bash
-# Create a new branch and switch to it
-nb() { git checkout -b "$1"; }
-
-# Quick commit with message
-qc() { git add . && git commit -m "$1" && git push; }
-
-# Kill process on a port
-killport() { lsof -ti:"$1" | xargs kill -9; }
-
-# Create directory and cd into it
-mkcd() { mkdir -p "$1" && cd "$1"; }
 ```
 
-### FZF: The Game Changer
+you can simply run:
 
-Install `fzf` for fuzzy finding everything:
+```
+gs
 
-```bash
-# Fuzzy find and open files
-alias f="fzf --preview 'cat {}' | xargs code"
-
-# Fuzzy find git branches
-alias gb="git branch | fzf | xargs git checkout"
 ```
 
-> The best developers aren't faster typists — they're smarter about what they type.
+It's a tiny improvement, but commands you use repeatedly add up.
 
-### Getting Started
+## Use Functions When Arguments Are Involved
 
-1. Open your shell config: `code ~/.zshrc`
-2. Paste the aliases above
-3. Run `source ~/.zshrc`
-4. Enjoy your extra 30 minutes every day
+Aliases work well when the command doesn't change.
+
+For commands that need arguments, shell functions are usually a better fit.
+
+For example, creating a branch:
+
+```
+nb() {
+  git switch -c "$1"
+}
+
+```
+
+Now:
+
+```
+nb feature/user-profile
+
+```
+
+creates and switches to the new branch.
+
+You can do the same thing for creating directories:
+
+```
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+```
+
+Then:
+
+```
+mkcd ~/projects/my-app
+
+```
+
+creates the directory if necessary and moves into it.
+
+This is where shell customization starts becoming more useful than a collection of shortcuts.
+
+## Automate Repetitive Git Workflows Carefully
+
+You might frequently find yourself doing:
+
+```
+git add .
+git commit -m "Fix login validation"
+git push
+
+```
+
+A function can combine these steps:
+
+```
+qc() {
+  git add . &&
+  git commit -m "$1" &&
+  git push
+}
+
+```
+
+Then:
+
+```
+qc "Fix login validation"
+
+```
+
+But there's an important trade-off here.
+
+Automatically staging everything with `git add .` can include files you didn't intend to commit. A safer workflow is often to review the changes first:
+
+```
+gs
+gd
+git add <files>
+git commit -m "message"
+
+```
+
+Automation is useful when you understand exactly what it's doing. Don't turn a convenient shortcut into a command you blindly run.
+
+## Find Things Faster With fzf
+
+Aliases reduce typing. **fzf** reduces searching.
+
+fzf is a command-line fuzzy finder that can be integrated into many development workflows.
+
+For example:
+
+```
+alias ff="find . -type f | fzf"
+
+```
+
+You can also use it with Git:
+
+```
+gb() {
+  git branch --format='%(refname:short)' |
+    fzf |
+    xargs git switch
+}
+
+```
+
+Now you can interactively search your local branches instead of remembering the exact branch name.
+
+fzf becomes particularly useful once you start integrating it with your shell, Git, editors and project navigation.
+
+## Make Port Management Easier
+
+Developers constantly run into:
+
+> "Port 3000 is already in use."
+
+You can create a helper function to find the process using a port:
+
+```
+portpid() {
+  lsof -ti :"$1"
+}
+
+```
+
+Then:
+
+```
+portpid 3000
+
+```
+
+returns the relevant process ID.
+
+If you're certain you want to terminate it, you can then explicitly kill that process:
+
+```
+kill "$(portpid 3000)"
+
+```
+
+This is safer than automatically running `kill -9`, which forcibly terminates a process and can prevent it from cleaning up resources properly.
+
+If a process doesn't respond to a normal `kill`, you can escalate to `kill -9` when appropriate.
+
+## Create Project-Specific Shortcuts
+
+Not every useful shortcut needs to live globally.
+
+Suppose a project frequently requires:
+
+```
+npm run dev
+npm run lint
+npm run test
+
+```
+
+You could create aliases such as:
+
+```
+alias dev="npm run dev"
+alias lint="npm run lint"
+alias test="npm test"
+
+```
+
+But for larger projects, project-specific scripts are often better.
