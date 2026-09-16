@@ -88,6 +88,11 @@ Hero image and its alt text are optional; the alt falls back to the title.
 - **Inside the article:** in the body, use the "+" menu → Image, or paste/drag a
   file. The dialog asks for **alt text** (required) and a **caption** (optional).
 
+Image field uploads keep their original filenames when an article is saved.
+This prevents Keystatic from renaming a file while leaving an older reference
+behind. Existing files that were already renamed can be selected once in the
+editor to rewrite their reference to the current filename.
+
 You never type image paths by hand, and there is only one image system — the
 same `next/image` pipeline renders the hero, body images, and product shots.
 Intrinsic dimensions are read from the file at build time, so images never shift
