@@ -351,7 +351,7 @@ export default function HomeContent() {
               </span>
               <h2 className="heading-lg mt-3 mb-3">Featured articles</h2>
               <p className="body-lg max-w-xl">
-                Hand-picked reads worth your time — the stories and guides we&apos;re proudest of.
+                Ideas, guides, and stories worth your time.
               </p>
             </div>
             <Link
