@@ -74,6 +74,8 @@ export interface PostSummary {
    * section. Controlled from Keystatic or MDX frontmatter.
    */
   featured?: boolean;
+  /** Sets the priority for featured posts. Lower values have higher priority. */
+  priority?: number;
   /** Present only on reviews. Powers the sidebar score and review rich results. */
   review?: ReviewMeta;
   /** Optional SEO overrides. Falls back to `title` / `excerpt` when empty. */

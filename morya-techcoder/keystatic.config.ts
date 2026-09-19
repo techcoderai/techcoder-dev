@@ -18,6 +18,23 @@ import { mdxEditorComponents } from "@/content/keystatic-components";
 const IMAGE_DIR = "public/content/blog";
 const IMAGE_PUBLIC_PATH = "/content/blog";
 
+/** Keep field asset filenames stable so saved references never go stale. */
+function imageField(options: Parameters<typeof fields.image>[0]) {
+  const field = fields.image(options);
+  return {
+    ...field,
+    serialize(
+      value: Parameters<typeof field.serialize>[0],
+      args: Parameters<typeof field.serialize>[1]
+    ) {
+      return field.serialize(value, {
+        ...args,
+        suggestedFilenamePrefix: undefined,
+      });
+    },
+  };
+}
+
 /**
  * Keystatic configuration — the Git-based CMS that powers /keystatic.
  *
@@ -94,7 +111,7 @@ export default config({
           description: "Lowercase, specific, and reused across articles — they power search.",
           itemLabel: (props) => props.value || "Tag",
         }),
-        thumbnail: fields.image({
+        thumbnail: imageField({
           label: "Hero image",
           description: "Shown on cards and at the top of the article. 16:9 works best.",
           directory: IMAGE_DIR,
@@ -128,6 +145,11 @@ export default config({
           label: "Featured",
           description: "Show this article in the homepage “Featured articles” rail.",
           defaultValue: false,
+        }),
+        priority: fields.number({
+          label: "Featured priority",
+          description: "Lower numbers appear first among featured articles.",
+          validation: { min: 0 },
         }),
         difficulty: fields.select({
           label: "Difficulty",
@@ -179,7 +201,7 @@ export default config({
               multiline: true,
               validation: { length: { max: 200 } },
             }),
-            ogImage: fields.image({
+            ogImage: imageField({
               label: "Social share image",
               description: "Falls back to the hero image. 1200×630 is the safe size.",
               directory: IMAGE_DIR,

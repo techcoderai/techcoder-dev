@@ -1,15 +1,24 @@
 ---
-title: "Hello World: Your First TechCoder Blog Post"
-excerpt: "A complete guide to writing blog posts using the TechCoder MDX content system. Includes images, code blocks, and all markdown features."
-date: "2026-03-21"
-category: Programming
-featured: true
-tags: [MDX, TechCoder, Guide, Markdown, Blogging]
-thumbnail: /content/blog/hello-world/hello-world.svg
+title: 'Hello World: Your First TechCoder Blog Post'
+excerpt: >-
+  A complete guide to writing blog posts using the TechCoder MDX content system.
+  Includes images, code blocks, and all markdown features.
+category: Guides
+tags:
+  - MDX
+  - TechCoder
+  - Guide
+  - Markdown
+  - Blogging
+date: 2026-03-21
+draft: true
+featured: false
+difficulty: Intermediate
+prerequisites: []
+review: {}
 seo:
-  ogImage: /content/blog/hello-world/hello-world.svg
+  noindex: false
 ---
-
 ## Welcome to TechCoder
 
 This is a sample blog post demonstrating everything you can do with the **TechCoder MDX content system**. Just drop a `.mdx` file into `content/posts/` and it appears on the site automatically.
@@ -55,9 +64,9 @@ print(greet("Developer"))
 
 ## Text Formatting
 
-- **Bold text** for emphasis
-- Regular paragraph text in Inter for readability
-- [Links are styled in gold](/blog) with underlines
+* **Bold text** for emphasis
+* Regular paragraph text in Inter for readability
+* [Links are styled in gold](/blog) with underlines
 
 ## Blockquotes
 
@@ -67,25 +76,27 @@ print(greet("Developer"))
 ## Lists
 
 ### Unordered
-- Drop a `.mdx` file into `content/posts/`
-- Add frontmatter (title, excerpt, date, category, tags, thumbnail)
-- Write your content in markdown
-- Done — it appears on the site
+
+* Drop a `.mdx` file into `content/posts/`
+* Add frontmatter (title, excerpt, date, category, tags, thumbnail)
+* Write your content in markdown
+* Done — it appears on the site
 
 ### Ordered
+
 1. Create your image in `public/content/blog/<slug>/`
 2. Reference it in frontmatter as `thumbnail: /content/blog/<slug>/my-image.svg`
 3. Use `![alt text](/content/blog/<slug>/my-image.svg)` for in-body images
 
 ## Tables
 
-| Feature | Supported |
-|---------|-----------|
-| MDX Components | Yes |
-| Image Optimization | Yes |
-| Code Highlighting | Yes |
-| Frontmatter | Yes |
-| Auto Reading Time | Yes |
+| Feature            | Supported |
+| ------------------ | --------- |
+| MDX Components     | Yes       |
+| Image Optimization | Yes       |
+| Code Highlighting  | Yes       |
+| Frontmatter        | Yes       |
+| Auto Reading Time  | Yes       |
 
 ---
 
