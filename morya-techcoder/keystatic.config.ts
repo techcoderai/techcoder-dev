@@ -146,6 +146,11 @@ export default config({
           description: "Show this article in the homepage “Featured articles” rail.",
           defaultValue: false,
         }),
+        priority: fields.number({
+          label: "Featured priority",
+          description: "Lower numbers appear first among featured articles.",
+          validation: { min: 0 },
+        }),
         difficulty: fields.select({
           label: "Difficulty",
           description: "How much prior knowledge the reader needs.",
