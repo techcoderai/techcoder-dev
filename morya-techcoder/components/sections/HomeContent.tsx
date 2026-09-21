@@ -106,7 +106,7 @@ function FeaturedAsymmetric({ posts }: { posts: PostSummary[] }) {
         <Link
           href={`/blog/${lead.slug}`}
           aria-label={`Read: ${lead.title}`}
-          className="card-premium card-premium-cover focus-ring relative flex flex-col h-full min-h-[264px] sm:min-h-[380px] rounded-2xl overflow-hidden border border-tc-border bg-tc-bg-card shadow-[var(--tc-shadow-sm)]"
+          className="card-premium card-premium-cover focus-ring relative flex flex-col h-full min-h-[264px] sm:min-h-[380px] rounded-2xl overflow-hidden bg-tc-bg-card shadow-[var(--tc-shadow-sm)]"
         >
           <div className="card-premium-media absolute inset-0 overflow-hidden">
             {lead.thumbnail ? (
@@ -154,7 +154,7 @@ function FeaturedAsymmetric({ posts }: { posts: PostSummary[] }) {
       </article>
 
       {/* Supporting stack */}
-      <div className="flex flex-col rounded-2xl border border-tc-border bg-tc-bg-card/60 overflow-hidden divide-y divide-tc-border">
+      <div className="flex flex-col rounded-2xl bg-tc-bg-card/60 overflow-hidden divide-y divide-tc-border">
         {supporting.map((post, i) => (
           <ArticleCard key={post.id} post={post} variant="horizontal" index={i} />
         ))}
@@ -233,7 +233,7 @@ function EditorialGrid({ posts }: { posts: PostSummary[] }) {
           <Link
             href={`/blog/${post.slug}`}
             aria-label={`Read: ${post.title}`}
-            className="card-premium focus-ring flex flex-col sm:flex-row gap-0 h-full rounded-xl border border-tc-border bg-tc-bg-card overflow-hidden"
+            className="card-premium focus-ring flex flex-col sm:flex-row gap-0 h-full rounded-xl bg-tc-bg-card overflow-hidden"
           >
             <div className="card-premium-media relative sm:w-[42%] aspect-[16/10] sm:aspect-auto sm:min-h-[200px] bg-tc-bg-elevated overflow-hidden shrink-0">
               {post.thumbnail ? (

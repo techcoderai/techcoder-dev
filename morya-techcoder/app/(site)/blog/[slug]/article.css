@@ -55,6 +55,7 @@
   color: var(--tc-text-muted);
   font-family: var(--font-body);
   font-size: 1.0625rem;
+  font-weight: 450;
   line-height: 1.8;
 }
 

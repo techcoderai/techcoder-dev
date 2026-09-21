@@ -37,7 +37,8 @@
 
   /* Text */
   --tc-text:           #111827;
-  --tc-text-muted:     #6B7280;
+  /* --tc-text-muted:     #6B7280; */
+  --tc-text-muted:     #383c42;
   --tc-text-light:     #9CA3AF;
 
   /* Lines & effects */
@@ -214,8 +215,8 @@
   --color-tc-cat-devtools-text:    var(--tc-cat-devtools-text);
   --color-tc-cat-devtools-border:  var(--tc-cat-devtools-border);
 
-  --font-heading: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Montserrat', 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'DM Sans', 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 }
 
@@ -409,6 +410,17 @@
   line-height: 0.98;
   color: var(--tc-text);
 }
+.hero-title {
+  max-width: 58rem;
+}
+.hero-title-line {
+  display: block;
+}
+@media (max-width: 639px) {
+  .hero-title {
+    font-size: clamp(2.55rem, 12.5vw, 4rem);
+  }
+}
 .heading-xl {
   font-family: var(--font-heading);
   font-weight: 700;
@@ -477,7 +489,6 @@
   background: var(--tc-glass-bg);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid var(--tc-glass-border);
   box-shadow: var(--tc-glass-shadow);
 }
 /* Backdrop filters are re-evaluated while scrolling; keep them cheap on phones. */
@@ -492,11 +503,9 @@
   background: color-mix(in srgb, var(--tc-bg-card) 88%, transparent);
   backdrop-filter: blur(32px) saturate(185%);
   -webkit-backdrop-filter: blur(32px) saturate(185%);
-  border: 1px solid var(--tc-glass-border);
 }
 .card-surface {
   background: var(--tc-bg-card);
-  border: 1px solid var(--tc-border);
   border-radius: 24px;
   box-shadow: var(--tc-shadow-md);
 }
@@ -533,44 +542,13 @@
     box-shadow var(--tc-dur-slow) var(--tc-ease),
     border-color var(--tc-dur) var(--tc-ease);
 }
-.card-premium::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1px;
-  background: conic-gradient(
-    from var(--tc-border-angle),
-    transparent 0%,
-    transparent 38%,
-    rgba(249, 115, 22, 0.15) 46%,
-    var(--tc-primary-light) 52%,
-    var(--tc-primary) 56%,
-    rgba(249, 115, 22, 0.15) 62%,
-    transparent 70%,
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity var(--tc-dur-slow) var(--tc-ease);
-  pointer-events: none;
-  z-index: 2;
-}
 .card-premium:hover {
   transform: translateY(-4px) scale(1.01);
   box-shadow: var(--tc-shadow-lg);
-  border-color: transparent;
 }
 .card-premium:active {
   transform: translateY(-1px) scale(0.998);
   transition-duration: var(--tc-dur-fast);
-}
-.card-premium:hover::before {
-  opacity: 1;
-  animation: borderAngle 3.2s linear infinite;
 }
 /* Zoom only the image node — scaling both the wrapper and the img felt jerky. */
 .card-premium .card-premium-media img {
@@ -626,7 +604,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .card-premium,
-  .card-premium::before,
   .card-premium .card-premium-media,
   .card-premium .card-premium-media img {
     transition: none !important;

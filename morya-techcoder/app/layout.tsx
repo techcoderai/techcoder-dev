@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google";
+import { DM_Sans, Montserrat } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
+const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
 });
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
@@ -60,7 +65,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
-      className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${dmSans.variable} h-full antialiased`}
     >
       {/*
         Theme bootstrap lives in <body>, not a manual <head>.

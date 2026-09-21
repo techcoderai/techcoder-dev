@@ -46,7 +46,7 @@ function Meta({ post, muted = false }: { post: BlogPostSummary; muted?: boolean 
 function HeroCard({ post, className }: { post: BlogPostSummary; className?: string }) {
   return (
     <article className={cn("group relative", className)}>
-      <Link href={`/blog/${post.slug}`} className="card-premium focus-ring block rounded-2xl overflow-hidden border border-tc-border">
+      <Link href={`/blog/${post.slug}`} className="card-premium focus-ring block rounded-2xl overflow-hidden">
         {/* Image */}
         <div className="card-premium-media relative aspect-[16/9] bg-tc-bg-elevated overflow-hidden">
           {post.thumbnail ? (
@@ -98,7 +98,7 @@ function FeaturedCard({ post, className, index }: { post: BlogPostSummary; class
     <article className={cn("group flex flex-col h-full", className)}>
       <Link
         href={`/blog/${post.slug}`}
-        className="card-premium focus-ring flex flex-col h-full rounded-2xl bg-tc-bg-card border border-tc-border overflow-hidden shadow-[var(--tc-shadow-sm)]"
+        className="card-premium focus-ring flex flex-col h-full rounded-2xl bg-tc-bg-card overflow-hidden shadow-[var(--tc-shadow-sm)]"
       >
         {/* Image */}
         <div className="card-premium-media relative aspect-[3/2] bg-tc-bg-elevated overflow-hidden">
