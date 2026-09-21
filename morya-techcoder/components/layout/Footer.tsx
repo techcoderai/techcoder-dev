@@ -20,7 +20,7 @@ const columns = [
       { href: categoryHref("Reviews"), label: "Reviews" },
       { href: categoryHref("Guides"), label: "Buying Guides" },
       { href: "/#topics", label: "All Topics" },
-      { href: "/blog", label: "Newsletter" },
+      { href: "/#newsletter", label: "Newsletter" },
     ],
   },
   {

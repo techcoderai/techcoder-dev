@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X, ArrowUpRight, ChevronLeft, List, Share2 } from "lucide-react";
+import { Menu, X, ArrowUpRight, Mail, ChevronLeft, List, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { categoryHref } from "@/lib/categories";
 import ThemeToggle from "@/components/ui/ThemeToggle";
@@ -159,11 +159,11 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
           <ThemeToggle />
           <Link
-            href="/blog"
+            href="/#newsletter"
             className="btn-primary nav-cta focus-ring px-5 py-2.5 text-[13.5px]"
           >
-            Read Articles
-            <ArrowUpRight size={15} className="nav-cta-arrow" />
+            Join Newsletter
+            <Mail size={15} />
           </Link>
         </div>
 
@@ -235,11 +235,11 @@ export default function Navbar() {
               style={{ animationDelay: `${50 + navLinks.length * 50}ms` }}
             >
               <Link
-                href="/blog"
+                href="/#newsletter"
                 onClick={() => setMenuOpen(false)}
                 className="btn-primary focus-ring mt-3 w-full py-4 text-base"
               >
-                Read Articles
+                Join Newsletter
                 <ArrowUpRight size={17} />
               </Link>
             </div>
