@@ -52,10 +52,10 @@ export default function HeroSection() {
         </div>
 
         {/* Headline — no enter animation: this is the LCP element */}
-        <h1 className="display-xl mt-5 max-w-4xl sm:mt-7">
-          Discover the technology
-          <br className="hidden sm:block" /> that&apos;s{" "}
-          <span className="text-gradient">worth knowing.</span>
+        <h1 className="display-xl hero-title mt-5 max-w-5xl sm:mt-7">
+          <span className="hero-title-line">Discover the </span>
+          <span className="hero-title-line">technology that&apos;s </span>
+          <span className="hero-title-line text-gradient">worth knowing.</span>
         </h1>
 
         {/* Subtitle */}
@@ -68,10 +68,8 @@ export default function HeroSection() {
           that actually matters.
         </p> */}
 
-                <p
-          className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
-          style={{ animationDelay: "240ms" }}
-        >
+        <p className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+          style={{ animationDelay: "240ms" }} >
           Clear thinking on the technology shaping how we build, work, and live  <span className="font-bold"> without the noise.</span>
         </p>
 
@@ -102,21 +100,21 @@ export default function HeroSection() {
           className="hero-browser-float"
           surfaceClassName="relative rounded-[26px] card-surface shadow-premium p-2.5 sm:p-3"
         >
-            <div className="rounded-[18px] overflow-hidden border border-tc-border bg-tc-bg-secondary">
+            <div className="rounded-[18px] overflow-hidden bg-tc-bg-secondary">
               {/* Browser chrome */}
-              <div className="flex items-center gap-2 px-4 h-11 border-b border-tc-border bg-tc-surface/60">
+              <div className="flex items-center gap-2 px-4 h-11 bg-tc-surface/60">
                 <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
                 <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
                 <span className="w-3 h-3 rounded-full bg-[#28C840]" />
                 <span className="mx-auto flex items-center gap-1.5 rounded-md bg-tc-bg-elevated px-3 py-1 text-[11px] font-medium text-tc-text-light">
-                  techcoder.tech
+                  https://techcoder.tech
                 </span>
               </div>
 
               {/* Magazine layout */}
               <div className="p-4 sm:p-5 grid gap-4 sm:grid-cols-[1.35fr_1fr]">
               {/* Featured story */}
-              <div className="relative overflow-hidden rounded-2xl border border-tc-border">
+              <div className="relative overflow-hidden rounded-2xl">
                 <div className="relative h-40 sm:h-full min-h-[168px] bg-tc-bg-elevated">
                   <Image
                     src="/hero_preview.svg"
@@ -144,7 +142,7 @@ export default function HeroSection() {
                 {previewItems.map((item) => (
                     <div
                       key={item.title}
-                      className="flex items-center gap-3 rounded-xl border border-tc-border bg-tc-bg-card/60 p-2.5"
+                      className="flex items-center gap-3 rounded-xl bg-tc-bg-card/60 p-2.5"
                     >
                       <span
                         className={`flex items-center justify-center shrink-0 w-11 h-11 rounded-lg bg-tc-bg-elevated ${CATEGORIES[item.category].accent}`}

@@ -21,7 +21,7 @@ export default function FinalCTA() {
               <h2 className="heading-lg mt-3">
                 Start building. <span className="text-tc-primary">Keep learning.</span>
               </h2>
-              <p className="body-base mt-3 max-w-md">
+              <p className="body-base mt-3">
                 Join the curious minds who learn something new here every week.
               </p>
             </div>

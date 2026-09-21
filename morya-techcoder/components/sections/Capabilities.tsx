@@ -13,38 +13,38 @@ import { cn } from "@/lib/utils";
 export default function Capabilities() {
   const publishedCount = postSummaries.length;
 
-  const items = [
-    {
-      icon: BookOpen,
-      title: "In-depth articles & hands-on tutorials",
-      desc: "Long-form deep dives that explain the why, not just the how — with runnable examples you can drop straight into your next project.",
-    },
-    {
-      icon: Route,
-      title: "Curated learning series",
-      desc: "Structured, topic-by-topic series across React, TypeScript, Rust, Next.js and CSS — no more wondering what to read next.",
-    },
-    {
-      icon: Code2,
-      title: "Premium code snippets",
-      desc: "Battle-tested utilities, hooks, and patterns, ready to use and documented well enough to trust in production.",
-    },
-    {
-      icon: Network,
-      title: "System design & architecture",
-      desc: "Case studies and deep dives into how real systems are built, scaled, and kept maintainable over years.",
-    },
-    {
-      icon: Gauge,
-      title: "Performance & debugging",
-      desc: "Optimization guides and debugging stories from the trenches, with the measurements that justify every change.",
-    },
-    {
-      icon: Feather,
-      title: "Written by the TechCoder team",
-      desc: `Researched, written, and edited in-house. ${publishedCount} articles published, zero paywalls, no guest filler.`,
-    },
-  ];
+const items = [
+  {
+    icon: BookOpen,
+    title: "Deep dives, not surface-level takes",
+    desc: "Clear, well-researched articles that go beyond the basics to explain how things work, why they matter, and where they fit in the real world.",
+  },
+  {
+    icon: Route,
+    title: "Practical guides for builders",
+    desc: "Step-by-step guides, tutorials, and workflows designed to help you learn a technology and put it to work in your own projects.",
+  },
+  {
+    icon: Code2,
+    title: "Code you can actually use",
+    desc: "Practical examples, patterns, and snippets that focus on real problems developers face — with enough context to understand what you're using.",
+  },
+  {
+    icon: Network,
+    title: "How systems really work",
+    desc: "Explore architecture, APIs, infrastructure, and engineering decisions through practical breakdowns of the systems behind modern software.",
+  },
+  {
+    icon: Gauge,
+    title: "Performance, debugging & best practices",
+    desc: "Learn how to diagnose problems, improve performance, and make better technical decisions with practical techniques and measurable results.",
+  },
+  {
+    icon: Feather,
+    title: "Independent & thoughtfully written",
+    desc: `Every article is researched, written, and edited with a focus on clarity and usefulness. ${publishedCount} articles published and counting.`,
+  },
+];
 
   return (
     <section className="section-padding pt-0 relative">
@@ -53,7 +53,7 @@ export default function Capabilities() {
           <div className="border-t border-tc-border pt-10 md:pt-14">
             <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">
               <span className="h-px w-6 bg-tc-primary" />
-              What you&apos;ll find
+              What you&apos;ll find at techcoder
             </span>
 
             <div className="mt-6 grid gap-5 md:grid-cols-12 md:gap-10">

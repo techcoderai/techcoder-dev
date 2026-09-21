@@ -119,6 +119,7 @@ function loadPosts(): PostDetail[] {
         prerequisites: data.prerequisites || undefined,
         draft: data.draft ?? false,
         featured: data.featured ?? false,
+        priority: typeof data.priority === "number" ? data.priority : undefined,
         review: resolveReview(data.review),
         seo,
         author: getAuthor(typeof data.author === "string" ? data.author : undefined),

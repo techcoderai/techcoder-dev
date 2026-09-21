@@ -44,9 +44,30 @@ export function filterPosts<T extends PostSummary>(
  * `count`. If nothing is flagged yet, falls back to the N most recent posts
  * so the homepage featured rail never goes blank during content setup.
  */
-export function getFeaturedPosts<T extends PostSummary>(posts: T[], count = 3): T[] {
+/* export function getFeaturedPosts<T extends PostSummary>(posts: T[], count = 3): T[] {
   const flagged = posts.filter((post) => post.featured);
   const pool = flagged.length > 0 ? flagged : posts;
+  return pool.slice(0, count);
+}*/
+
+/**
+ * Returns posts flagged with `featured: true` (ordered by priority, then newest first),
+ * capped at `count`. If nothing is flagged yet, falls back to the N most recent posts.
+ */
+export function getFeaturedPosts<T extends PostSummary>(posts: T[], count = 3): T[] {
+  const flagged = posts.filter((post) => post.featured);
+  
+  const sortedFlagged = [...flagged].sort((a, b) => {
+    const priorityA = a.priority ?? 999;
+    const priorityB = b.priority ?? 999;
+    
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  const pool = sortedFlagged.length > 0 ? sortedFlagged : posts;
   return pool.slice(0, count);
 }
 
