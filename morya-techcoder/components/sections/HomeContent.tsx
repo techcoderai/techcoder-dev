@@ -135,7 +135,7 @@ function FeaturedAsymmetric({ posts }: { posts: PostSummary[] }) {
               tone="overlay"
               className="card-premium-badge mb-4"
             />
-            <h3 className="card-premium-title font-heading font-bold !text-white text-xl sm:text-2xl md:text-[1.75rem] leading-tight tracking-tight max-w-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">
+            <h3 className="card-premium-title font-heading font-bold !text-white text-xl sm:text-2xl md:text-[1.65rem] leading-tight tracking-tight max-w-xl drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]">
               {lead.title}
             </h3>
             <p className="mt-2.5 text-sm text-white/80 leading-relaxed line-clamp-2 max-w-lg hidden sm:block">

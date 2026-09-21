@@ -68,10 +68,8 @@ export default function HeroSection() {
           that actually matters.
         </p> */}
 
-                <p
-          className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
-          style={{ animationDelay: "240ms" }}
-        >
+        <p className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+          style={{ animationDelay: "240ms" }} >
           Clear thinking on the technology shaping how we build, work, and live  <span className="font-bold"> without the noise.</span>
         </p>
 
@@ -109,7 +107,7 @@ export default function HeroSection() {
                 <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
                 <span className="w-3 h-3 rounded-full bg-[#28C840]" />
                 <span className="mx-auto flex items-center gap-1.5 rounded-md bg-tc-bg-elevated px-3 py-1 text-[11px] font-medium text-tc-text-light">
-                  techcoder.tech
+                  https://techcoder.tech
                 </span>
               </div>
 
