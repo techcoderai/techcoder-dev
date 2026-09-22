@@ -38,6 +38,43 @@ function contactsUrl(email?: string): string {
   return email ? `${base}/${encodeURIComponent(email)}` : base;
 }
 
+/** Sends a welcome email to a newly created subscriber. */
+async function sendWelcomeEmail(email: string): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM_EMAIL;
+
+  if (!apiKey || !from) {
+    console.error("[newsletter] Missing RESEND_API_KEY or RESEND_FROM_EMAIL");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${RESEND_API_BASE}/emails`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from,
+        to: email,
+        subject: "Welcome to TechCoder!",
+        html: `
+          <h1>Welcome to TechCoder!</h1>
+          <p>Thanks for subscribing. You'll now receive our latest updates on technology, programming tips, and more directly in your inbox.</p>
+          <p>Stay tuned!</p>
+        `,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`[newsletter] Welcome email failed (${response.status})`);
+    }
+  } catch (err) {
+    console.error("[newsletter] Failed to send welcome email", err);
+  }
+}
+
 export async function subscribeToNewsletter(rawEmail: string): Promise<SubscribeResult> {
   const email = normalizeEmail(rawEmail);
   if (!email) return { status: "invalid" };
@@ -74,6 +111,8 @@ export async function subscribeToNewsletter(rawEmail: string): Promise<Subscribe
       console.error(`[newsletter] Resend create failed (${created.status})`);
       return { status: "error" };
     }
+
+    await sendWelcomeEmail(email);
 
     return { status: "subscribed" };
   } catch (err) {
