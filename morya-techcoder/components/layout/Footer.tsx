@@ -40,9 +40,9 @@ const columns = [
  */
 export default function Footer() {
   return (
-    <footer className="relative z-0 border-t border-white/[0.06] bg-[#18181B] pt-20 sm:pt-28 md:pt-36 text-white">
-      <div className="container-wide mx-auto px-4 sm:px-6 md:px-8 pb-10 md:pb-14">
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-5 md:gap-8">
+    <footer className="relative z-0 border-t border-white/[0.06] bg-[#18181B] pt-24 sm:pt-28 md:pt-36 text-white">
+      <div className="container-wide mx-auto px-4 pb-12 sm:px-6 sm:pb-10 md:px-8 md:pb-14">
+        <div className="grid grid-cols-2 gap-8 sm:gap-10 md:grid-cols-5 md:gap-8">
           {/* Brand */}
           <div className="col-span-2 md:col-span-2 max-w-sm">
             <Link href="/" className="focus-ring rounded-lg inline-flex items-center gap-2.5 mb-5 group">
@@ -82,7 +82,7 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-14 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-3">
+        <div className="mt-12 pt-5 border-t border-white/10 flex flex-col sm:mt-14 sm:flex-row sm:pt-6 justify-between items-center gap-4 sm:gap-3">
           <p className="text-xs text-white/35">
             Copyright &copy; {new Date().getFullYear()} techcoder.tech | All rights reserved.
           </p>

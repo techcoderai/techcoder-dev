@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useRef } from "react";
+import { useScrollProgress } from "@/hooks/useScrollProgress";
 
 /**
  * Scroll progress bar for article pages.
@@ -15,35 +16,17 @@ export default function ReadingProgress() {
   const progressRef = useRef<HTMLDivElement>(null);
   const lastRoundedRef = useRef(-1);
 
-  useEffect(() => {
-    let frame = 0;
-
-    const paint = () => {
-      frame = 0;
-      const el = document.scrollingElement || document.documentElement;
-      const max = el.scrollHeight - el.clientHeight;
-      const progress = max > 0 ? Math.min(1, Math.max(0, el.scrollTop / max)) : 0;
-      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
-      const rounded = Math.round(progress * 100);
-      if (rounded !== lastRoundedRef.current) {
-        progressRef.current?.setAttribute("aria-valuenow", String(rounded));
-        lastRoundedRef.current = rounded;
-      }
-    };
-
-    const schedule = () => {
-      if (!frame) frame = requestAnimationFrame(paint);
-    };
-
-    paint();
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
-    return () => {
-      if (frame) cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-    };
+  const onProgress = useCallback((progress: number) => {
+    const normalized = progress / 100;
+    if (barRef.current) barRef.current.style.transform = `scaleX(${normalized})`;
+    const rounded = Math.round(progress);
+    if (rounded !== lastRoundedRef.current) {
+      progressRef.current?.setAttribute("aria-valuenow", String(rounded));
+      lastRoundedRef.current = rounded;
+    }
   }, []);
+
+  useScrollProgress(onProgress);
 
   return (
     <div

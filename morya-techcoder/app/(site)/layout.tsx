@@ -22,7 +22,7 @@ export default function SiteLayout({
 }>) {
   return (
     <ReadingChromeProvider>
-      <div className="relative flex min-h-screen flex-col">
+      <div className="relative flex min-h-screen flex-col overflow-x-clip">
         {/* Global ambient background */}
         <div
           aria-hidden="true"
