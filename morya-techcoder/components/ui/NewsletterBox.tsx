@@ -56,7 +56,7 @@ export default function NewsletterBox() {
   };
 
   return (
-    <section className="border-t border-tc-border pt-10 md:pt-14">
+    <section className="border-t border-tc-border pt-12 sm:pt-10 md:pt-14">
       <div className="grid gap-8 md:grid-cols-12 md:gap-10 md:items-center">
         <div className="md:col-span-5">
           <span className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-tc-text-light">

@@ -20,7 +20,12 @@ export function useScrollProgress(onProgress: (progress: number) => void): void 
     const compute = () => {
       ticking = false;
       const el = document.scrollingElement || document.documentElement;
-      const max = el.scrollHeight - el.clientHeight;
+      const readingEnd = document.querySelector<HTMLElement>("[data-reading-content]");
+      const hasMeasuredReadingEnd = readingEnd && readingEnd.offsetHeight > 0;
+      const end = hasMeasuredReadingEnd
+        ? readingEnd.getBoundingClientRect().bottom + el.scrollTop
+        : el.scrollHeight;
+      const max = end - el.clientHeight;
       const p = max > 0 ? Math.min(100, Math.max(0, (el.scrollTop / max) * 100)) : 0;
       onProgress(p);
     };

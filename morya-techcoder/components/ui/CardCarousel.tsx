@@ -242,7 +242,7 @@ export default function CardCarousel({
   // in from sm+ so the desktop rail keeps its multi-card cadence.
   const cardWidth =
     size === "lg"
-      ? "w-[87vw] max-w-[380px] sm:w-[340px] sm:max-w-none lg:w-[380px]"
+      ? "w-[56vw] max-w-[240px] sm:w-[340px] sm:max-w-none lg:w-[380px]"
       : "w-[84vw] max-w-[340px] sm:w-[300px] sm:max-w-none lg:w-[320px]";
 
   return (

@@ -21,7 +21,7 @@ export default function TrustedBy() {
   return (
     <section
       aria-label="Topics covered by TechCoder"
-      className="relative py-16 md:py-20 px-4 sm:px-6 border-y border-tc-border"
+      className="relative overflow-hidden py-16 md:py-20 px-4 sm:px-6 border-y border-tc-border"
     >
       <div className="container-wide mx-auto">
         <Reveal className="text-center mb-10">

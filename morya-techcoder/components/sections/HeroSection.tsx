@@ -26,7 +26,7 @@ const previewItems = previewList.map((item) => ({
 
 export default function HeroSection() {
   return (
-    <section className="relative px-4 pb-12 pt-24 sm:px-6 sm:pb-20 sm:pt-36 md:pb-28 md:pt-44">
+    <section className="relative px-4 pb-10 pt-20 sm:px-6 sm:pb-20 sm:pt-36 md:pb-28 md:pt-44">
       {/* Ambient mesh — clipped so glow doesn't spill; floats live outside this layer */}
       <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 h-[700px] w-[1100px] -translate-x-1/2 mesh-glow opacity-80" />
@@ -52,7 +52,7 @@ export default function HeroSection() {
         </div>
 
         {/* Headline — no enter animation: this is the LCP element */}
-        <h1 className="display-xl hero-title mt-5 max-w-5xl sm:mt-7">
+        <h1 className="display-xl hero-title mt-4 max-w-5xl sm:mt-7">
           <span className="hero-title-line">Discover the </span>
           <span className="hero-title-line">technology that&apos;s </span>
           <span className="hero-title-line text-gradient">worth knowing.</span>
@@ -68,14 +68,14 @@ export default function HeroSection() {
           that actually matters.
         </p> */}
 
-        <p className="hero-enter mt-4 max-w-2xl text-[17px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+        <p className="hero-enter mt-4 max-w-2xl text-[16px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
           style={{ animationDelay: "240ms" }} >
           Clear thinking on the technology shaping how we build, work, and live  <span className="font-bold"> without the noise.</span>
         </p>
 
         {/* CTAs */}
         <div
-          className="hero-enter mt-6 flex w-full flex-row items-center gap-2.5 sm:mt-9 sm:w-auto sm:gap-3"
+          className="hero-enter mt-5 flex w-full flex-row items-center gap-2 sm:mt-9 sm:w-auto sm:gap-3"
           style={{ animationDelay: "320ms" }}
         >
           <Link href="/blog" className="btn-primary hero-cta-primary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
@@ -93,7 +93,7 @@ export default function HeroSection() {
       <div
         aria-hidden="true"
         style={{ perspective: 1400, animationDelay: "400ms" }}
-        className="hero-browser-enter container-wide relative mx-auto mt-10 w-[calc(100%-1rem)] max-w-5xl sm:mt-16 sm:w-full md:mt-20"
+        className="hero-browser-enter container-wide relative mx-auto mt-8 w-[calc(100%-1rem)] max-w-5xl sm:mt-16 sm:w-full md:mt-20"
       >
         <div className="hero-browser-glow" aria-hidden="true" />
         <TiltSurface

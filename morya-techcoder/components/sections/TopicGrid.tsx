@@ -38,7 +38,7 @@ export default function TopicGrid() {
           label + one-line description right. At sm+ this unfolds into the
           roomier vertical card treatment the desktop layout expects.
         */}
-        <div className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 md:mt-16 lg:grid-cols-3 md:gap-6">
+        <div className="mt-10 grid grid-cols-1 gap-2 sm:mt-12 sm:grid-cols-2 sm:gap-5 md:mt-16 lg:grid-cols-3 md:gap-6">
           {CATEGORY_KEYS.map((key, i) => {
             const meta = CATEGORIES[key];
             const Icon = categoryIcon(key);
@@ -48,7 +48,7 @@ export default function TopicGrid() {
                 <Link
                   href={categoryHref(key)}
                   className={cn(
-                    "press group focus-ring moving-border relative flex h-full min-h-[96px] items-center gap-4 rounded-2xl card-surface p-4",
+                    "press group focus-ring moving-border relative flex h-full min-h-[78px] items-center gap-3 rounded-xl card-surface p-3 max-sm:active:scale-[0.99]",
                     "sm:min-h-0 sm:flex-col sm:items-stretch sm:gap-0 sm:rounded-[22px] sm:p-6 sm:hover-lift",
                     meta.comingSoon && "opacity-70"
                   )}
@@ -58,7 +58,7 @@ export default function TopicGrid() {
                     className={cn(
                       "flex shrink-0 items-center justify-center rounded-xl bg-tc-bg-elevated group-hover:bg-tc-primary/10 group-hover:rotate-[5deg] group-hover:scale-105",
                       "transition-[transform,background-color] duration-[var(--tc-dur)] ease-[cubic-bezier(0.22,1,0.36,1)]",
-                      "h-11 w-11 sm:h-12 sm:w-12 sm:rounded-2xl",
+                      "h-10 w-10 sm:h-12 sm:w-12 sm:rounded-2xl",
                       meta.accent
                     )}
                   >
@@ -68,19 +68,19 @@ export default function TopicGrid() {
                   {/* Body */}
                   <div className="min-w-0 flex-1 sm:mt-6 sm:flex-none">
                     <div className="flex items-center justify-between gap-2">
-                      <h3 className="heading-sm text-[16px] sm:text-[17px]">{meta.label}</h3>
+                      <h3 className="heading-sm text-[15px] sm:text-[17px]">{meta.label}</h3>
                       {meta.comingSoon ? (
                         <span className="chip shrink-0 px-2.5 py-1 text-[10.5px] text-tc-text-light sm:px-3 sm:text-[11px]">
                           Soon
                         </span>
                       ) : (
                         <ArrowRight
-                          size={18}
+                          size={17}
                           className="shrink-0 text-tc-text-light transition-[color,opacity,transform] duration-[var(--tc-dur)] group-hover:text-tc-primary sm:opacity-0 sm:-translate-x-1 sm:group-hover:opacity-100 sm:group-hover:translate-x-0"
                         />
                       )}
                     </div>
-                    <p className="body-sm mt-1 line-clamp-1 text-[12.5px] sm:mt-2 sm:text-sm sm:line-clamp-none">
+                    <p className="body-sm mt-0.5 line-clamp-1 text-[12px] sm:mt-2 sm:text-sm sm:line-clamp-none">
                       {meta.description}
                     </p>
                   </div>

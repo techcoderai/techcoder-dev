@@ -45,7 +45,7 @@ export default function Home() {
       <div className="render-deferred">
         <Capabilities />
       </div>
-      <section id="newsletter" className="render-deferred section-padding scroll-mt-24 pt-0 newsletter-atmosphere">
+      <section id="newsletter" className="render-deferred section-padding scroll-mt-24 pb-16 pt-0 sm:pb-14 md:pb-28 newsletter-atmosphere">
         <div className="container-wide mx-auto">
           <NewsletterBox />
         </div>

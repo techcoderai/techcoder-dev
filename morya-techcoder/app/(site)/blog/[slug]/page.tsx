@@ -250,25 +250,26 @@ export default async function BlogDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Body */}
-              <div className="prose-tc mb-12">{mdxContent}</div>
+              <div data-reading-content>
+                {/* Body */}
+                <div className="prose-tc mb-12">{mdxContent}</div>
 
-              {/* Tags */}
-              <div className="reading-dim max-w-[720px] flex flex-wrap gap-2 mb-14">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="group inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-tc-bg-elevated text-tc-text-muted rounded-full border border-tc-border transition-[border-color,color,transform] duration-[var(--tc-dur)] hover:-translate-y-0.5 hover:border-tc-primary hover:text-tc-primary hover:shadow-[var(--tc-shadow-sm)]"
-                  >
-                    <Tag size={10} className="transition-transform duration-200 group-hover:-rotate-12" />
-                    {tag}
-                  </span>
-                ))}
-              </div>
+                {/* Tags */}
+                <div className="reading-dim max-w-[720px] flex flex-wrap gap-2 mb-14">
+                  {post.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="group inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-tc-bg-elevated text-tc-text-muted rounded-full border border-tc-border transition-[border-color,color,transform] duration-[var(--tc-dur)] hover:-translate-y-0.5 hover:border-tc-primary hover:text-tc-primary hover:shadow-[var(--tc-shadow-sm)]"
+                    >
+                      <Tag size={10} className="transition-transform duration-200 group-hover:-rotate-12" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
 
-              {/* Byline */}
-              {author.bio && (
-                <div className="reading-dim max-w-[720px] mb-8 flex items-start gap-4 rounded-2xl card-surface p-5 sm:p-6">
+                {/* Byline */}
+                {author.bio && (
+                  <div className="reading-dim max-w-[720px] mb-8 flex items-start gap-4 rounded-2xl card-surface p-5 sm:p-6">
                   {author.avatar ? (
                     <Image
                       src={author.avatar}
@@ -291,8 +292,9 @@ export default async function BlogDetailPage({ params }: Props) {
                       {author.bio}
                     </p>
                   </div>
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
 
               {/* Newsletter */}
               <div className="reading-dim max-w-[720px]">
