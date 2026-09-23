@@ -105,14 +105,14 @@ export default function MagicBorderCard({ post, size = "default", className }: P
             {post.excerpt}
           </p>
 
-          <div className="card-premium-meta flex items-center gap-2 pt-2.5 mt-2.5 border-t border-tc-border text-[11px] font-medium text-tc-text-light">
-            <time dateTime={post.date}>{formatDate(post.date)}</time>
+          <div className="card-premium-meta flex flex-nowrap items-center gap-2 pt-2.5 mt-2.5 border-t border-tc-border text-[11px] font-medium text-tc-text-light">
+            <time className="shrink-0 whitespace-nowrap" dateTime={post.date}>{formatDate(post.date)}</time>
             <span className="w-0.5 h-0.5 rounded-full bg-tc-text-light/60" />
-            <span className="flex items-center gap-1">
+            <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
               <Clock size={11} />
               {post.readingTime}
             </span>
-            <span className="ml-auto inline-flex items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0">
+            <span className="ml-auto hidden items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0 sm:inline-flex">
               Read
               <ArrowRight size={12} />
             </span>
