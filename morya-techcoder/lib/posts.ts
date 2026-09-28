@@ -91,3 +91,20 @@ export function getRelatedPosts<T extends PostSummary>(
     .filter((post) => post.category === current.category && post.id !== current.id)
     .slice(0, count);
 }
+
+/** Returns the next newer and older posts in the publication timeline. */
+export function getAdjacentPosts<T extends PostSummary>(
+  posts: T[],
+  current: T
+): { newer?: T; older?: T } {
+  const ordered = [...posts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+  const index = ordered.findIndex((post) => post.slug === current.slug);
+
+  if (index === -1) return {};
+  return {
+    newer: index > 0 ? ordered[index - 1] : undefined,
+    older: index < ordered.length - 1 ? ordered[index + 1] : undefined,
+  };
+}

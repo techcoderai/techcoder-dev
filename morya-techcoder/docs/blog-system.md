@@ -169,6 +169,7 @@ From `lib/posts.ts`:
 - `getFeaturedPosts(posts, n)` — posts with `featured: true` (falls back to newest if none flagged)
 - `getPostsByCategory(posts, category, n?)`
 - `getRelatedPosts(posts, current, n)`
+- `getAdjacentPosts(posts, current)` — previous/newer and next/older articles in publication order.
 
 ### Featuring a post on the homepage
 
@@ -186,9 +187,14 @@ helper falls back to the newest posts so the rail isn’t empty during setup.
 - `app/sitemap.ts` includes published posts, browsable topic pages, and post
   thumbnails. Drafts, `noindex` articles, "coming soon" topics, and every admin
   route are excluded.
+- Article pages link to their canonical topic page, same-category articles,
+  and adjacent articles; the manually selected `RelatedArticles` MDX component
+  supports contextual links inside the prose.
 - Article metadata includes canonical, Open Graph, Twitter, author, and
   `BlogPosting` structured data — plus a `Review` graph when the post has a
   rating.
+- See [seo.md](./seo.md) for metadata authoring, social-preview setup, canonical
+  routes, sitemap eligibility, robots behavior, and validation steps.
 - Keystatic is not part of the public surface at all: `/keystatic` and
   `/api/keystatic/*` 404 in production. See
   [keystatic.md](./keystatic.md#storage-and-production).

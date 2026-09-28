@@ -150,7 +150,7 @@ The backbone of a buying guide: awarded picks with a price and a reason.
 
 ```mdx
 <Recommendations>
-<Recommendation award="Best overall" product="Framework 13" price="$1,049" href="https://frame.work">
+<Recommendation award="Best overall" product="Framework 13" price="$1,049" href="https://frame.work" image="/content/blog/framework-13.png" imageAlt="Framework Laptop 13 open to its internal components">
 The only laptop here you can still repair in five years.
 </Recommendation>
 </Recommendations>
@@ -158,6 +158,7 @@ The only laptop here you can still repair in five years.
 
 - `award`: the superlative it won, e.g. "Best budget".
 - `image`: optional product shot, uploaded through the editor.
+- `imageAlt`: optional description of the product image; defaults to the product name.
 
 ---
 

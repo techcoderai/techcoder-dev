@@ -341,6 +341,10 @@ export const mdxEditorComponents = {
         directory: "public/content/blog",
         publicPath: "/content/blog",
       }),
+      imageAlt: fields.text({
+        label: "Product image alt text",
+        description: "Describe the product shown; defaults to the product name.",
+      }),
     },
     ContentView: ({ value, children }) => (
       <div style={{ borderLeft: `3px solid ${ORANGE}`, paddingLeft: 10 }}>

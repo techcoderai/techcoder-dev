@@ -52,7 +52,7 @@ function HeroCard({ post, className }: { post: BlogPostSummary; className?: stri
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
-              alt={post.title}
+              alt={post.thumbnailAlt || post.title}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 60vw"
@@ -105,7 +105,7 @@ function FeaturedCard({ post, className, index }: { post: BlogPostSummary; class
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
-              alt={post.title}
+              alt={post.thumbnailAlt || post.title}
               fill
               className="object-cover"
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -155,7 +155,7 @@ function HorizontalCard({ post, className, index }: { post: BlogPostSummary; cla
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
-              alt={post.title}
+              alt={post.thumbnailAlt || post.title}
               fill
               className="object-cover"
               sizes="112px"

@@ -5,9 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/keystatic", "/api/keystatic"],
+      disallow: ["/api/", "/keystatic/"],
     },
     sitemap: "https://techcoder.tech/sitemap.xml",
-    host: "https://techcoder.tech",
   };
 }

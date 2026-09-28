@@ -129,7 +129,7 @@ export default function Navbar() {
                 <span className="nav-logo-halo absolute inset-0 rounded-xl bg-tc-primary/20 blur-md" />
                 <Image
                   src="/icon.png"
-                  alt="TechCoder"
+                  alt=""
                   width={34}
                   height={34}
                   className="nav-logo-mark relative rounded-xl"

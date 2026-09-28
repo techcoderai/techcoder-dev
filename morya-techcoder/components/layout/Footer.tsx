@@ -46,7 +46,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-2 max-w-sm">
             <Link href="/" className="focus-ring rounded-lg inline-flex items-center gap-2.5 mb-5 group">
-              <Image src="/icon.png" alt="TechCoder" width={34} height={34} className="rounded-xl" />
+              <Image src="/icon.png" alt="" width={34} height={34} className="rounded-xl" />
               <span className="font-heading text-lg font-bold tracking-tight text-white">
                 Tech<span className="text-tc-primary">Coder</span>
               </span>

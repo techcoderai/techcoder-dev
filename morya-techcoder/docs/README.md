@@ -11,6 +11,7 @@ index for anything deeper.
 | [architecture.md](./architecture.md) | The big picture: stack, data flow, and every major decision (and *why*). |
 | [folder-structure.md](./folder-structure.md) | Every folder explained, and where new code should go. |
 | [blog-system.md](./blog-system.md) | How posts are loaded, rendered, and routed. Adding a post by hand. |
+| [seo.md](./seo.md) | Page metadata, canonical URLs, social previews, sitemap, robots, and internal discovery. |
 | [keystatic.md](./keystatic.md) | Why Keystatic, using the `/keystatic` editor, images, and deployment. |
 | [mdx-components.md](./mdx-components.md) | Reference for every custom MDX component with copy-paste examples. |
 | [authoring-workflow.md](./authoring-workflow.md) | The fastest path from idea to published article. |
