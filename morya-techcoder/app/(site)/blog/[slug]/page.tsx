@@ -3,10 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
-import { postSummaries, getBlogBySlug, getAllSlugs, compileBlogContent } from "@/content/loader";
+import { postSummaries, getBlogBySlug, getAllSlugs } from "@/content/loader";
+import { compileBlogContent } from "@/content/compile";
 import { formatDate, getHeadings } from "@/lib/utils";
 import { getAdjacentPosts, getRelatedPosts } from "@/lib/posts";
 import { categoryHref } from "@/lib/categories";
+import { SITE_URL, absoluteUrl, articleOgImagePath } from "@/lib/site";
 import type { BlogPost, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
@@ -42,7 +44,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogBySlug(slug);
   if (!post) return { title: "Article Not Found | TechCoder" };
-  const ogImage = post.ogImage || post.thumbnail;
+  // A hand-made `seo.ogImage` wins; otherwise use the generated card
+  // (`app/og/blog/[slug]/route.tsx`), whose size is known.
+  const ogImage = post.ogImage
+    ? { url: post.ogImage, alt: post.title }
+    : { url: articleOgImagePath(post.slug), width: 1200, height: 630, alt: post.title };
   const author = post.author;
   return {
     title: `${post.seo?.title || post.title} | TechCoder`,
@@ -60,13 +66,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       modifiedTime: post.updated || post.date,
       tags: post.tags,
-      images: ogImage ? [{ url: ogImage, width: 800, height: 450, alt: post.title }] : undefined,
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title: post.seo?.title || post.title,
       description: post.seo?.description || post.excerpt,
-      images: ogImage ? [ogImage] : undefined,
+      images: [ogImage.url],
     },
   };
 }
@@ -103,18 +109,16 @@ export default async function BlogDetailPage({ params }: Props) {
     description: post.seo?.description || post.excerpt,
     datePublished: post.date,
     dateModified: post.updated || post.date,
-    mainEntityOfPage: `https://techcoder.tech/blog/${post.slug}`,
-    image: post.ogImage || post.thumbnail
-      ? `https://techcoder.tech${post.ogImage || post.thumbnail}`
-      : undefined,
+    mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
+    image: absoluteUrl(post.ogImage || post.thumbnail || articleOgImagePath(post.slug)),
     author: authorJsonLd,
     publisher: {
       "@type": "Organization",
       name: "TechCoder",
-      url: "https://techcoder.tech",
+      url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: "https://techcoder.tech/icon.png",
+        url: absoluteUrl("/icon.png"),
       },
     },
   };
@@ -132,7 +136,7 @@ export default async function BlogDetailPage({ params }: Props) {
     },
     author: authorJsonLd,
     datePublished: post.date,
-    url: `https://techcoder.tech/blog/${post.slug}`,
+    url: absoluteUrl(`/blog/${post.slug}`),
   };
 
   return (

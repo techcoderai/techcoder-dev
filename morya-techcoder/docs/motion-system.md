@@ -8,7 +8,10 @@ animates `transform` / `opacity` wherever possible, and everything respects
 
 ## Tokens (`app/globals.css` → `:root`)
 
-Never hardcode durations or easings — reference these:
+Never hardcode durations or easings in new code — reference these. (A few
+older rules in `globals.css` still use raw values: the touch press on
+`.card-premium:active`, `.nav-indicator`, the theme-change transition, and
+`.animate-read-pulse` / `.animate-read-pop`. Tokenize them if you touch them.)
 
 | Token | Value | Use |
 | --- | --- | --- |
@@ -31,7 +34,8 @@ stack — it never just gets darker. Avoid one-off `box-shadow` values.
 
 - **Cards** (`.card-premium`) — hover: `translateY(-4px) scale(1.01)`, layered
   shadow, image zoom to `1.04`, title → primary, category chip brightens,
-  metadata (`.card-premium-meta`) recedes to `0.72`. Press: brief `scale(0.998)`.
+  metadata (`.card-premium-meta`) recedes to `0.72`. Press: brief `scale(0.998)`
+  (`scale(0.985)` on touch devices).
 - **Moving border** (`.moving-border`) — reusable class: a soft orange gradient
   sweeps the 1px edge on hover (conic-gradient masked to a ring via the
   `--tc-border-angle` `@property` + `borderAngle` keyframe), stopping smoothly on

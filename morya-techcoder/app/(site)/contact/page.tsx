@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 const CONTACT_EMAIL = "mailtechcoder@gmail.com";
 
@@ -32,6 +33,7 @@ export const metadata: Metadata = {
     title: "Contact | TechCoder",
     description: "How to reach TechCoder directly.",
     siteName: "TechCoder",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

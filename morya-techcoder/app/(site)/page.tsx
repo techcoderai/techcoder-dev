@@ -8,6 +8,7 @@ import FAQ from "@/components/sections/FAQ";
 import FinalCTA from "@/components/sections/FinalCTA";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import { isFeatureEnabled } from "@/lib/featureFlags";
+import { SITE_URL, absoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -17,14 +18,14 @@ const websiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "TechCoder",
-  url: "https://techcoder.tech",
+  url: SITE_URL,
   description:
     "A premium technology publication covering programming, AI, technology, and gadgets.",
   publisher: {
     "@type": "Organization",
     name: "TechCoder",
-    url: "https://techcoder.tech",
-    logo: "https://techcoder.tech/icon.png",
+    url: SITE_URL,
+    logo: absoluteUrl("/icon.png"),
   },
 };
 

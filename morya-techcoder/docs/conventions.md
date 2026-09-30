@@ -7,8 +7,8 @@ Practical rules that keep this codebase consistent and easy to maintain solo.
 | Thing | Convention | Example |
 | --- | --- | --- |
 | Component files | `PascalCase.tsx` | `MagicBorderCard.tsx` |
-| Hooks | `useX.ts` (camelCase) | `useReadingProgress.ts` |
-| Utilities / logic | `camelCase.ts` | `posts.ts`, `categories.ts` |
+| Hooks | `useX.ts` (camelCase) | `useScrollProgress.ts` |
+| Utilities / logic | `camelCase.ts` (a few older files are `kebab-case.ts`) | `posts.ts`, `featureFlags.ts`, `category-icons.ts` |
 | Types file | `camelCase.ts` in `types/` | `blog.ts` |
 | Blog posts | `kebab-case.mdx` | `nextjs-16-tailwind-v4.mdx` |
 | MDX components | `PascalCase` tags | `<Callout>`, `<YouTube>` |
@@ -50,6 +50,7 @@ Practical rules that keep this codebase consistent and easy to maintain solo.
   directional cue, and `icon-lift` for a 1px decorative icon movement.
 - Entrance animation must respect reduced-motion preferences. CSS animations
   are covered globally; Framer Motion components should use `useReducedMotion`.
+  (`components/sections/FAQ.tsx` doesn't yet. Fix it before enabling the FAQ flag.)
 
 ## Component guidelines
 
@@ -104,4 +105,8 @@ automatically. Two follow-ups when adding a topic:
 
 - Content commits: `post: <title>` or `content: <what changed>`.
 - Code commits: short imperative summary (`fix: …`, `refactor: …`, `feat: …`).
-- Never commit with `--no-verify`.
+  Older history uses free-form messages (e.g. "TechCoder - Modified SEO
+  Settings"). Use the prefixes for new commits.
+- There are no git hooks, so nothing checks your code at commit time. CI runs
+  lint, typecheck, and build on every PR; run them locally first
+  (see [contributing.md](./contributing.md)).

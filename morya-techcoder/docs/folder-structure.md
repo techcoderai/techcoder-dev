@@ -3,12 +3,17 @@
 ```
 morya-techcoder/
 ├── app/                            # Next.js App Router (routing lives here)
-│   ├── layout.tsx                  # Root layout: <html>, fonts, theme script (minimal)
+│   ├── layout.tsx                  # Root layout: <html>, fonts, theme script, site metadata, Vercel Analytics
 │   ├── globals.css                 # Design tokens (--tc-*), typography, animations
 │   ├── sitemap.ts                  # Static sitemap: routes, topics, posts, images
 │   ├── robots.ts                   # Crawler policy; excludes CMS/API routes
+│   ├── not-found.tsx               # Site-wide 404 (wraps itself in SiteShell)
+│   ├── og/                         # Generated social share images (static PNGs)
+│   │   ├── og-card.tsx             # Shared ImageResponse renderer + brand fonts
+│   │   ├── route.tsx               # Site-wide default card     → /og
+│   │   └── blog/[slug]/route.tsx   # One card per article        → /og/blog/:slug
 │   ├── (site)/                     # Route group for the public site (no URL segment)
-│   │   ├── layout.tsx              # Navbar + Footer + ambient background
+│   │   ├── layout.tsx              # Wraps pages in SiteShell (Navbar + Footer + background)
 │   │   ├── page.tsx                # Home page                    → /
 │   │   ├── about/page.tsx          # About page                   → /about
 │   │   ├── contact/page.tsx        # Contact page                 → /contact
@@ -36,7 +41,7 @@ morya-techcoder/
 │       └── newsletter/route.ts             # POST { email } → subscribes via Resend
 │
 ├── components/
-│   ├── layout/                     # Navbar, Footer, NavLinks
+│   ├── layout/                     # SiteShell, Navbar, Footer, NavLinks
 │   ├── sections/                   # Big page sections (Hero, HomeContent, BlogIndex, FAQ, …)
 │   ├── ui/                         # Small reusable UI (cards, badges, CodeBlock, …)
 │   ├── reading/                    # Article reading chrome — progress bar, floating
@@ -60,9 +65,9 @@ morya-techcoder/
 ├── hooks/                          # Reusable client hooks
 │   ├── useScrollProgress.ts        # Imperative rAF scroll progress (no re-renders)
 │   ├── useReadingState.ts          # Active heading + completed-sections scroll-spy
-│   └── useActiveHeading.ts         # IntersectionObserver active-heading (desktop TOC)
+│   └── useActiveHeading.ts         # Currently unused (the TOC uses useReadingState)
 │
-├── lib/                            # Pure logic (no React, no I/O side effects except fs reads)
+├── lib/                            # Non-UI logic (author.ts reads files; category-icons.ts maps to icon components)
 │   ├── categories.ts               # SINGLE SOURCE OF TRUTH for categories
 │   ├── category-icons.ts           # lucide icon name → component map
 │   ├── featureFlags.ts             # Progressive feature rollout (Testimonials, FAQ, …)
@@ -71,24 +76,36 @@ morya-techcoder/
 │   ├── author.ts                   # getAuthor()/getAuthors() — resolves the Authors collection
 │   ├── newsletter.ts               # subscribeToNewsletter() — talks to the Resend API
 │   ├── posts.ts                    # filterPosts / getFeaturedPosts / getRelatedPosts …
-│   └── utils.ts                    # cn, formatDate, slugify, getHeadings, calcReadingTime
+│   ├── site.ts                     # SITE_URL, absoluteUrl(), share-image paths — the ONLY place the origin lives
+│   └── utils.ts                    # cn, formatDate, isRecent, slugify, getHeadings, calcReadingTime
 │
 ├── types/
-│   └── blog.ts                     # Author, PostSummary, PostDetail, ReviewMeta, SeoMeta
+│   └── blog.ts                     # Author, PostSummary, PostDetail, Difficulty, ReviewMeta, SeoMeta
 │
 ├── public/
+│   ├── favicon.svg, icon.png       # Site icons
+│   ├── hero_preview.svg            # Homepage hero illustration
 │   └── content/
 │       ├── blog/<slug>/            # Post images, namespaced by the post's own slug —
 │       │                           # see keystatic.md#uploading-images for why this is mandatory
 │       └── authors/<author-slug>/  # Author avatars, namespaced the same way
 │
+├── assets/fonts/                   # WOFF brand fonts (OFL) used only by app/og share images
+│
 ├── docs/                           # You are here
 │
 ├── keystatic.config.ts             # Keystatic schema: the `posts` and `authors` collections
+├── package.json                    # Scripts: dev, build, start, lint, typecheck
+├── eslint.config.mjs               # ESLint (next config)
+├── postcss.config.mjs              # Tailwind v4 PostCSS plugin
+├── AGENTS.md, CLAUDE.md            # Rules for AI coding assistants
 ├── .env.example                    # Every environment variable the app reads, documented
-├── next.config.ts
+├── next.config.ts                  # Security headers (CSP, HSTS, …) + image config
 └── tsconfig.json                   # `@/*` path alias → project root
 ```
+
+One level up, at the Git repo root (`techcoder-dev/`), `.github/workflows/ci.yml`
+holds the CI pipeline. See [contributing.md](./contributing.md).
 
 ## Where do I put a new file?
 

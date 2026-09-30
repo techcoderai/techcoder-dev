@@ -25,8 +25,8 @@ You should never need to open the `.mdx` file to publish a normal article.
 
 ## The power-user path (your code editor)
 
-For hand-written Markdown, or the two components the editor doesn't expose
-(`FileTree`, `Table`):
+For hand-written Markdown, or the components the editor doesn't expose
+(`FileTree`, `Table`, the `<Image>` JSX form):
 
 1. Create `content/posts/my-post.mdx`
 2. Copy the frontmatter template from [blog-system.md](./blog-system.md#frontmatter-fields)

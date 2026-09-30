@@ -19,7 +19,7 @@
 content/posts/*.mdx
       │  (read + parse frontmatter, at server startup)
       ▼
-content/loader.ts  (BlogPost[] data only — no MDX component imports)
+content/loader.ts  (PostDetail[] data only — no MDX component imports)
       │
       ├─► list/home/topic routes (metadata cards)
       │
@@ -42,23 +42,31 @@ and simple to reason about.
 
 - **`content/loader.ts`** — *data only*. Reads every `.mdx` file, parses
   frontmatter, de-duplicates by slug, hides drafts in production, and exposes
-  `blogPosts`, `getBlogBySlug`, and `getCategories`. Intentionally does **not**
+  `blogPosts`, `postSummaries` (body-free copies for lists), `getBlogBySlug`,
+  `getAllSlugs`, and `getCategories`. Intentionally does **not**
   import MDX components (so home/list routes never pull `react-tweet` CSS).
 - **`content/compile.ts`** — *MDX compilation only*. `compileBlogContent(body)`
-  used by the article page; isolated so the MDX component graph stays off the
+  runs the plugin chain (GFM tables, Shiki highlighting, image sizing) and is
+  imported **only** by the article page; isolated so the MDX component graph stays off the
   homepage critical path.
 - **`content/mdx-components.tsx`** — *presentation only*. Maps MDX tags
   (`img`, `h2`, `Callout`, `YouTube`, …) to React components.
 - **`components/mdx/*`** — the reusable article building blocks.
-- **`lib/`** — pure, framework-agnostic logic: `categories.ts` (single source of
+- **`lib/`** — logic with no UI (a few files read the filesystem, and
+  `category-icons.ts` maps names to React icon components): `categories.ts` (single source of
   truth for categories), `posts.ts` (filtering/related helpers),
   `author.ts` (resolves a post's `author` slug to a full record),
   `assets.ts` (normalizes a stored image value to a usable `src`),
-  `newsletter.ts` (talks to the Resend API), `keystatic.ts` (the one flag
+  `newsletter.ts` (talks to the Resend API), `site.ts` (`SITE_URL` /
+  `absoluteUrl`, `DEFAULT_OG_IMAGE`, `articleOgImagePath` — the only place the
+  public origin is defined),
+  `keystatic.ts` (the one flag
   gating both admin routes), `featureFlags.ts` (progressive section rollout),
-  `utils.ts` (`cn`, `formatDate`, `slugify`, `getHeadings`, `calcReadingTime`).
+  `utils.ts` (`cn`, `formatDate`, `isRecent`, `slugify`, `getHeadings`, `calcReadingTime`).
 - **`types/blog.ts`** — the `Author` / `PostSummary` / `PostDetail` /
-  `Difficulty` types shared everywhere.
+  `Difficulty` / `SeoMeta` / `ReviewMeta` types shared everywhere.
+  `BlogPost` / `BlogPostSummary` are deprecated aliases; use `PostDetail` /
+  `PostSummary` in new code.
 - **`hooks/`** — reusable client behaviors (`useScrollProgress`, `useReadingState`,
   `useActiveHeading`).
 
@@ -95,7 +103,8 @@ Posts with `draft: true` are visible in `npm run dev` but filtered out of
 production builds. This gives "preview before publishing" with zero extra infra.
 
 ### 7. Feature flags (`lib/featureFlags.ts`)
-Homepage sections that aren't ready to ship (e.g. Testimonials, FAQ) are gated
+Homepage sections that aren't ready to ship (FAQ today; `showTestimonials`
+is a placeholder with no component yet) are gated
 behind a typed flag map. Components call `isFeatureEnabled("showFAQ")` instead
 of hardcoding conditions. Flags are compile-time constants today; the lookup can
 later read env/remote config without changing call sites.
@@ -107,16 +116,17 @@ reads like a magazine. Shared hover language lives in `.card-premium` tokens in
 `globals.css`; the infinite article carousel is `components/ui/CardCarousel.tsx`.
 
 ### 9. Route-scoped performance assets
-Inter and Space Grotesk remain global because they are visible above the fold.
+Montserrat (headings) and DM Sans (body) remain global because they are visible above the fold.
 JetBrains Mono and article prose CSS are loaded only by
 `app/(site)/blog/[slug]/layout.tsx`. Interactive article lists receive
-`BlogPostSummary` objects, never raw MDX bodies. This keeps homepage/list
+`PostSummary` objects, never raw MDX bodies. This keeps homepage/list
 transfers and non-article font work small without changing presentation.
 
 ### 10. Authors are a Keystatic collection, not a post field
 `content/authors/*.json` holds each byline (name, role, bio, avatar, url). A
 post's `author` frontmatter field is an *optional* slug into that collection —
-leaving it unset falls back to a default author (`lib/author.ts`), so existing
+leaving it unset falls back to the default author, `team-techcoder`
+(`DEFAULT_AUTHOR_SLUG` in `lib/author.ts`), so existing
 posts never needed editing when a second and third writer joined. This mirrors
 the categories decision: one registry, referenced by slug, instead of copying
 name/bio/avatar into every post.
@@ -130,6 +140,29 @@ not a stylistic choice: it's how Keystatic's `fields.image()` locates the file
 on disk (it strips exactly `<publicPath>/<slug>/` from the stored value), and
 getting it wrong causes a specific, easy-to-hit bug — see
 [troubleshooting.md](./troubleshooting.md#an-image-disappears-from-frontmatter-after-editing-in-keystatic).
+
+### 12. Generated share images via route handlers
+`/og` and `/og/blog/[slug]` render 1200×630 PNGs at build time with
+`next/og`. They are route handlers, not `opengraph-image.tsx` files, because
+file-based metadata overrides `generateMetadata` and would ignore a post's
+hand-made `seo.ogImage`. See [seo.md](./seo.md#social-preview-images).
+
+### 13. Static security headers
+`next.config.ts` sends HSTS, `X-Frame-Options`, `nosniff`, `Referrer-Policy`,
+`Permissions-Policy`, and (production only) a CSP to every route. The CSP is
+nonce-free with `'unsafe-inline'` scripts: nonces require per-request
+rendering, which would give up SSG for the whole site. Adding a new embed
+provider means adding its origin to `frame-src` (or `img-src`/`media-src`) there.
+
+### 14. One 404 page with site chrome
+`app/not-found.tsx` handles unmatched URLs and every `notFound()` call. It
+renders outside the `(site)` layout, so the chrome lives in
+`components/layout/SiteShell.tsx`, shared by both.
+
+### 15. CI on every PR
+`.github/workflows/ci.yml` (repo root) runs `lint`, `typecheck`, and
+`next build`. The build is the important gate: it compiles every MDX post and
+prerenders every article, share image, and the sitemap.
 
 ## Rendering & caching
 
