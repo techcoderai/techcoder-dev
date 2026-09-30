@@ -75,15 +75,15 @@ export default function HeroSection() {
 
         {/* CTAs */}
         <div
-          className="hero-enter mt-7 flex w-full flex-row items-center gap-3 sm:mt-9 sm:w-auto sm:gap-3"
+          className="hero-enter mt-7 flex w-full flex-row items-center justify-center gap-2 sm:mt-9 sm:w-auto sm:gap-3"
           style={{ animationDelay: "320ms" }}
         >
-          <Link href="/blog" className="btn-primary hero-cta-primary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
+          <Link href="/blog" className="btn-primary hero-cta-primary focus-ring group flex-none min-h-11 justify-center gap-1.5 px-3 py-2.5 text-xs sm:w-auto sm:gap-2 sm:px-7 sm:py-3.5 sm:text-[15px]">
             Start exploring
-            <ArrowRight size={16} className="icon-nudge" />
+            <ArrowRight size={14} className="icon-nudge sm:h-4 sm:w-4" />
           </Link>
-          <Link href="/#topics" className="btn-secondary hero-cta-secondary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
-            <Compass size={15} className="icon-lift" />
+          <Link href="/#topics" className="btn-secondary hero-cta-secondary focus-ring group flex-none min-h-11 justify-center gap-1.5 px-3 py-2.5 text-xs sm:w-auto sm:gap-2 sm:px-7 sm:py-3.5 sm:text-[15px]">
+            <Compass size={14} className="icon-lift sm:h-[15px] sm:w-[15px]" />
             Browse topics
           </Link>
         </div>
