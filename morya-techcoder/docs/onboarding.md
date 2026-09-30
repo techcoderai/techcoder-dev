@@ -1,0 +1,105 @@
+# Onboarding — Start Here
+
+Welcome to TechCoder. This page gets you from "just cloned the repo" to
+"shipped my first change", and tells you which docs to read in what order.
+It assumes you know basic React and Git, but not Next.js App Router internals.
+
+## Day 1: run it
+
+1. Install **Node 20.9+** (Node 22 LTS is what CI uses) and npm.
+2. Clone and install:
+   ```bash
+   git clone https://github.com/techcoderai/techcoder-dev.git
+   cd techcoder-dev/morya-techcoder   # the app lives in this subfolder
+   npm install
+   npm run dev
+   ```
+3. Open <http://localhost:3000> (the site) and
+   <http://localhost:3000/keystatic> (the content editor).
+
+No `.env` file is needed. Only the newsletter form needs secrets — see
+[newsletter.md](./newsletter.md).
+
+Before you push anything, check that these three pass locally. They're the
+same checks CI runs:
+
+```bash
+npm run lint
+npm run typecheck
+npm run build
+```
+
+## Day 1–2: read these, in this order
+
+| # | Doc | Why |
+| --- | --- | --- |
+| 1 | [architecture.md](./architecture.md) | The mental model. Read "Core principle" carefully. |
+| 2 | [diagrams.md](./diagrams.md) | Same thing, as pictures. |
+| 3 | [folder-structure.md](./folder-structure.md) | Where every file lives and where new ones go. |
+| 4 | [conventions.md](./conventions.md) | Coding rules reviewers will hold you to. |
+| 5 | [contributing.md](./contributing.md) | Branches, PRs, CI. |
+| 6 | [troubleshooting.md](./troubleshooting.md) | Skim now; come back when stuck. |
+
+Read the rest when your task touches that area:
+[blog-system.md](./blog-system.md) (posts), [keystatic.md](./keystatic.md)
+(editor), [mdx-components.md](./mdx-components.md) (article components),
+[seo.md](./seo.md) (metadata, share images), [mobile-first.md](./mobile-first.md)
+and [motion-system.md](./motion-system.md) (UI work),
+[performance-optimization.md](./performance-optimization.md),
+[newsletter.md](./newsletter.md), [deployment.md](./deployment.md).
+
+## The five rules that matter most
+
+1. **Content flows one way.** `content/posts/*.mdx` → `content/loader.ts` →
+   Server Components → Client Components (as props). Never fetch posts in the
+   browser, and never import `content/loader.ts` into a `"use client"` file.
+2. **Server Components by default.** Add `"use client"` only for state,
+   effects, or browser APIs.
+3. **Never hardcode** colors (use `--tc-*` tokens), categories (use
+   `lib/categories.ts`), or the site URL (use `lib/site.ts`).
+4. **Image paths include the entry's slug**:
+   `/content/blog/<post-slug>/<file>`. Anything else breaks Keystatic later.
+   See [troubleshooting.md](./troubleshooting.md).
+5. **Update the docs in the same PR** when you change behavior or structure.
+
+## Good first tasks
+
+- Write or edit a draft post in `/keystatic` and watch it appear at
+  `/blog/<slug>` (drafts show in dev only). This teaches you the content pipeline.
+- Fix a lint warning (`npm run lint`).
+- Add a small page under `app/(site)/` following an existing one such as
+  `contact/page.tsx`. Include `metadata` with `alternates.canonical` and
+  `openGraph.images: [DEFAULT_OG_IMAGE]` (see [seo.md](./seo.md)).
+
+## Glossary
+
+| Term | Meaning here |
+| --- | --- |
+| **App Router** | Next.js routing where folders in `app/` become URLs; `page.tsx` is a page, `layout.tsx` wraps pages, `route.ts(x)` is an API/file endpoint. |
+| **Route group** | A folder in parentheses, like `app/(site)/`. It organizes files and shares a layout **without** adding to the URL. |
+| **Dynamic segment** | A folder in brackets, like `[slug]`. Matches any value; the page receives it as `params`. |
+| **Server Component (RSC)** | Default React component type in `app/`. Runs only on the server, can read files, ships no JS to the browser. |
+| **Client Component / island** | A component marked `"use client"`. Runs in the browser too; used for interactive bits (search, theme toggle). |
+| **SSG** | Static Site Generation. Pages are rendered to HTML at `npm run build`, not per request. Almost the whole site is SSG. |
+| **`generateStaticParams`** | Tells Next which `[slug]` values to pre-render at build time. |
+| **Hydration** | React attaching event handlers to server-rendered HTML in the browser. "Hydration mismatch" = server and client HTML differ. |
+| **MDX** | Markdown that can also contain React components (`<Callout>`). Every post is an `.mdx` file. |
+| **Frontmatter** | The YAML block between `---` lines at the top of a post (title, date, category…). |
+| **Keystatic** | The visual CMS at `/keystatic`. It just reads/writes the `.mdx`/`.json` files — there is no database. |
+| **Design tokens** | CSS variables (`--tc-primary`, `--tc-dur`) in `app/globals.css`. Use these instead of raw values. |
+| **Canonical URL** | The "official" URL for a page, told to search engines to avoid duplicate-content issues. |
+| **OG image** | Open Graph image — the preview picture shown when a link is shared on social media. Generated by `app/og/`. |
+| **CSP** | Content-Security-Policy header: tells the browser which origins may load scripts, frames, images. Set in `next.config.ts`. |
+| **Feature flag** | A switch in `lib/featureFlags.ts` that turns an unfinished section on/off. |
+| **Slug** | The URL-safe ID of a post or author, taken from its filename: `my-post.mdx` → `/blog/my-post`. |
+| **JSON-LD / structured data** | A `<script type="application/ld+json">` block describing the page (article, author, rating) for search engines. |
+| **Soft 404** | A missing page that answers HTTP 200 instead of 404. Search engines may index it. We avoid it with `dynamicParams = false`. |
+| **Fails closed** | When something is misconfigured it refuses (returns an error) rather than pretending to work. |
+| **remark / rehype** | Plugin systems that transform Markdown (remark) and HTML (rehype) while MDX compiles. See `content/compile.ts`. |
+| **Shiki** | The syntax highlighter for code blocks. It runs at build time, so no highlighting JS is shipped. |
+| **`server-only`** | An import that makes the build fail if the file is ever pulled into client code. `content/loader.ts` uses it. |
+| **Turbopack / HMR** | Next's dev bundler, and Hot Module Replacement: edits show up in the browser without a full reload. |
+| **Satori / `ImageResponse`** | The library behind `next/og` that turns JSX into a PNG. Used by `app/og/`. Supports only a subset of CSS (flexbox). |
+| **rAF** | `requestAnimationFrame`: runs code right before the next frame is painted. Used to batch scroll work. |
+| **Core Web Vitals** | Google's page-experience metrics: **LCP** (Largest Contentful Paint, how fast the main content shows), **INP** (Interaction to Next Paint, how fast the page reacts), **CLS** (Cumulative Layout Shift, how much things jump). Also **FCP** (First Contentful Paint) and **TBT** (Total Blocking Time). "p75" = the value 75% of visits beat. |
+| **RSC payload** | The serialized Server Component output sent to the browser alongside the HTML. Big props passed to client components make it bigger. |

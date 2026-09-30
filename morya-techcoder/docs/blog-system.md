@@ -5,8 +5,8 @@
 1. A post is an `.mdx` file in `content/posts/` with **YAML frontmatter** at the
    top and MDX content below.
 2. `content/loader.ts` runs on the server, reads every file, and turns it into a
-   `BlogPost` object (see `types/blog.ts`).
-3. `app/(site)/blog/page.tsx` serializes compact `BlogPostSummary` objects to
+   `PostDetail` object (see `types/blog.ts`).
+3. `app/(site)/blog/page.tsx` serializes compact `PostSummary` objects to
    the client-side filter; raw MDX bodies never cross that boundary.
    `app/(site)/blog/[slug]/page.tsx` renders each article and compiles the MDX
    body with `compileBlogContent`.
@@ -43,12 +43,13 @@ category: Programming                     # Programming | AI | Technology | Revi
 tags: ["nextjs", "tailwind"]
 thumbnail: /content/blog/nextjs-16-tailwind-v4/hero.png  # hero / card image
 thumbnailAlt: "The Next.js logo"          # optional; falls back to the title
-author: atharva-yadav                     # optional slug into content/authors/*; falls back to the primary author
+author: atharva-yadav                     # optional slug into content/authors/*; falls back to team-techcoder
 difficulty: Intermediate                  # Beginner | Intermediate | Advanced
 updated: 2026-02-01                       # optional "last updated" date
 prerequisites: ["Basic React"]            # optional; shown as a callout
 draft: false                              # true = hidden in production
 featured: false                           # true = eligible for the homepage rail
+priority: 1                               # optional; lower = earlier in the featured rail
 review:                                   # Reviews only — see below
   product: "Framework 13"
   rating: 4.5
@@ -56,14 +57,15 @@ review:                                   # Reviews only — see below
 seo:                                      # all optional
   title: "Custom <title>"
   description: "Custom meta description"
-  ogImage: /content/blog/nextjs-16-tailwind-v4/og.png   # falls back to thumbnail
+  ogImage: /content/blog/nextjs-16-tailwind-v4/og.png   # falls back to a generated card (/og/blog/<slug>)
   canonical: "https://example.com/original"
   noindex: false
 ---
 ```
 
 Only `title`, `excerpt`, and `date` are strictly required. Everything else has a
-sensible fallback (e.g. `difficulty` is derived from `category` when omitted).
+sensible fallback. For example, when `difficulty` is omitted the article page
+shows `Advanced` for the `AI` category and `Intermediate` for everything else.
 
 **Reading time is not a field** — it's computed from the body on every load
 (`calcReadingTime`, 238 wpm). A stored word count goes stale on the first edit.
@@ -120,9 +122,20 @@ Authors**; nothing else needs to change.
 | `/` | `app/(site)/page.tsx` | Static |
 | `/blog` | `app/(site)/blog/page.tsx` | Static shell + client filter |
 | `/blog/:slug` | `app/(site)/blog/[slug]/page.tsx` | Static (SSG per post) |
+| `/blog/category/:category` | `app/(site)/blog/category/[category]/page.tsx` | Static; canonical points at `/topics/:category` |
+| `/topics/:category` | `app/(site)/topics/[category]/page.tsx` | Static (all topics, including "coming soon") |
+| `/about`, `/contact`, `/privacy`, `/terms` | `app/(site)/<name>/page.tsx` | Static |
+| `/og`, `/og/blog/:slug` | `app/og/…/route.tsx` | Static PNG share images |
+| `/sitemap.xml`, `/robots.txt` | `app/sitemap.ts`, `app/robots.ts` | Static |
+| `/api/newsletter` | `app/api/newsletter/route.ts` | Runs per request |
+| anything else | `app/not-found.tsx` | 404 |
 
 The slug comes from the filename: `content/posts/my-post.mdx` → `/blog/my-post`.
-(Keystatic may store posts as `my-post/index.mdx`; the loader handles both.)
+Keystatic writes flat files (`content/posts/<slug>.mdx`). The loader also
+accepts a folder form (`my-post/index.mdx`) for hand-made posts.
+
+Example: `content/posts/nextjs-16-tailwind-v4-blog.mdx` is served at
+`/blog/nextjs-16-tailwind-v4-blog`.
 
 `/blog/[slug]` sets `dynamicParams = false`: every publishable slug is known at
 build time, so anything else is rejected by the router with a real 404. Without
@@ -158,15 +171,19 @@ Keystatic dropdown all update automatically. See
 
 From `content/loader.ts`:
 - `blogPosts` — all posts, newest first.
+- `postSummaries` — the same posts without the body (safe to pass to client components).
+- `getAllSlugs()` — every publishable slug (used by `generateStaticParams`).
 - `getBlogBySlug(slug)` — one post.
 - `getCategories()` — categories actually present in the content.
-- `compileBlogContent(body)` — compiles an MDX string to a React element
-  (`content/compile.ts`; imported only by the article page).
+From `content/compile.ts`:
+- `compileBlogContent(body)` — compiles an MDX string to a React element.
+  Imported only by the article page.
 
 From `lib/posts.ts`:
-- `toPostSummary(post)` — strips article-only fields before client serialization.
 - `filterPosts(posts, { query, category })`
-- `getFeaturedPosts(posts, n)` — posts with `featured: true` (falls back to newest if none flagged)
+- `getFeaturedPosts(posts, n)` — posts with `featured: true`, sorted by `priority`
+  (lowest first; posts without one count as 999), then newest first. Falls back
+  to the newest posts if none are flagged.
 - `getPostsByCategory(posts, category, n?)`
 - `getRelatedPosts(posts, current, n)`
 - `getAdjacentPosts(posts, current)` — previous/newer and next/older articles in publication order.
@@ -174,7 +191,8 @@ From `lib/posts.ts`:
 ### Featuring a post on the homepage
 
 Set `featured: true` in the post’s frontmatter (or tick **Featured** in Keystatic).
-Only flagged posts appear in “Featured articles”. If nothing is flagged yet, the
+Only flagged posts appear in “Featured articles”. Use `priority` (**Featured
+priority** in Keystatic) to pin the order: `1` shows first. If nothing is flagged yet, the
 helper falls back to the newest posts so the rail isn’t empty during setup.
 
 ## Performance and discovery
@@ -185,8 +203,9 @@ helper falls back to the newest posts so the rail isn’t empty during setup.
   non-article routes.
 - Article hero images use `next/image` with `preload`; card images remain lazy.
 - `app/sitemap.ts` includes published posts, browsable topic pages, and post
-  thumbnails. Drafts, `noindex` articles, "coming soon" topics, and every admin
-  route are excluded.
+  thumbnails. Drafts, `noindex` articles, articles whose `seo.canonical`
+  points elsewhere, empty or "coming soon" topics, and every admin route are
+  excluded.
 - Article pages link to their canonical topic page, same-category articles,
   and adjacent articles; the manually selected `RelatedArticles` MDX component
   supports contextual links inside the prose.

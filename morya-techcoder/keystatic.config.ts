@@ -124,7 +124,7 @@ export default config({
         }),
         author: fields.relationship({
           label: "Author",
-          description: "Who wrote it. Defaults to the primary author when left unset.",
+          description: "Who wrote it. Defaults to Team TechCoder (team-techcoder) when left unset.",
           collection: "authors",
         }),
         date: fields.date({
@@ -203,7 +203,7 @@ export default config({
             }),
             ogImage: imageField({
               label: "Social share image",
-              description: "Falls back to the hero image. 1200×630 is the safe size.",
+              description: "Falls back to a generated card (/og/blog/<slug>). 1200×630 is the safe size.",
               directory: IMAGE_DIR,
               publicPath: IMAGE_PUBLIC_PATH,
             }),

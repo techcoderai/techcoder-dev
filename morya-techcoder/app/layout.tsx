@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next"
 import { DM_Sans, Montserrat } from "next/font/google";
+import { DEFAULT_OG_IMAGE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 export const viewport = {
@@ -21,7 +22,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://techcoder.tech"),
+  metadataBase: new URL(SITE_URL),
   title: "TechCoder | Technology Knowledge You Can Trust",
   description:
     "TechCoder is a premium technology publication with in-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
@@ -32,12 +33,14 @@ export const metadata: Metadata = {
     title: "TechCoder | Technology Knowledge You Can Trust",
     description:
       "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "TechCoder | Technology Knowledge You Can Trust",
     description:
       "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
+    images: [DEFAULT_OG_IMAGE.url],
   },
   icons: {
     icon: "/favicon.svg",

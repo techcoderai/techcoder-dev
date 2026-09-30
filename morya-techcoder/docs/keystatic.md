@@ -29,7 +29,7 @@ The sidebar has two sections:
 - **Publishing → Articles** — every post.
 - **Team → Authors** — everyone who can be credited on an article. Each post
   has an optional Author field that picks one; leaving it unset falls back to
-  the primary author (see `lib/author.ts`).
+  the default author, `team-techcoder` (`DEFAULT_AUTHOR_SLUG` in `lib/author.ts`).
 
 ## The publishing workflow
 
@@ -51,7 +51,7 @@ The sidebar is ordered the way an article actually gets made:
 | --- | --- |
 | Identity | Title, Slug, Excerpt, Category, Tags |
 | Artwork | Hero image, Hero image alt text |
-| Publishing | Author, Publish date, Last updated, Draft, Featured |
+| Publishing | Author, Publish date, Last updated, Draft, Featured, Featured priority |
 | Reader context | Difficulty, Prerequisites |
 | Reviews | Product reviewed, Rating, Price |
 | SEO | SEO title, SEO description, Social share image, Canonical URL, Hide from search engines |
@@ -88,15 +88,17 @@ Hero image and its alt text are optional; the alt falls back to the title.
 - **Inside the article:** in the body, use the "+" menu → Image, or paste/drag a
   file. The dialog asks for **alt text** (required) and a **caption** (optional).
 
-Image field uploads keep their original filenames when an article is saved.
+Uploads to the two image *fields* (the hero `thumbnail` and `seo.ogImage`)
+keep their original filenames when an article is saved.
 This prevents Keystatic from renaming a file while leaving an older reference
 behind. Existing files that were already renamed can be selected once in the
 editor to rewrite their reference to the current filename.
 
 You never type image paths by hand, and there is only one image system — the
 same `next/image` pipeline renders the hero, body images, and product shots.
-Intrinsic dimensions are read from the file at build time, so images never shift
-the page as they load.
+Intrinsic dimensions of body images are read from the file at build time, so
+they never shift the page as they load. (Product shots in `Recommendation`
+are always shown at a fixed 88×88.)
 
 **If you hand-place an image instead of uploading it through the editor** (e.g.
 writing a post by hand, per [authoring-workflow.md](./authoring-workflow.md)),
@@ -120,9 +122,10 @@ in [mdx-components.md](./mdx-components.md) — editorial blocks (TL;DR, Verdict
 Pros/Cons, Comparison…), embeds (YouTube, X, GitHub, CodePen, sandboxes), and
 structural pieces (Steps, Tabs, Info cards, Terminal).
 
-Two are hand-written MDX only: **FileTree**, because arbitrarily nested folders
-don't fit Keystatic's flat children model, and **Table**, because Markdown
-tables now render natively.
+Three are hand-written MDX only: **FileTree**, because arbitrarily nested folders
+don't fit Keystatic's flat children model; **Table**, because Markdown
+tables now render natively; and the **`<Image>`** JSX form (use Markdown
+images instead).
 
 ### Tables
 

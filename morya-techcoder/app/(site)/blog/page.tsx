@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { postSummaries, getCategories } from "@/content/loader";
 import BlogListContent from "@/components/sections/BlogListContent";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Blog | TechCoder",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
     description:
       "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
     siteName: "TechCoder",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

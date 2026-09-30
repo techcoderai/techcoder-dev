@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 const CONTACT_EMAIL = "mailtechcoder@gmail.com";
 
@@ -39,6 +40,7 @@ export const metadata: Metadata = {
     title: "Terms & Conditions | TechCoder",
     description: "The terms that apply to reading and using TechCoder.",
     siteName: "TechCoder",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

@@ -46,7 +46,7 @@ designs are needed again.
 **Issue:** Large animated blur filters, an animated headline
 `background-position`, and broad filter transitions caused repeated paint work.
 
-**Files:** `app/(site)/layout.tsx`, `app/globals.css`,
+**Files:** `components/layout/SiteShell.tsx` (ambient orbs; was `app/(site)/layout.tsx`), `app/globals.css`,
 `components/sections/HeroSection.tsx`,
 `components/sections/FinalCTA.tsx`, `components/sections/Capabilities.tsx`.
 
@@ -93,8 +93,8 @@ crossing client boundaries.
 
 **Change:** Converted cards and hero markup to Server Components; isolated the
 pointer tilt to a small client island; replaced Framer reveals with progressive
-CSS view-timeline animation; introduced `BlogPostSummary`/`toPostSummary` so
-raw article bodies never serialize into interactive lists.
+CSS view-timeline animation; introduced `PostSummary` (built as `postSummaries` in
+`content/loader.ts`) so raw article bodies never serialize into interactive lists.
 
 **Expected improvement:** Less hydration work, smaller RSC payloads, and better
 INP as content volume grows.
@@ -112,8 +112,8 @@ waited on a client fade wrapper, and three font families were globally loaded.
 `components/sections/HomeContent.tsx`, `next.config.ts`.
 
 **Change:** Removed deprecated/nonessential image priority hints; render the
-article hero directly with `next/image` and one `preload`; use variable Inter
-and Space Grotesk globally; scope non-preloaded JetBrains Mono to articles;
+article hero directly with `next/image` and one `preload`; use Montserrat
+and DM Sans globally; scope non-preloaded JetBrains Mono to articles;
 added an image quality allowlist and a seven-day optimizer cache floor.
 
 **Expected improvement:** Estimated 200–700ms faster LCP on slow mobile
@@ -139,7 +139,8 @@ measured once per pointer entry and writes are frame-batched.
 
 **Expected improvement:** Lower scroll-time layout work and better article INP.
 
-**Trade-off:** Article routes still maintain two lightweight progress listeners;
+**Trade-off:** Article routes run three `useScrollProgress` listeners (four
+while the Contents sheet is open);
 a shared scroll coordinator is a future optimization.
 
 ### Accessibility
@@ -181,8 +182,9 @@ and WebSite/BlogPosting JSON-LD.
 **Expected improvement:** Lighthouse SEO should reach 100 if the production
 domain, HTTPS, and crawl responses are configured correctly.
 
-**Trade-off:** Social previews remain text-only for routes without a dedicated
-OG image.
+**Trade-off (since resolved):** Social previews used to be text-only. Every
+route now has a generated share image (`app/og/`). This section is a
+historical record; for the current SEO setup read [seo.md](./seo.md).
 
 ## Estimated outcome
 
@@ -203,7 +205,7 @@ OG image.
 3. Replace the full client blog grid with a smaller search/filter island when
    the post library becomes large.
 4. Add production `useReportWebVitals` reporting and track p75 by route/device.
-5. Create dedicated raster Open Graph images for home, blog, and topics.
+5. ~~Create dedicated raster Open Graph images.~~ Done (`app/og/`). Per-topic cards are a possible follow-up.
 6. Validate the one article image preload with real LCP element data.
 7. Serve immutable static assets through a CDN with Brotli, HTTP/2 or HTTP/3,
    and long-lived hashed caching.

@@ -14,12 +14,21 @@ separate static sitemap or robots files.
 | Article metadata | `app/(site)/blog/[slug]/page.tsx` and post frontmatter |
 | Topic metadata | `app/(site)/topics/[category]/page.tsx` |
 | Category-filter alias canonical | `app/(site)/blog/category/[category]/page.tsx` |
+| About / contact / privacy / terms canonical + Open Graph | `app/(site)/{about,contact,privacy,terms}/page.tsx` |
+| 404 page (`noindex, follow`) | `app/not-found.tsx` |
+| Share images | `app/og/` (see below) |
 | Sitemap | `app/sitemap.ts` |
 | Robots policy | `app/robots.ts` |
 
-`metadataBase` is `https://techcoder.tech`. Use relative canonical and image
-paths when the URL belongs to TechCoder; Next.js resolves them against this
-base. Keep production URLs on HTTPS and the preferred `techcoder.tech` host.
+`metadataBase` is `SITE_URL` from `lib/site.ts` — the one place the site's
+origin is defined. It resolves from `NEXT_PUBLIC_SITE_URL`, then Vercel's
+`VERCEL_PROJECT_PRODUCTION_URL` (so preview deployments still point canonicals
+at production), then `http://localhost:3000`. Never hardcode the domain; use
+relative paths in metadata and `absoluteUrl()` where an absolute URL is required
+(sitemap, robots, JSON-LD). URLs are only HTTPS on `techcoder.tech` if
+`NEXT_PUBLIC_SITE_URL=https://techcoder.tech` is set, or the Vercel project's
+production domain is `techcoder.tech`. Otherwise you may get a `*.vercel.app`
+host, or `http://localhost:3000` (e.g. in CI). Check `/sitemap.xml` after deploying.
 
 ## Article metadata
 
@@ -36,7 +45,8 @@ seo:
 ```
 
 The SEO block is optional. Article title and excerpt are the fallbacks for the
-page title and description. The social image falls back to the post thumbnail.
+page title and description. The social image falls back to a generated card
+(see below) — not the thumbnail.
 Only set `canonical` when the article has a different preferred original URL;
 an article with a non-self canonical is omitted from TechCoder's sitemap. A
 canonical is a search-engine hint, not a redirect.
@@ -52,32 +62,34 @@ the build or deployment date.
 
 ## Social preview images
 
-The root layout currently sets site-wide Open Graph and X titles/descriptions,
-but no default preview image. To add one, put a share graphic in `public/` and
-add it to both metadata objects in `app/layout.tsx`:
+Share images are generated at build time with `ImageResponse` (`next/og`) and
+served as static PNGs:
 
-```ts
-openGraph: {
-  // Keep the existing site-wide fields.
-  images: [{
-    url: "/social-preview.png",
-    width: 1200,
-    height: 630,
-    alt: "TechCoder technology publication",
-  }],
-},
-twitter: {
-  card: "summary_large_image",
-  // Keep the existing site-wide fields.
-  images: ["/social-preview.png"],
-},
-```
+| Route | Used by | Source |
+| --- | --- | --- |
+| `/og` | Every non-article page (root layout + each page's `openGraph.images`) | `app/og/route.tsx` |
+| `/og/blog/{slug}` | Articles without a custom `seo.ogImage` | `app/og/blog/[slug]/route.tsx` |
+
+Both render through `app/og/og-card.tsx` (1200×630, dark brand theme,
+Montserrat + DM Sans from `assets/fonts/`). Article cards show the category,
+the SEO title (or title), author, date, and reading time.
+
+Precedence for an article: `seo.ogImage` from frontmatter (or the legacy
+top-level `ogImage`) → generated card. The `thumbnail` is **not** used as the
+share image.
+JSON-LD `image` prefers `seo.ogImage`, then the thumbnail, then the generated
+card, since search results favour a real hero image.
+
+These are route handlers rather than the `opengraph-image.tsx` file convention
+on purpose: file-based metadata overrides `generateMetadata`, which would make
+`seo.ogImage` impossible to honour. Page metadata merges shallowly, so any page
+that defines its own `openGraph` object must include
+`images: [DEFAULT_OG_IMAGE]` (from `lib/site.ts`) or it loses the default card.
 
 Open Graph metadata is used by services such as LinkedIn and Facebook. The
-`twitter` metadata configures X's card. Article metadata sets its own large
-image card using `seo.ogImage` or the thumbnail, so a site-wide default does not
-replace an article-specific image. Social services cache previews; use their
-sharing/debug tools to request a refresh after changing an image.
+`twitter` metadata configures X's card (`summary_large_image` site-wide).
+Social services cache previews; use their sharing/debug tools to request a
+refresh after changing an image.
 
 The browser favicon is `public/favicon.svg`. The Apple touch icon uses the PNG
 at `/icon.png`; keep it raster for iOS home-screen compatibility.
@@ -97,7 +109,7 @@ Drafts are removed by the content loader in production. `noindex` and
 non-self-canonical articles are excluded. Empty/coming-soon topics and the
 duplicate `/blog/category/{category}` listing routes are not listed; the latter
 declare their corresponding `/topics/{category}` URL as canonical. Sitemap
-entries use HTTPS and the production host. Article thumbnails are included as
+entries use `SITE_URL` as the host (see above). Article thumbnails are included as
 image locations when available. Listing-page `lastModified` values derive from
 the latest relevant article date; static information pages have no fabricated
 modification date.
@@ -111,13 +123,13 @@ production build is the authoritative sitemap check.
 ## Crawl policy
 
 `app/robots.ts` allows public pages and assets, disallows `/api/` and
-`/keystatic/`, and points crawlers to `https://techcoder.tech/sitemap.xml`.
+`/keystatic/`, and points crawlers to `{SITE_URL}/sitemap.xml`.
 These disallows keep internal endpoints out of crawl paths; they are not an
 indexing control for public pages. Do not block CSS, JavaScript, images, fonts,
 or other resources needed to render the site. Do not add `Disallow: /` or
 unsupported crawl-delay directives.
 
-Keystatic pages also declare `noindex`; robots rules and page metadata serve
+Keystatic pages also declare `noindex, nofollow`; robots rules and page metadata serve
 different purposes and should remain consistent.
 
 ## Internal discovery
@@ -136,10 +148,10 @@ genuinely helps the reader. Do not add keyword-stuffed or unrelated links.
 
 After changing metadata or route eligibility:
 
-1. Run `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
+1. Run `npm run lint`, `npm run typecheck`, and `npm run build`.
 2. Serve the production build and inspect `/robots.txt` and `/sitemap.xml`.
-3. Parse the sitemap as XML; check for unique HTTPS URLs on
-   `techcoder.tech`, with no query strings, private routes, redirects, or
+3. Parse the sitemap as XML; check for unique URLs on the expected
+   origin (HTTPS `techcoder.tech` in production), with no query strings, private routes, redirects, or
    `noindex` pages.
 4. For every sitemap URL, check its HTTP status and rendered canonical.
 5. Inspect page source for canonical, robots, `og:*`, and `twitter:*` tags.
