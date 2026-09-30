@@ -10,8 +10,12 @@ type TabProps = { label: string; children: React.ReactNode };
  *
  * MDX usage:
  *   <Tabs>
- *   <Tab label="npm">```bash\nnpm install\n```</Tab>
- *   <Tab label="pnpm">```bash\npnpm add\n```</Tab>
+ *   <Tab label="npm">
+ *   ```bash
+ *   npm install
+ *   ```
+ *   </Tab>
+ *   (Each Tab must be multi-line, or Keystatic can't open the post.)
  *   </Tabs>
  */
 export function Tabs({ children }: { children: React.ReactNode }) {

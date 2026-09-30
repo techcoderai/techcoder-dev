@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 import { blogPosts, getCategories } from "@/content/loader";
 import { categoryHref } from "@/lib/categories";
-
-const SITE_URL = "https://techcoder.tech";
+import { SITE_URL } from "@/lib/site";
 
 function parseDate(value?: string): Date | undefined {
   if (!value) return undefined;

@@ -116,6 +116,10 @@ each on their own line. Written as a single line (`<Pro>text</Pro>`), MDX
 parses it as inline JSX instead of a block element, which Keystatic's editor
 can't read back and fails to open the whole article.
 
+The same rule applies to **every** component that wraps content: `Step`,
+`Tab`, `Recommendation`, `InfoCard`, `Callout`, `Terminal`, `CodeFile`, and
+the rest.
+
 ---
 
 ## Comparison
@@ -140,7 +144,10 @@ the content is a grid of short values you might want to restyle later without
 touching the article.
 
 Rows with fewer values than columns are padded with `—`, so a half-filled table
-still lines up with its headers.
+still lines up with its headers. With no columns or no rows it renders nothing.
+
+`label` is the header of the first column. It defaults to `"Comparison"` in
+hand-written MDX, but the Keystatic editor pre-fills `"Feature"`.
 
 ---
 
@@ -157,8 +164,12 @@ The only laptop here you can still repair in five years.
 ```
 
 - `award`: the superlative it won, e.g. "Best budget".
-- `image`: optional product shot, uploaded through the editor.
-- `imageAlt`: optional description of the product image; defaults to the product name.
+- `product`, `price`: shown on the card.
+- `href`: optional buy/product link. It opens with `rel="nofollow noopener"`.
+- `image`: optional product shot, uploaded through the editor. It's shown at a
+  fixed 88×88 size.
+- `imageAlt`: optional description of the product image; defaults to
+  "<product> product photo".
 
 ---
 
@@ -189,6 +200,9 @@ Only the slugs are stored. Titles, categories, and reading times are resolved
 from the content loader at build time, so retitling an article never leaves a
 stale label behind, and a slug that stops resolving is silently dropped rather
 than rendered as a dead link.
+
+- `title`: optional heading; defaults to "Related reading". If no slug
+  resolves, the whole block renders nothing.
 
 This complements the automatic "Keep reading" rail at the end of every article,
 which is same-category and algorithmic.
@@ -224,7 +238,12 @@ component, so both forms behave identically.
 
 The Markdown *title* — the quoted string after the URL — becomes the caption.
 That's what the editor's image dialog writes, so a caption added in Keystatic
-renders here without a second syntax.
+renders here without a second syntax. If both `caption` and `title` are set,
+`caption` wins.
+
+The `<Image …>` JSX form is **code-only**: it isn't registered in the Keystatic
+editor, so a post that uses it can't be opened in `/keystatic`. In posts you
+edit in Keystatic, use the Markdown form (the editor writes it for you).
 
 Intrinsic width and height are read from the file at compile time
 (`content/rehype-image-size.ts`), so images reserve the right space and don't
@@ -240,7 +259,8 @@ Store images in `public/content/blog/`. The editor puts them there for you.
 <YouTube id="dQw4w9WgXcQ" title="Intro to Next.js" />
 ```
 
-`id` is the part after `watch?v=` in the URL.
+`id` is the part after `watch?v=` in the URL. `title` (for screen readers)
+defaults to "YouTube video". Videos load from `youtube-nocookie.com`.
 
 ---
 
@@ -407,6 +427,7 @@ Read the guide.
 Same rule as Pro/Con above: `<InfoCard>` must be multi-line, or MDX parses it
 as inline JSX and the article fails to open in Keystatic.
 
+- `title`: required.
 - `icon`: any [lucide-react](https://lucide.dev/icons) icon name (optional).
 - `href`: makes the card a link (optional).
 

@@ -75,7 +75,7 @@ that field. Check, in order:
 
 1. **`Missing component definition for X`** — the post uses a component that
    isn't registered in the Keystatic editor. Today that's `FileTree` (with its
-   `Folder`/`File` children) or `Table`. Edit that post in your **code
+   `Folder`/`File` children), `Table`, or the `<Image>` JSX form. Edit that post in your **code
    editor**, or register the component in `content/keystatic-components.tsx`.
    See [mdx-components.md](./mdx-components.md#filetree-code-only).
 
@@ -111,7 +111,7 @@ subfolder, not a config option. If the value doesn't have that exact prefix
 when it loads the entry into the form, silently treats the field as unset, and
 your next save writes out that "unset" state — deleting the reference. The
 site itself still rendered the image fine right up until that save, because
-`content/loader.ts`'s `resolveAsset()` is more lenient about path shape than
+`resolveAsset()` (in `lib/assets.ts`, called by `content/loader.ts`) is more lenient about path shape than
 Keystatic's own editor is.
 
 **Fix:** move the file to `public/content/blog/<slug>/<filename>` (or
@@ -202,6 +202,9 @@ Then run Lighthouse (Incognito, extensions off) against the production server.
 ```bash
 pkill -f "next dev"; rm -rf .next; npm run dev
 ```
+
+On Windows, `pkill` may not exist. Stop the server with **Ctrl+C** in its
+terminal, then run `rm -rf .next && npm run dev`.
 
 ## Opening a blog post spikes CPU forever / `FATAL: An unexpected Turbopack error occurred`
 

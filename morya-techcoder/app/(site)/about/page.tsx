@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Linkedin, Twitter } from "lucide-react";
 import { CATEGORY_KEYS, CATEGORIES } from "@/lib/categories";
 import Reveal from "@/components/ui/Reveal";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About | TechCoder",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
     title: "About | TechCoder",
     description: "TechCoder is an independent publication about software, AI, and the devices we use every day.",
     siteName: "TechCoder",
+    images: [DEFAULT_OG_IMAGE],
   },
 };
 

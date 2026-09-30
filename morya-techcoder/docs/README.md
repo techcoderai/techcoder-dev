@@ -8,7 +8,10 @@ index for anything deeper.
 
 | Doc | What's inside |
 | --- | --- |
+| [onboarding.md](./onboarding.md) | **New here? Start with this.** Setup, reading order, first tasks, glossary. |
+| [contributing.md](./contributing.md) | Branch naming, PR workflow, what CI checks, PR checklist. |
 | [architecture.md](./architecture.md) | The big picture: stack, data flow, and every major decision (and *why*). |
+| [diagrams.md](./diagrams.md) | Mermaid diagrams: system architecture, content pipeline, reader flow, newsletter sequence, publishing flow. |
 | [folder-structure.md](./folder-structure.md) | Every folder explained, and where new code should go. |
 | [blog-system.md](./blog-system.md) | How posts are loaded, rendered, and routed. Adding a post by hand. |
 | [seo.md](./seo.md) | Page metadata, canonical URLs, social previews, sitemap, robots, and internal discovery. |
@@ -19,6 +22,8 @@ index for anything deeper.
 | [mobile-first.md](./mobile-first.md) | The mobile-first design system: rhythm, typography, interactions, and per-component behavior. |
 | [motion-system.md](./motion-system.md) | Unified motion & interaction language: tokens, shadows, hover/press, moving border, transitions. |
 | [performance-optimization.md](./performance-optimization.md) | Measured CSS/CWV optimization pass, trade-offs, targets, and remaining work. |
+| [newsletter.md](./newsletter.md) | Newsletter signup flow, Resend setup, statuses, known gaps. |
+| [deployment.md](./deployment.md) | What a production build produces, hosting settings, env vars, post-deploy checks. |
 | [troubleshooting.md](./troubleshooting.md) | Common problems and their fixes — read this first when something breaks. |
 
 ## 30-second orientation
@@ -27,14 +32,14 @@ index for anything deeper.
 - **Content:** Blog posts are `.mdx` files in `content/posts/`; authors are
   `.json` files in `content/authors/`. No database.
 - **Editing:** Run `npm run dev` and open `http://localhost:3000/keystatic`.
-  Those routes **404 in production** — see [keystatic.md](./keystatic.md#storage-and-production).
+  Those routes **404 in production** (unless `ENABLE_KEYSTATIC=true`) — see [keystatic.md](./keystatic.md#storage-and-production).
 - **Rendering:** `content/loader.ts` reads posts and resolves each one's author
   (`lib/author.ts`); `content/compile.ts` runs the MDX pipeline (GFM, Shiki,
   image sizing); `content/mdx-components.tsx` maps MDX tags to React
   components; pages render them as static HTML.
 - **Setup:** `npm install && npm run dev`. Nothing in `.env` is required to run
-  the site — see [`.env.example`](../.env.example) for the one optional
-  feature (the newsletter form) that needs it.
+  the site — see [`.env.example`](../.env.example) for the optional
+  settings (newsletter, public site URL, Keystatic in a production build).
 
 ## The two things most likely to bite you
 
@@ -51,6 +56,9 @@ easy to hit while contributing, so they're worth knowing before you start:
    written multi-line**, not `<Pro>text</Pro>` on one line — otherwise the
    post can't be opened in Keystatic afterward. See
    [mdx-components.md](./mdx-components.md).
+
+New to the project? The [onboarding glossary](./onboarding.md#glossary)
+explains terms like SSG, RSC, canonical, JSON-LD, LCP, and CLS.
 
 ## For AI assistants
 
@@ -78,4 +86,4 @@ If you are an LLM working in this repo:
   hard-to-trace failures that look unrelated to the actual cause.
 - Whenever you change architecture or behavior described in these docs,
   update the relevant doc in the same change — see `AGENTS.md` and
-  `CLAUDE.md` at the repo root.
+  `CLAUDE.md` in the project root (`morya-techcoder/`).

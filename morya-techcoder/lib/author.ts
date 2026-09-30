@@ -11,7 +11,7 @@ const AVATAR_PUBLIC_PATH = "/content/authors";
  * The author credited when a post doesn't pick one explicitly. Keeps
  * `content/posts/*` from having to name an author on every single file.
  */
-const DEFAULT_AUTHOR_SLUG = "techcoder";
+const DEFAULT_AUTHOR_SLUG = "team-techcoder";
 
 const FALLBACK: Author = { slug: DEFAULT_AUTHOR_SLUG, name: "TechCoder" };
 

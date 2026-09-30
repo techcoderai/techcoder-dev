@@ -13,6 +13,7 @@ import {
 import { categoryIcon } from "@/lib/category-icons";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
 import NewsletterBox from "@/components/ui/NewsletterBox";
+import { DEFAULT_OG_IMAGE } from "@/lib/site";
 
 type Props = {
   params: Promise<{ category: string }>;
@@ -44,6 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${meta.label} | TechCoder`,
       description: meta.description,
       siteName: "TechCoder",
+      images: [DEFAULT_OG_IMAGE],
     },
   };
 }
