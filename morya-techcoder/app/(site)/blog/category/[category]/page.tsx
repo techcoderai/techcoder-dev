@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${CATEGORIES[key].label} | TechCoder`,
     description: CATEGORIES[key].description,
+    alternates: { canonical: `/topics/${categorySlug(key)}` },
   };
 }
 

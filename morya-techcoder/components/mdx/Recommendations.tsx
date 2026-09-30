@@ -27,6 +27,7 @@ export function Recommendation({
   price,
   href,
   image,
+  imageAlt,
   children,
 }: {
   /** The superlative this pick won, e.g. "Best overall", "Best budget". */
@@ -35,6 +36,7 @@ export function Recommendation({
   price?: string;
   href?: string;
   image?: string;
+  imageAlt?: string;
   children?: React.ReactNode;
 }) {
   return (
@@ -43,7 +45,7 @@ export function Recommendation({
         {image && (
           <Image
             src={image}
-            alt=""
+            alt={imageAlt || (product ? `${product} product photo` : "Recommended product photo")}
             width={88}
             height={88}
             className="!my-0 hidden h-22 w-22 shrink-0 rounded-xl border border-tc-border object-cover sm:block"

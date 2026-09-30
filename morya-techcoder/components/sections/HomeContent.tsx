@@ -112,7 +112,7 @@ function FeaturedAsymmetric({ posts }: { posts: PostSummary[] }) {
             {lead.thumbnail ? (
               <Image
                 src={lead.thumbnail}
-                alt={lead.title}
+                alt={lead.thumbnailAlt || lead.title}
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 60vw"
@@ -239,7 +239,7 @@ function EditorialGrid({ posts }: { posts: PostSummary[] }) {
               {post.thumbnail ? (
                 <Image
                   src={post.thumbnail}
-                  alt={post.title}
+                  alt={post.thumbnailAlt || post.title}
                   fill
                   className="object-cover"
                   sizes="(max-width: 640px) 100vw, 40vw"

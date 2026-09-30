@@ -7,7 +7,7 @@ import CategoryBadge from "@/components/ui/CategoryBadge";
 
 const RECENT_POST_CUTOFF = Date.now() - 7 * 86400000;
 
-type Size = "default" | "lg";
+type Size = "default" | "lg" | "compact";
 
 type Props = {
   post: PostSummary;
@@ -19,6 +19,7 @@ type Props = {
 export default function MagicBorderCard({ post, size = "default", className }: Props) {
   const isRecent = new Date(post.date).getTime() > RECENT_POST_CUTOFF;
   const isLg = size === "lg";
+  const isCompact = size === "compact";
 
   return (
     <article className={cn("group h-full", className)}>
@@ -34,19 +35,21 @@ export default function MagicBorderCard({ post, size = "default", className }: P
         <div
           className={cn(
             "card-premium-media relative bg-tc-bg-elevated overflow-hidden",
-            isLg ? "aspect-[16/10]" : "aspect-[16/9]"
+            isLg ? "aspect-[16/10]" : isCompact ? "aspect-[16/10]" : "aspect-[16/9]"
           )}
         >
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
-              alt={post.title}
+              alt={post.thumbnailAlt || post.title}
               fill
               className="object-cover"
               sizes={
                 isLg
                   ? "(max-width: 640px) 85vw, (max-width: 1024px) 40vw, 360px"
-                  : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  : isCompact
+                    ? "(max-width: 640px) 45vw, 30vw"
+                    : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
               }
             />
           ) : (
@@ -79,7 +82,7 @@ export default function MagicBorderCard({ post, size = "default", className }: P
             )}
           />
 
-          {isRecent && (
+          {isRecent && !isCompact && (
             <span className="absolute top-2.5 right-2.5 px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-tc-accent text-white uppercase tracking-wider shadow-sm">
               New
             </span>
@@ -87,35 +90,41 @@ export default function MagicBorderCard({ post, size = "default", className }: P
         </div>
 
         {/* Content — tightened for quick mobile scanning */}
-        <div className={cn("flex flex-col flex-1", isLg ? "p-3 sm:p-5" : "p-3.5 sm:p-4")}>
+        <div className={cn("flex flex-col flex-1", isCompact ? "p-2.5 sm:p-3.5" : isLg ? "p-3 sm:p-5" : "p-3.5 sm:p-4")}>
           <h3
             className={cn(
               "card-premium-title font-heading font-bold text-tc-text leading-snug mb-1 line-clamp-2 transition-colors duration-300",
-              isLg ? "text-[14px] sm:text-lg" : "text-[14.5px] sm:text-base"
+              isCompact ? "text-xs sm:text-sm" : isLg ? "text-[14px] sm:text-lg" : "text-[14.5px] sm:text-base"
             )}
           >
             {post.title}
           </h3>
-          <p
-            className={cn(
-              "text-tc-text-muted leading-relaxed line-clamp-2 mb-auto",
-              isLg ? "text-[12px] sm:text-[13.5px]" : "text-[12.5px] sm:text-[13px]"
-            )}
-          >
-            {post.excerpt}
-          </p>
+          {!isCompact && (
+            <p
+              className={cn(
+                "text-tc-text-muted leading-relaxed line-clamp-2 mb-auto",
+                isLg ? "text-[12px] sm:text-[13.5px]" : "text-[12.5px] sm:text-[13px]"
+              )}
+            >
+              {post.excerpt}
+            </p>
+          )}
 
-          <div className="card-premium-meta flex flex-nowrap items-center gap-2 pt-2.5 mt-2.5 border-t border-tc-border text-[11px] font-medium text-tc-text-light">
+          <div className={cn("card-premium-meta flex flex-nowrap items-center gap-2 border-t border-tc-border font-medium text-tc-text-light", isCompact ? "mt-1.5 pt-1.5 text-[9px] sm:mt-2 sm:pt-2 sm:text-[10px]" : "pt-2.5 mt-2.5 text-[11px]")}>
             <time className="shrink-0 whitespace-nowrap" dateTime={post.date}>{formatDate(post.date)}</time>
-            <span className="w-0.5 h-0.5 rounded-full bg-tc-text-light/60" />
-            <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
-              <Clock size={11} />
-              {post.readingTime}
-            </span>
-            <span className="ml-auto hidden items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0 sm:inline-flex">
-              Read
-              <ArrowRight size={12} />
-            </span>
+            {!isCompact && (
+              <>
+                <span className="w-0.5 h-0.5 shrink-0 rounded-full bg-tc-text-light/60" />
+                <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
+                  <Clock size={11} />
+                  {post.readingTime}
+                </span>
+                <span className="ml-auto hidden items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0 sm:inline-flex">
+                  Read
+                  <ArrowRight size={12} />
+                </span>
+              </>
+            )}
           </div>
         </div>
       </Link>

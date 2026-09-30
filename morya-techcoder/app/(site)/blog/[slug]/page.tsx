@@ -2,10 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
-import { ArrowLeft, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Clock, Calendar, Tag, History, ListChecks, Check } from "lucide-react";
 import { postSummaries, getBlogBySlug, getAllSlugs, compileBlogContent } from "@/content/loader";
 import { formatDate, getHeadings } from "@/lib/utils";
-import { getRelatedPosts } from "@/lib/posts";
+import { getAdjacentPosts, getRelatedPosts } from "@/lib/posts";
+import { categoryHref } from "@/lib/categories";
 import type { BlogPost, Difficulty } from "@/types/blog";
 import NewsletterBox from "@/components/ui/NewsletterBox";
 import MagicBorderCard from "@/components/ui/MagicBorderCard";
@@ -89,6 +90,7 @@ export default async function BlogDetailPage({ params }: Props) {
   const author = post.author;
 
   const related = getRelatedPosts(postSummaries, post, 2);
+  const adjacent = getAdjacentPosts(postSummaries, post);
   const authorJsonLd = {
     "@type": "Person",
     name: author.name,
@@ -169,7 +171,13 @@ export default async function BlogDetailPage({ params }: Props) {
               {/* Header */}
               <header className="max-w-[720px] mb-8 sm:mb-10 animate-fade-up">
                 <div className="flex flex-wrap items-center gap-2.5 mb-4 sm:mb-5">
-                  <CategoryBadge category={post.category} variant="full" className="px-3 py-1 text-xs" />
+                  <Link
+                    href={categoryHref(post.category)}
+                    aria-label={`Browse all ${post.category} articles`}
+                    className="focus-ring rounded-full"
+                  >
+                    <CategoryBadge category={post.category} variant="full" className="px-3 py-1 text-xs" />
+                  </Link>
                   <DifficultyBadge level={difficulty} />
                 </div>
 
@@ -269,7 +277,7 @@ export default async function BlogDetailPage({ params }: Props) {
 
                 {/* Byline */}
                 {author.bio && (
-                  <div className="reading-dim max-w-[720px] mb-8 flex items-start gap-4 rounded-2xl card-surface p-5 sm:p-6">
+                  <div className="reading-dim max-w-[720px] mb-8 flex items-start gap-4 rounded-2xl card-surface author-bio-card p-5 sm:p-6">
                   {author.avatar ? (
                     <Image
                       src={author.avatar}
@@ -295,6 +303,38 @@ export default async function BlogDetailPage({ params }: Props) {
                   </div>
                 )}
               </div>
+
+              {(adjacent.newer || adjacent.older) && (
+                <nav
+                  aria-label="Navigate between articles"
+                  className="reading-dim mb-10 grid max-w-[720px] grid-cols-2 divide-x divide-tc-border border-y border-tc-border py-4"
+                >
+                  {adjacent.newer ? (
+                    <Link
+                      href={`/blog/${adjacent.newer.slug}`}
+                      className="focus-ring group flex min-h-14 min-w-0 items-center gap-2 pr-3 text-left sm:gap-3 sm:pr-5"
+                    >
+                      <ChevronLeft size={17} aria-hidden="true" className="shrink-0 text-tc-text-light transition-transform group-hover:-translate-x-0.5 group-hover:text-tc-primary" />
+                      <span className="min-w-0">
+                        <span className="block text-[10px] font-semibold uppercase text-tc-text-light">Previous article</span>
+                        <span className="mt-1 line-clamp-2 block break-words text-xs font-medium leading-snug text-tc-text group-hover:text-tc-primary sm:text-sm">{adjacent.newer.title}</span>
+                      </span>
+                    </Link>
+                  ) : <span aria-hidden="true" />}
+                  {adjacent.older ? (
+                    <Link
+                      href={`/blog/${adjacent.older.slug}`}
+                      className="focus-ring group flex min-h-14 min-w-0 items-center justify-end gap-2 pl-3 text-right sm:gap-3 sm:pl-5"
+                    >
+                      <span className="min-w-0">
+                        <span className="block text-[10px] font-semibold uppercase text-tc-text-light">Next article</span>
+                        <span className="mt-1 line-clamp-2 block break-words text-xs font-medium leading-snug text-tc-text group-hover:text-tc-primary sm:text-sm">{adjacent.older.title}</span>
+                      </span>
+                      <ChevronRight size={17} aria-hidden="true" className="shrink-0 text-tc-text-light transition-transform group-hover:translate-x-0.5 group-hover:text-tc-primary" />
+                    </Link>
+                  ) : <span aria-hidden="true" />}
+                </nav>
+              )}
 
               {/* Newsletter */}
               <div className="reading-dim max-w-[720px]">
@@ -365,11 +405,11 @@ export default async function BlogDetailPage({ params }: Props) {
 
           {/* Related */}
           {related.length > 0 && (
-            <div className="reading-dim mt-14 pt-10 sm:mt-20 sm:pt-14 border-t border-tc-border">
+            <div className="reading-dim mt-10 pt-8 sm:mt-14 sm:pt-10">
               <h2 className="heading-lg text-[1.375rem] md:text-2xl mb-6 sm:mb-8">Keep reading</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-7">
+              <div className="grid max-w-4xl grid-cols-2 gap-3 sm:gap-4">
                 {related.map((p) => (
-                  <MagicBorderCard key={p.id} post={p} />
+                  <MagicBorderCard key={p.id} post={p} size="compact" />
                 ))}
               </div>
             </div>

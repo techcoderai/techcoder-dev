@@ -32,10 +32,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const key = categoryFromSlug(category);
   if (!key) return { title: "Topic Not Found | TechCoder" };
   const meta = CATEGORIES[key];
+  const isEmpty = getPostsByCategory(blogPosts, key).length === 0;
   return {
     title: `${meta.label} | TechCoder`,
     description: meta.description,
     alternates: { canonical: `/topics/${category}` },
+    robots: isEmpty || meta.comingSoon ? { index: false, follow: true } : undefined,
     openGraph: {
       type: "website",
       url: `/topics/${category}`,

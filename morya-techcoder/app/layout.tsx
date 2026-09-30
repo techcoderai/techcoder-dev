@@ -40,7 +40,7 @@ export const metadata: Metadata = {
       "In-depth articles, hands-on guides, and honest reviews across programming, AI, technology, and gadgets.",
   },
   icons: {
-    icon: "/icon.png",
+    icon: "/favicon.svg",
     apple: "/icon.png",
   },
 };
