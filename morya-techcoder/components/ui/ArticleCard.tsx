@@ -29,12 +29,12 @@ function CategoryPill({ category, className }: { category: BlogPostSummary["cate
   );
 }
 
-function Meta({ post, muted = false }: { post: BlogPostSummary; muted?: boolean }) {
+function Meta({ post, muted = false, compact = false }: { post: BlogPostSummary; muted?: boolean; compact?: boolean }) {
   return (
-    <div className={cn("flex items-center gap-2.5 text-[11.5px] font-medium", muted ? "text-tc-text-light" : "text-tc-text-muted")}>
-      <time dateTime={post.date}>{formatDate(post.date)}</time>
-      <span className="w-px h-3 bg-current opacity-30" />
-      <span className="flex items-center gap-1">
+    <div className={cn("flex items-center font-medium", compact ? "flex-nowrap gap-x-1.5 text-[10px] sm:gap-x-2.5 sm:text-[11.5px]" : "flex-wrap gap-x-2.5 gap-y-1 text-[11.5px]", muted ? "text-tc-text-light" : "text-tc-text-muted")}>
+      <time className="shrink-0 whitespace-nowrap" dateTime={post.date}>{formatDate(post.date)}</time>
+      <span className="hidden h-3 w-px bg-current opacity-30 sm:block" />
+      <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
         <Clock size={11} />
         {post.readingTime}
       </span>
@@ -148,10 +148,10 @@ function HorizontalCard({ post, className, index }: { post: BlogPostSummary; cla
     <article className={cn("group", className)}>
       <Link
         href={`/blog/${post.slug}`}
-        className="card-premium card-premium-flat focus-ring flex gap-4 py-5 px-4 sm:px-5 border-0 rounded-none shadow-none transition-colors duration-200 hover:bg-tc-bg-elevated/40"
+        className="card-premium card-premium-flat focus-ring flex gap-3 py-5 px-4 sm:gap-4 sm:px-5 border-0 rounded-none shadow-none transition-colors duration-200 hover:bg-tc-bg-elevated/40"
       >
         {/* Number stamp or image */}
-        <div className="card-premium-media relative flex-shrink-0 w-24 sm:w-28 aspect-[4/3] rounded-xl bg-tc-bg-elevated overflow-hidden">
+        <div className="card-premium-media relative flex-shrink-0 w-20 sm:w-28 aspect-[4/3] rounded-xl bg-tc-bg-elevated overflow-hidden">
           {post.thumbnail ? (
             <Image
               src={post.thumbnail}
@@ -178,13 +178,13 @@ function HorizontalCard({ post, className, index }: { post: BlogPostSummary; cla
             {post.title}
           </h3>
           <div className="mt-2">
-            <Meta post={post} muted />
+            <Meta post={post} muted compact />
           </div>
         </div>
 
         <ArrowUpRight
           size={16}
-          className="flex-shrink-0 self-center text-tc-text-light opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-[opacity,transform] duration-[var(--tc-dur)]"
+          className="hidden flex-shrink-0 self-center text-tc-text-light opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0 sm:block"
         />
       </Link>
     </article>
