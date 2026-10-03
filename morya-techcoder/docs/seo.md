@@ -134,6 +134,10 @@ different purposes and should remain consistent.
 
 ## Internal discovery
 
+`public/llms.txt` provides a concise, curated entry point for AI agents. Keep
+its links aligned with the canonical public routes and populated topic hubs;
+it supplements, but does not replace, the sitemap or ordinary navigation.
+
 Sitemaps supplement, but do not replace, links. Public routes connect through
 the site navigation, blog/topic listings, and footer. Article pages link their
 category badge to `/topics/{category}`, show same-category recommendations in

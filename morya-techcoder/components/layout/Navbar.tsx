@@ -189,15 +189,21 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <ThemeToggle />
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="press focus-ring flex items-center justify-center w-11 h-11 rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
-                aria-label="Toggle menu"
-                aria-expanded={menuOpen}
-              >
-                {menuOpen ? <X size={19} /> : <Menu size={19} />}
-              </button>
+              {!menuOpen && (
+                <>
+                  <ThemeToggle />
+                  <button
+                    type="button"
+                    onClick={() => setMenuOpen(true)}
+                    className="press focus-ring flex items-center justify-center w-11 h-11 rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
+                    aria-label="Open menu"
+                    title="Open menu"
+                    aria-expanded={false}
+                  >
+                    <Menu size={19} />
+                  </button>
+                </>
+              )}
             </>
           )}
         </div>
@@ -212,6 +218,15 @@ export default function Navbar() {
           className="mobile-menu-enter lg:hidden fixed inset-0 top-0 z-40 bg-tc-bg/95"
           onClick={() => setMenuOpen(false)}
         >
+          <button
+            type="button"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+            title="Close menu"
+            className="press focus-ring absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-tc-border text-tc-text transition-colors duration-200 hover:border-tc-primary"
+          >
+            <X size={19} />
+          </button>
           <nav className="flex flex-col gap-1.5 pt-24 px-5" onClick={(e) => e.stopPropagation()}>
             {navLinks.map((link, i) => (
               <div
@@ -240,7 +255,7 @@ export default function Navbar() {
                 className="btn-primary focus-ring mt-3 w-full py-4 text-base"
               >
                 Join Newsletter
-                <ArrowUpRight size={17} />
+                <Mail size={19} />
               </Link>
             </div>
           </nav>

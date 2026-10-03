@@ -27,7 +27,7 @@ export default function TopicGrid() {
                 Everything tech, <span className="text-tc-primary">worth understanding</span>
               </h2>
               <p className="body-base max-w-lg md:col-span-5 md:pt-2">
-                From code and AI to the gadgets on your desk — pick a topic and start exploring.
+                From code and AI to the gadgets on your desk, pick a topic and start exploring.
               </p>
             </div>
           </div>
