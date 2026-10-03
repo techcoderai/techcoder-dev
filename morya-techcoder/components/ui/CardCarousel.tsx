@@ -295,6 +295,7 @@ export default function CardCarousel({
                   key={`${copy}-${post.id}-${i}`}
                   className={cn("shrink-0", cardWidth)}
                   aria-hidden={isDuplicateContent || undefined}
+                  inert={isDuplicateContent || undefined}
                 >
                   <MagicBorderCard post={post} size={size} />
                 </div>
