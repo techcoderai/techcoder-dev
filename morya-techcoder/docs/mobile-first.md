@@ -17,7 +17,7 @@ readability.
   to `7rem` / `8.75rem` at `md`/`lg`. Keep inter-section gaps in the 48–64px band
   on mobile (e.g. `gap-14 sm:gap-20`, `mb-14 sm:mb-20`).
 - **Typography** — mobile-first sizes: hero (`.display-xl`) starts at 44px (the homepage hero
-  also uses `.hero-title`, `clamp(1.625rem, 7.6vw, 2.2rem)` below 640px, where the two
+  also uses `.hero-title`, `clamp(1.75rem, 8.2vw, 2.25rem)` below 640px, where the two
   title spans flow inline so the headline balances into three lines and
   "worth knowing." never breaks; "that's" drops its muted colour on mobile),
   section titles (`.heading-lg`) at 32px, and reading body / prose paragraphs at

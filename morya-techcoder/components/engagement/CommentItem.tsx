@@ -67,9 +67,9 @@ export default function CommentItem({ comment }: { comment: CommentView }) {
   };
 
   return (
-    <li className="py-5">
+    <li className="py-3.5">
       <article aria-label={`Comment from ${comment.author.name}`}>
-        <header className="flex items-center gap-2.5">
+        <header className="flex items-center gap-2">
           <UserAvatar name={comment.author.name} src={comment.author.avatarUrl} size={28} />
           <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 text-sm">
             <span className="truncate font-semibold text-tc-text">{comment.author.name}</span>
@@ -80,12 +80,12 @@ export default function CommentItem({ comment }: { comment: CommentView }) {
         </header>
 
         {/* Rendered as plain text — React escapes it; no HTML or links are interpreted. */}
-        <p className="mt-2.5 whitespace-pre-line break-words text-[15px] leading-relaxed text-tc-text-muted">
+        <p className="mt-1.5 whitespace-pre-line break-words text-[15px] leading-relaxed text-tc-text-muted">
           {comment.body}
         </p>
 
         {(canDelete || canRemove || canReport || notice) && (
-          <div className="mt-2.5 flex min-h-6 flex-wrap items-center gap-x-4 gap-y-1">
+          <div className="mt-1 flex min-h-5 flex-wrap items-center gap-x-4 gap-y-1">
             {confirming ? (
               <>
                 <span className="text-xs text-tc-text-muted">{CONFIRM_COPY[confirming].prompt}</span>

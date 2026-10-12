@@ -43,8 +43,8 @@ function Composer() {
   const name = profile?.displayName ?? "Reader";
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3">
-      <div className="flex items-center gap-2.5">
+    <form onSubmit={onSubmit} className="flex flex-col gap-2.5">
+      <div className="flex items-center gap-2">
         <UserAvatar name={name} src={profile?.avatarUrl} size={28} />
         <span className="text-sm font-medium text-tc-text">{name}</span>
       </div>
@@ -60,12 +60,12 @@ function Composer() {
           if (feedback?.tone === "success") setFeedback(null);
         }}
         placeholder="Add a comment…"
-        rows={3}
+        rows={2}
         maxLength={COMMENT_MAX_LENGTH + 200}
         disabled={pending}
         aria-describedby={`${id}-count`}
         aria-invalid={overLimit || undefined}
-        className="min-h-24 w-full resize-y rounded-lg border border-tc-border-strong bg-tc-bg-card px-3.5 py-3 text-base leading-relaxed text-tc-text placeholder:text-tc-text-light outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] focus:border-tc-primary focus:shadow-[0_0_0_3px_var(--tc-glow)] disabled:opacity-60 sm:text-[15px]"
+        className="min-h-[4.5rem] w-full resize-y rounded-lg border border-tc-border-strong bg-tc-bg-card px-3.5 py-2.5 text-base leading-relaxed text-tc-text placeholder:text-tc-text-light outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] focus:border-tc-primary focus:shadow-[0_0_0_3px_var(--tc-glow)] disabled:opacity-60 sm:text-[15px]"
       />
       <div className="flex items-center justify-between gap-3">
         <span
@@ -78,7 +78,7 @@ function Composer() {
           type="submit"
           disabled={pending || trimmedLength === 0 || overLimit}
           aria-busy={pending}
-          className={cn(primaryButtonClass, "h-9 w-auto disabled:opacity-50")}
+          className={cn(primaryButtonClass, "h-8 w-auto disabled:opacity-50")}
         >
           {pending ? "Posting…" : "Comment"}
         </button>
@@ -106,13 +106,13 @@ export default function Comments() {
       id={COMMENTS_ID}
       tabIndex={-1}
       aria-labelledby={headingId}
-      className="reading-dim max-w-[720px] mb-12 scroll-mt-24 outline-none"
+      className="reading-dim max-w-[720px] mb-8 scroll-mt-24 outline-none"
     >
       <h2 id={headingId} className="heading-md text-xl sm:text-[1.375rem]">
         Comments{status === "ready" && <span className="text-tc-text-light"> ({commentCount})</span>}
       </h2>
 
-      <div className="mt-5 border-b border-tc-border pb-6">
+      <div className="mt-3 border-b border-tc-border pb-4">
         {authStatus === "signed-in" ? (
           <Composer />
         ) : authStatus === "signed-out" ? (
@@ -134,14 +134,14 @@ export default function Comments() {
 
       <div aria-busy={status === "loading"}>
         {status === "loading" && (
-          <p className="flex items-center gap-2 py-6 text-sm text-tc-text-light">
+          <p className="flex items-center gap-2 py-4 text-sm text-tc-text-light">
             <Loader2 size={16} aria-hidden="true" className="animate-spin" />
             Loading comments…
           </p>
         )}
 
         {status === "error" && (
-          <div className="flex flex-wrap items-center gap-3 py-6">
+          <div className="flex flex-wrap items-center gap-3 py-4">
             <FormMessage tone="error">Couldn&apos;t load comments.</FormMessage>
             <button
               type="button"
@@ -154,7 +154,7 @@ export default function Comments() {
         )}
 
         {status === "ready" && comments.length === 0 && (
-          <p className="py-6 text-sm text-tc-text-light">No comments yet. Start the conversation.</p>
+          <p className="py-4 text-sm text-tc-text-light">No comments yet. Start the conversation.</p>
         )}
 
         {status === "ready" && comments.length > 0 && (

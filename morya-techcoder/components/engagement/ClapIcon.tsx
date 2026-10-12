@@ -11,10 +11,10 @@ const HAND = [
 // The same hand as one closed outline, for the knockout and the active tint.
 const SILHOUETTE =
   "M6 14V6a2 2 0 0 1 4 0V4a2 2 0 0 1 4 0V6a2 2 0 0 1 4 0V8a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82Z";
-const SCALE = 0.7;
-const BACK = `translate(13.2 9.4) rotate(16) scale(${SCALE}) translate(-12 -12)`;
-const FRONT = `translate(10.4 13.6) rotate(-4) scale(${SCALE}) translate(-12 -12)`;
-const STROKE = 1.7 / SCALE;
+const SCALE = 0.74;
+const BACK = `translate(14.6 10.2) rotate(14) scale(${SCALE}) translate(-12 -12)`;
+const FRONT = `translate(9.4 14.4) rotate(-8) scale(${SCALE}) translate(-12 -12)`;
+const STROKE = 1.3 / SCALE;
 
 function Hand({ transform, filled }: { transform: string; filled: boolean }) {
   return (
@@ -56,14 +56,14 @@ export default function ClapIcon({
       <defs>
         <mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
           <rect width="24" height="24" fill="white" stroke="none" />
-          <path transform={FRONT} d={SILHOUETTE} fill="black" stroke="black" strokeWidth={STROKE + 2.4} />
+          <path transform={FRONT} d={SILHOUETTE} fill="black" stroke="black" strokeWidth={STROKE + 2.2} />
         </mask>
       </defs>
       <g mask={`url(#${maskId})`}>
         <Hand transform={BACK} filled={active} />
       </g>
       <Hand transform={FRONT} filled={active} />
-      <path d="M4.2 5.6 2.9 4.3M6.6 3.9 6.3 2.2M2.6 8.3l-1.6-.4" strokeWidth={1.6} />
+      <path d="M5.2 4.4 4.1 3.2M7.7 3.1 7.4 1.6M3.3 6.8 1.8 6.4" strokeWidth={1.3} />
     </svg>
   );
 }
