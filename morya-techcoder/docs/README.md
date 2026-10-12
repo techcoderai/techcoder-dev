@@ -23,6 +23,7 @@ index for anything deeper.
 | [motion-system.md](./motion-system.md) | Unified motion & interaction language: tokens, shadows, hover/press, moving border, transitions. |
 | [performance-optimization.md](./performance-optimization.md) | Measured CSS/CWV optimization pass, trade-offs, targets, and remaining work. |
 | [newsletter.md](./newsletter.md) | Newsletter signup flow, Resend setup, statuses, known gaps. |
+| [database-and-auth-primer.md](./database-and-auth-primer.md) | Beginner-friendly intro to Supabase, auth, the database schema, and RLS. Start here before the reference below. |
 | [auth-and-engagement.md](./auth-and-engagement.md) | Reader accounts (Supabase Auth), likes, responses, RLS, moderation, setup for Supabase/Google/Vercel. |
 | [deployment.md](./deployment.md) | What a production build produces, hosting settings, env vars, post-deploy checks. |
 | [troubleshooting.md](./troubleshooting.md) | Common problems and their fixes — read this first when something breaks. |

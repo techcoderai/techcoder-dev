@@ -77,7 +77,15 @@ same-site relative paths, so they can't be used as open redirects.
 
 ## Database
 
+New to Supabase or RLS? Read the [database and auth primer](./database-and-auth-primer.md) first.
+
 Migration: [`supabase/migrations/20261012090000_reader_accounts_likes_comments.sql`](../supabase/migrations/20261012090000_reader_accounts_likes_comments.sql)
+
+A second migration,
+[`20261012120000_sync_profiles_from_auth_metadata.sql`](../supabase/migrations/20261012120000_sync_profiles_from_auth_metadata.sql),
+derives the profile name and avatar from sign-in metadata in one place
+(`profile_seed_from_metadata`), refreshes the avatar on each Google sign-in,
+fills the name only while it's still "Reader", and repairs older profiles.
 
 | Table | Columns | Notes |
 | --- | --- | --- |

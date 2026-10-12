@@ -17,7 +17,9 @@ readability.
   to `7rem` / `8.75rem` at `md`/`lg`. Keep inter-section gaps in the 48–64px band
   on mobile (e.g. `gap-14 sm:gap-20`, `mb-14 sm:mb-20`).
 - **Typography** — mobile-first sizes: hero (`.display-xl`) starts at 44px (the homepage hero
-  also uses `.hero-title`, `clamp(2.25rem, 10.5vw, 3rem)` below 640px),
+  also uses `.hero-title`, `clamp(1.625rem, 7.6vw, 2.2rem)` below 640px, where the two
+  title spans flow inline so the headline balances into three lines and
+  "worth knowing." never breaks; "that's" drops its muted colour on mobile),
   section titles (`.heading-lg`) at 32px, and reading body / prose paragraphs at
   17–18px. Bump specific headings with responsive utilities where a section needs
   it (e.g. rail headers use `text-[1.375rem] md:text-2xl`).
@@ -33,8 +35,9 @@ readability.
 ## Component behavior
 
 - **Navbar** (`components/layout/Navbar.tsx`) — leaner on mobile
-  (`h-12`/`h-14`) growing to `h-14`/`h-16` at `sm+`. Keeps the glass effect and
-  logo; the menu toggle is a 44px thumb target.
+  (`h-[3.25rem]`/`h-14`) growing to `h-14`/`h-16` at `sm+`. Keeps the glass effect and
+  logo. Below `lg` the theme toggle, account button and menu toggle are all 44px
+  thumb targets with an 8px gap. The homepage hero clears the bar with `pt-28`.
 - **Reading progress** (`components/ui/ReadingProgress.tsx`) — a 3px,
   right-rounded (`rounded-r-full`), orange-gradient bar pinned at `top-0` with `z-[100]` so it always sits
   above the navbar (`z-50`).
