@@ -1466,6 +1466,11 @@ html.reading-focus .prose-tc li {
 }
 /* end @layer components */
 
+/* Navbar account slot until AuthProvider resolves; data-session comes from the boot script in app/layout.tsx. */
+.auth-pending { display: none; }
+html[data-session] .auth-pending { display: block; }
+html[data-session] .auth-guest { display: none; }
+
 /* ═══════════════════════  SELECTION & SCROLLBAR  ═══════════════════════ */
 ::selection { background: var(--tc-primary); color: #fff; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }

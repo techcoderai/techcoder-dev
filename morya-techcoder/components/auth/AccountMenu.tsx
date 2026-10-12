@@ -58,14 +58,11 @@ export default function AccountMenu({ className }: { className?: string }) {
 
   if (status === "unavailable") return null;
 
-  if (status === "loading") {
-    return <span aria-hidden="true" className={cn("block h-9 w-9 shrink-0 rounded-full border border-tc-border", className)} />;
-  }
-
-  if (status === "signed-out") {
+  const signIn = (extraClass?: string) => {
     const signInClass = cn(
       "press focus-ring flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-tc-border bg-tc-glass-bg text-[13.5px] font-medium text-tc-text-muted transition-colors duration-[var(--tc-dur)] hover:border-tc-primary hover:text-tc-primary",
       "w-9 sm:w-auto sm:px-3.5",
+      extraClass,
       className
     );
     const label = (
@@ -87,7 +84,19 @@ export default function AccountMenu({ className }: { className?: string }) {
         {label}
       </button>
     );
+  };
+
+  // Server HTML can't see the session, so render both; CSS keeps the one matching the cookie.
+  if (status === "loading") {
+    return (
+      <>
+        <span aria-hidden="true" className={cn("auth-pending skeleton h-9 w-9 shrink-0 rounded-full", className)} />
+        {signIn("auth-guest")}
+      </>
+    );
   }
+
+  if (status === "signed-out") return signIn();
 
   const name = profile?.displayName ?? "Reader";
 
@@ -116,7 +125,11 @@ export default function AccountMenu({ className }: { className?: string }) {
         aria-label={`Account menu for ${name}`}
         className="press focus-ring flex h-9 w-9 items-center justify-center rounded-full transition-shadow duration-[var(--tc-dur)] hover:shadow-[0_0_0_2px_var(--tc-primary)]"
       >
-        <UserAvatar name={name} src={profile?.avatarUrl} size={36} />
+        {profile ? (
+          <UserAvatar name={name} src={profile.avatarUrl} size={36} />
+        ) : (
+          <span aria-hidden="true" className="skeleton block h-9 w-9 rounded-full" />
+        )}
       </button>
 
       {open && (
