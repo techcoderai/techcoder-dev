@@ -3,7 +3,8 @@
 A developer-first publication — technical blogs, AI news, and programming
 tutorials — built with Next.js 16, React 19, and Tailwind CSS v4. Content is
 authored in MDX and edited visually with [Keystatic](https://keystatic.com), a
-Git-based CMS. No database.
+Git-based CMS. Content never touches a database; optional reader accounts
+(likes and responses) use Supabase.
 
 ## Quick start
 
@@ -21,8 +22,9 @@ npm run dev
 - Content editor: <http://localhost:3000/keystatic>
 
 Everything works out of the box with no `.env` at all — the newsletter signup
-form is the only feature that needs one, and it fails closed (shows an error,
-doesn't crash) without it. See [`.env.example`](./.env.example) for what each
+form and optional reader accounts (likes/responses, via Supabase — see
+[docs/auth-and-engagement.md](./docs/auth-and-engagement.md)) are the only
+features that need one, and both fail closed without it. See [`.env.example`](./.env.example) for what each
 variable does. If you deploy anywhere other than Vercel, set
 `NEXT_PUBLIC_SITE_URL` (e.g. `https://techcoder.tech`), or canonical URLs and
 the sitemap will point at `http://localhost:3000`.

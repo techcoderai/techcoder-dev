@@ -6,7 +6,11 @@ const CONTACT_EMAIL = "mailtechcoder@gmail.com";
 const sections = [
   {
     title: "What we collect",
-    body: "If you subscribe to the newsletter, we store the email address you provide. If you switch between light and dark mode, that preference is saved in your browser's local storage — it never leaves your device. We don't run account systems, so there's no profile, password, or personal data tied to reading the site.",
+    body: "If you subscribe to the newsletter, we store the email address you provide. If you switch between light and dark mode, that preference is saved in your browser's local storage — it never leaves your device. Reading the site never requires an account.",
+  },
+  {
+    title: "Reader accounts",
+    body: "An account is optional and only needed to like articles or post responses. We store your email address, a display name, your likes, and the responses you write; if you sign in with Google, we also keep your Google profile picture. Your display name, picture, and responses are shown publicly next to what you post. Accounts are run on Supabase, which keeps you signed in with a first-party cookie. You can delete your responses at any time, and ask us to delete your account.",
   },
   {
     title: "Cookies & analytics",
@@ -49,8 +53,8 @@ export default function PrivacyPage() {
           What we collect, and what we don&apos;t.
         </h1>
         <p className="mt-5 body-lg max-w-xl">
-          TechCoder doesn&apos;t have user accounts or a paywall, so there&apos;s very little
-          of yours for us to hold in the first place. Here&apos;s the full picture.
+          TechCoder doesn&apos;t have a paywall and reading never needs an account, so
+          there&apos;s very little of yours for us to hold. Here&apos;s the full picture.
         </p>
 
         <section className="mt-16">
@@ -65,7 +69,7 @@ export default function PrivacyPage() {
         </section>
 
         <p className="mt-16 pt-8 border-t border-tc-border text-sm text-tc-text-muted">
-          Last updated September 2026. Questions about this policy?{" "}
+          Last updated October 2026. Questions about this policy?{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="text-tc-primary hover:underline font-medium">
             {CONTACT_EMAIL}
           </a>

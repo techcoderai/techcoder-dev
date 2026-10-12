@@ -18,6 +18,8 @@ import SetReadingChrome from "@/components/reading/SetReadingChrome";
 import DifficultyBadge from "@/components/ui/DifficultyBadge";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 import RatingStars from "@/components/ui/RatingStars";
+import ArticleActionBar from "@/components/engagement/ArticleActionBar";
+import Responses from "@/components/engagement/Responses";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -268,7 +270,7 @@ export default async function BlogDetailPage({ params }: Props) {
                 <div className="prose-tc mb-12">{mdxContent}</div>
 
                 {/* Tags */}
-                <div className="reading-dim max-w-[720px] flex flex-wrap gap-2 mb-14">
+                <div className="reading-dim max-w-[720px] flex flex-wrap gap-2 mb-8">
                   {post.tags.map((tag) => (
                     <span
                       key={tag}
@@ -279,6 +281,8 @@ export default async function BlogDetailPage({ params }: Props) {
                     </span>
                   ))}
                 </div>
+
+                <ArticleActionBar />
 
                 {/* Byline */}
                 {author.bio && (
@@ -308,6 +312,8 @@ export default async function BlogDetailPage({ params }: Props) {
                   </div>
                 )}
               </div>
+
+              <Responses />
 
               {(adjacent.newer || adjacent.older) && (
                 <nav

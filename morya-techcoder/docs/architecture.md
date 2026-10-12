@@ -12,6 +12,7 @@
 | Icons | `lucide-react` | |
 | Embeds | `react-tweet` | Server-rendered tweets. |
 | Newsletter | Resend (REST API, no SDK) | `lib/newsletter.ts`; optional — the form fails closed without `RESEND_API_KEY`. |
+| Reader accounts | Supabase Auth + Postgres (`@supabase/ssr`) | Optional likes/responses only; articles never touch it. See [auth-and-engagement.md](./auth-and-engagement.md). |
 
 ## Core principle: one-way content flow
 
@@ -160,9 +161,20 @@ renders outside the `(site)` layout, so the chrome lives in
 `components/layout/SiteShell.tsx`, shared by both.
 
 ### 15. CI on every PR
-`.github/workflows/ci.yml` (repo root) runs `lint`, `typecheck`, and
+`.github/workflows/ci.yml` (repo root) runs `lint`, `typecheck`, `npm test`, and
 `next build`. The build is the important gate: it compiles every MDX post and
 prerenders every article, share image, and the sitemap.
+
+### 16. Reader accounts are an island, not a dependency
+Likes and responses use Supabase (Auth + Postgres with RLS), but articles stay
+MDX in Git and static HTML. The engagement UI loads client-side from
+`/api/articles/[slug]/*` after hydration, so article rendering, SEO and
+caching don't depend on auth or the database. Rows reference articles by
+canonical slug, validated against `content/loader.ts`. There's no `articles`
+table. Authorization is enforced twice: once in the Route Handlers (verified
+session, same-origin check, input validation) and again by RLS, column grants
+and constraints in the database. Without the two `NEXT_PUBLIC_SUPABASE_*`
+variables the feature hides itself. See [auth-and-engagement.md](./auth-and-engagement.md).
 
 ## Rendering & caching
 
@@ -170,6 +182,8 @@ prerenders every article, share image, and the sitemap.
   cached for the process lifetime — perfect for static generation.
 - `/` and `/blog` are static; `/blog/[slug]` is statically generated via
   `generateStaticParams`. `/keystatic` and its API are dynamic (editor only).
+  `/account`, `/auth/*` and the engagement APIs are dynamic; `proxy.ts` runs
+  only on `/account` and `/auth/*`.
 - Long homepage sections use `content-visibility: auto`; the article carousel
   suspends its animation frame loop off-screen and in background tabs.
 - `app/sitemap.ts` and `app/robots.ts` provide cached metadata routes for

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { categoryHref } from "@/lib/categories";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import NavLinks from "@/components/layout/NavLinks";
+import AccountMenu from "@/components/auth/AccountMenu";
 import { useReadingChrome } from "@/components/reading/ReadingChromeProvider";
 
 const navLinks = [
@@ -158,6 +159,7 @@ export default function Navbar() {
         {/* Actions */}
         <div className="hidden lg:flex items-center gap-2.5 shrink-0">
           <ThemeToggle />
+          <AccountMenu />
           <Link
             href="/#newsletter"
             className="btn-primary nav-cta focus-ring px-5 py-2.5 text-[13.5px]"
@@ -192,6 +194,7 @@ export default function Navbar() {
               {!menuOpen && (
                 <>
                   <ThemeToggle />
+                  <AccountMenu />
                   <button
                     type="button"
                     onClick={() => setMenuOpen(true)}

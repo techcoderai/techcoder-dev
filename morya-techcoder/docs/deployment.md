@@ -13,7 +13,8 @@ Next.js build, so any Node host that runs `next build && next start` also works.
 - Drafts (`draft: true`) are **excluded**.
 - `/keystatic` and `/api/keystatic/*` return **404**. See [keystatic.md](./keystatic.md#storage-and-production).
 
-Only `/api/newsletter` runs at request time.
+Only `/api/newsletter`, the engagement APIs (`/api/articles/*`,
+`/api/comments/*`), `/account` and `/auth/*` run at request time.
 
 Content changes need a rebuild. Publishing a post means merging the `.mdx`
 file to `main` and letting the host rebuild.
@@ -40,6 +41,11 @@ behaves oddly.
 | `RESEND_AUDIENCE_ID` | Rarely | Only for older audience-scoped Resend workspaces. |
 | `NEXT_PUBLIC_SITE_URL` | Only off Vercel | Public origin for canonicals/sitemap. On Vercel it's inferred. |
 | `ENABLE_KEYSTATIC` | **Never** on a real deploy | Exposes an unauthenticated file-write API. |
+| `NEXT_PUBLIC_SUPABASE_URL` | For reader accounts | Supabase project URL. Inlined at build time and added to the CSP `connect-src`. |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | For reader accounts | Publishable (anon) key. Safe in the browser, because RLS protects the data. Never set the secret/service-role key. |
+
+Supabase, Google OAuth, migrations and RLS verification are covered in
+[auth-and-engagement.md](./auth-and-engagement.md#production-setup-supabase--google--vercel).
 
 ## After deploying
 
@@ -56,8 +62,9 @@ behaves oddly.
 - `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`,
   `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`.
 - In production only, a `Content-Security-Policy`. It allows scripts from the
-  site and Vercel Analytics, images from any HTTPS origin, and frames from
-  YouTube (nocookie), CodePen, CodeSandbox, and StackBlitz.
+  site and Vercel Analytics, images from any HTTPS origin, frames from
+  YouTube (nocookie), CodePen, CodeSandbox, and StackBlitz, and connections to
+  the configured Supabase project.
 
 It uses `'unsafe-inline'` instead of nonces, because nonces would force every
 page to render per request instead of at build time.

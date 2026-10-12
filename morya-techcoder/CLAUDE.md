@@ -5,7 +5,8 @@
 **TechCoder** is an MDX-based tech publishing platform: Next.js 16 (App
 Router) + React 19 + Tailwind CSS v4, with [Keystatic](https://keystatic.com)
 (a Git-based CMS) as a visual editor on top of plain `.mdx`/`.json` files.
-Static site generation, no database.
+Static site generation. Content is never stored in a database. Supabase backs
+only the optional reader accounts, likes and responses.
 
 **This file is a map, not the manual.** Full, current documentation lives in
 [`docs/`](./docs/README.md) — read [docs/README.md](./docs/README.md) first,
@@ -19,7 +20,10 @@ misleading.
 ## Fast orientation
 
 - Content lives in Git: `content/posts/*.mdx` (articles) and
-  `content/authors/*.json` (bylines). No database.
+  `content/authors/*.json` (bylines). Never move it into a database. The only
+  database is Supabase, for optional reader accounts, likes and responses
+  ([docs/auth-and-engagement.md](./docs/auth-and-engagement.md)). It loads
+  client-side, so articles stay static.
 - One-way data flow: `content/loader.ts` (data) → server components → client
   components (props only). Never import `content/loader.ts` into a client
   component — it's `server-only`.
@@ -80,8 +84,8 @@ short version, because they're easy to reintroduce without realizing it:
 - An author slug on a post is resolved to a full record in `lib/author.ts`;
   unset falls back to `DEFAULT_AUTHOR_SLUG` (`team-techcoder`).
 - CI (`.github/workflows/ci.yml` at the Git root) runs `npm run lint`,
-  `npm run typecheck` (`next typegen && tsc --noEmit`) and `npm run build`.
-  Run all three before finishing a change.
+  `npm run typecheck` (`next typegen && tsc --noEmit`), `npm test` and
+  `npm run build`. Run them all before finishing a change.
 - Reading time is always computed from the body (`calcReadingTime`, 238 wpm)
   — never add it as a frontmatter field.
 - `npm run dev` after a large dependency change (e.g. bumping
@@ -96,4 +100,10 @@ welcome email (`RESEND_AUDIENCE_ID` is optional, for older Resend
 workspaces), `NEXT_PUBLIC_SITE_URL` sets the public origin when not on Vercel, and
 `ENABLE_KEYSTATIC=true` re-enables `/keystatic` in a local production build
 (`next build && next start`) — never set it on a real deployment while
-storage is `local`.
+storage is `local`. `NEXT_PUBLIC_SUPABASE_URL` +
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` enable reader accounts. Without them
+that UI hides itself. Never add the Supabase service-role/secret key: every
+write runs as the signed-in reader under RLS. Schema changes go in a new file
+in `supabase/migrations/` (apply with `npx supabase db push`), and
+`npx supabase test db --linked` must still pass. There is no local Supabase
+stack.

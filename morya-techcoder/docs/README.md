@@ -23,6 +23,7 @@ index for anything deeper.
 | [motion-system.md](./motion-system.md) | Unified motion & interaction language: tokens, shadows, hover/press, moving border, transitions. |
 | [performance-optimization.md](./performance-optimization.md) | Measured CSS/CWV optimization pass, trade-offs, targets, and remaining work. |
 | [newsletter.md](./newsletter.md) | Newsletter signup flow, Resend setup, statuses, known gaps. |
+| [auth-and-engagement.md](./auth-and-engagement.md) | Reader accounts (Supabase Auth), likes, responses, RLS, moderation, setup for Supabase/Google/Vercel. |
 | [deployment.md](./deployment.md) | What a production build produces, hosting settings, env vars, post-deploy checks. |
 | [troubleshooting.md](./troubleshooting.md) | Common problems and their fixes — read this first when something breaks. |
 
@@ -30,7 +31,8 @@ index for anything deeper.
 
 - **Framework:** Next.js 16 (App Router) + React 19 + Tailwind CSS v4.
 - **Content:** Blog posts are `.mdx` files in `content/posts/`; authors are
-  `.json` files in `content/authors/`. No database.
+  `.json` files in `content/authors/`. Content never lives in a database; only
+  optional reader likes/responses use Supabase ([auth-and-engagement.md](./auth-and-engagement.md)).
 - **Editing:** Run `npm run dev` and open `http://localhost:3000/keystatic`.
   Those routes **404 in production** (unless `ENABLE_KEYSTATIC=true`) — see [keystatic.md](./keystatic.md#storage-and-production).
 - **Rendering:** `content/loader.ts` reads posts and resolves each one's author

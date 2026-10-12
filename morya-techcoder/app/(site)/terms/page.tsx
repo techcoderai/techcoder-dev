@@ -9,6 +9,10 @@ const sections = [
     body: "Everything published on TechCoder is free to read, with no account required. You're welcome to link to articles, quote short excerpts with attribution, and share them — just don't republish full articles elsewhere without asking first.",
   },
   {
+    title: "Responses",
+    body: "Signed-in readers can post responses to articles. Keep them on topic and civil: no spam, harassment, hate, personal data about others, or illegal content. You're responsible for what you post. We may hide or remove responses, and suspend accounts, that break these rules; readers can report responses for review.",
+  },
+  {
     title: "Content accuracy",
     body: "Articles are written and fact-checked in-house, but software and best practices change quickly. Code samples and guides are provided as-is; test anything before relying on it in production.",
   },
@@ -69,7 +73,7 @@ export default function TermsPage() {
         </section>
 
         <p className="mt-16 pt-8 border-t border-tc-border text-sm text-tc-text-muted">
-          Last updated September 2026. Questions about these terms?{" "}
+          Last updated October 2026. Questions about these terms?{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="text-tc-primary hover:underline font-medium">
             {CONTACT_EMAIL}
           </a>

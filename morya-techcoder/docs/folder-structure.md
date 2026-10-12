@@ -19,6 +19,11 @@ morya-techcoder/
 │   │   ├── contact/page.tsx        # Contact page                 → /contact
 │   │   ├── privacy/page.tsx        # Privacy policy                → /privacy
 │   │   ├── terms/page.tsx          # Terms of service               → /terms
+│   │   ├── account/                # Reader profile (dynamic)      → /account
+│   │   │   ├── page.tsx            # Avatar, display name, email, password, sign out
+│   │   │   └── actions.ts          # Server Action: updateDisplayName
+│   │   ├── auth/                   # sign-in, sign-up, forgot-password, update-password
+│   │   │   └── callback/route.ts   # Lands OAuth + email links, sets the session cookie
 │   │   ├── topics/[category]/      # Rich topic landing page (all 6 topics,
 │   │   │   page.tsx                # including "coming soon" ones) → /topics/:category
 │   │   └── blog/
@@ -29,7 +34,7 @@ morya-techcoder/
 │   │       │                       # `BlogIndex`) → /blog/category/:category — a
 │   │       │                       # thinner alternative to /topics/:category
 │   │       └── [slug]/
-│   │           ├── layout.tsx      # Article-only mono font + ReadingLayer (Framer)
+│   │           ├── layout.tsx      # Article-only mono font + ReadingLayer (Framer) + EngagementProvider
 │   │           ├── article.css     # Route-scoped prose styles
 │   │           ├── loading.tsx     # Streamed loading state for an article
 │   │           └── page.tsx        # Article                      → /blog/:slug (SSG)
@@ -38,10 +43,14 @@ morya-techcoder/
 │   │   └── keystatic-app.tsx       # The editor itself (client component)
 │   └── api/
 │       ├── keystatic/[...params]/route.ts  # Keystatic read/write API, gated the same way
-│       └── newsletter/route.ts             # POST { email } → subscribes via Resend
+│       ├── newsletter/route.ts             # POST { email } → subscribes via Resend
+│       ├── articles/[slug]/                # engagement (GET), like (PUT), comments (POST)
+│       └── comments/[id]/                  # DELETE (own / moderator), report/ (POST)
 │
 ├── components/
 │   ├── layout/                     # SiteShell, Navbar, Footer, NavLinks
+│   ├── auth/                       # AuthProvider (UI session state), AccountMenu, auth forms
+│   ├── engagement/                 # EngagementProvider, ArticleActionBar, Responses, CommentItem
 │   ├── sections/                   # Big page sections (Hero, HomeContent, BlogIndex, FAQ, …)
 │   ├── ui/                         # Small reusable UI (cards, badges, CodeBlock, …)
 │   ├── reading/                    # Article reading chrome — progress bar, floating
@@ -77,10 +86,21 @@ morya-techcoder/
 │   ├── newsletter.ts               # subscribeToNewsletter() — talks to the Resend API
 │   ├── posts.ts                    # filterPosts / getFeaturedPosts / getRelatedPosts …
 │   ├── site.ts                     # SITE_URL, absoluteUrl(), share-image paths — the ONLY place the origin lives
+│   ├── auth.ts                     # Shared helpers for the /auth pages (next-path, metadata)
+│   ├── supabase/                   # config.ts (public env), client.ts (browser), server.ts (per-request, server-only)
+│   ├── engagement/                 # validation.ts (+ .test.ts, pure) and server.ts (Route Handler helpers)
 │   └── utils.ts                    # cn, formatDate, isRecent, slugify, getHeadings, calcReadingTime
 │
 ├── types/
-│   └── blog.ts                     # Author, PostSummary, PostDetail, Difficulty, ReviewMeta, SeoMeta
+│   ├── blog.ts                     # Author, PostSummary, PostDetail, Difficulty, ReviewMeta, SeoMeta
+│   └── engagement.ts               # CommentView, EngagementPayload (API ↔ UI shapes)
+│
+├── supabase/                       # Supabase CLI project (hosted project only, no local stack)
+│   ├── config.toml                 # Minimal; lets the CLI link/push. Auth settings live in the dashboard
+│   ├── migrations/                 # Version-controlled schema + RLS (`npx supabase db push`)
+│   └── tests/database/             # pgTAP authorization tests (`npx supabase test db --linked`)
+│
+├── proxy.ts                        # Session refresh for /account and /auth/* only
 │
 ├── public/
 │   ├── favicon.svg, icon.png       # Site icons
@@ -95,7 +115,7 @@ morya-techcoder/
 ├── docs/                           # You are here
 │
 ├── keystatic.config.ts             # Keystatic schema: the `posts` and `authors` collections
-├── package.json                    # Scripts: dev, build, start, lint, typecheck
+├── package.json                    # Scripts: dev, build, start, lint, typecheck, test
 ├── eslint.config.mjs               # ESLint (next config)
 ├── postcss.config.mjs              # Tailwind v4 PostCSS plugin
 ├── AGENTS.md, CLAUDE.md            # Rules for AI coding assistants

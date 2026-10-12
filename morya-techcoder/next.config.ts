@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// Supabase Auth is called from the browser (sign-in, session refresh).
+const supabaseOrigin = (() => {
+  try {
+    return process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : "";
+  } catch {
+    return "";
+  }
+})();
+
 /**
  * Static (nonce-free) CSP. A nonce-based policy would force every page into
  * dynamic rendering and give up SSG, so inline scripts (theme bootstrap,
@@ -12,6 +21,7 @@ const isDev = process.env.NODE_ENV !== "production";
  *   img-src    — https: for react-tweet media (pbs.twimg.com) and remote MDX images
  *   media-src  — video.twimg.com for tweet videos
  *   script-src — va.vercel-scripts.com serves the Vercel Analytics debug script in dev
+ *   connect-src — the Supabase project (NEXT_PUBLIC_SUPABASE_URL) for reader auth
  *
  * Only applied in production: dev needs 'unsafe-eval' and HMR websockets, and
  * the Keystatic editor (dev only) loads its own resources.
@@ -23,7 +33,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   "media-src 'self' https://video.twimg.com",
-  "connect-src 'self'",
+  `connect-src 'self'${supabaseOrigin ? ` ${supabaseOrigin}` : ""}`,
   "frame-src https://www.youtube-nocookie.com https://codepen.io https://codesandbox.io https://stackblitz.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -47,6 +57,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   poweredByHeader: false,
+  // Engagement API routes validate slugs against content/loader.ts at runtime.
+  outputFileTracingIncludes: {
+    "/api/articles/**": ["./content/posts/**/*", "./content/authors/**/*"],
+  },
   images: {
     formats: ["image/webp"],
     qualities: [75],

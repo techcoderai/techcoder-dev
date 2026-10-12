@@ -2,7 +2,8 @@
 
 Readers subscribe through the `NewsletterBox` form (homepage and article
 pages). Subscribers are stored as contacts in [Resend](https://resend.com);
-TechCoder has no database of its own.
+TechCoder doesn't keep its own subscriber list (the Supabase database only
+holds reader accounts, likes and responses).
 
 ## How it works
 
