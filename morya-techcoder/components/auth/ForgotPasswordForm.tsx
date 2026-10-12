@@ -4,19 +4,33 @@ import { useId, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Field, FormMessage, primaryButtonClass } from "@/components/auth/AuthUi";
 import { authErrorMessage, callbackUrl } from "@/components/auth/GoogleButton";
+import { isPlausibleEmail } from "@/lib/engagement/validation";
 
-export default function ForgotPasswordForm() {
+export default function ForgotPasswordForm({
+  defaultEmail,
+  onEmailChange,
+}: {
+  defaultEmail?: string;
+  onEmailChange?: (email: string) => void;
+} = {}) {
   const { getClient } = useAuth();
   const ids = useId();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (pending) return;
-    const email = String(new FormData(e.currentTarget).get("email") ?? "").trim();
-    if (!email) return;
+    const formEl = e.currentTarget;
+    const email = String(new FormData(formEl).get("email") ?? "").trim();
+    if (!isPlausibleEmail(email)) {
+      setEmailError(email ? "Enter a valid email address." : "Enter your email address.");
+      formEl.querySelector<HTMLInputElement>('[name="email"]')?.focus();
+      return;
+    }
+    setEmailError(null);
 
     setPending(true);
     setError(null);
@@ -44,7 +58,7 @@ export default function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <Field
         id={`${ids}-email`}
         name="email"
@@ -54,6 +68,9 @@ export default function ForgotPasswordForm() {
         inputMode="email"
         required
         disabled={pending}
+        defaultValue={defaultEmail}
+        onChange={(e) => onEmailChange?.(e.target.value)}
+        error={emailError}
       />
       <div aria-live="polite" className="empty:hidden">
         {error && <FormMessage tone="error">{error}</FormMessage>}

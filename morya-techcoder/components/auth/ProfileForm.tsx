@@ -29,7 +29,7 @@ export function ProfileForm({ displayName }: { displayName: string }) {
         defaultValue={displayName}
         maxLength={DISPLAY_NAME_MAX_LENGTH}
         autoComplete="name"
-        hint="Shown publicly next to your responses."
+        hint="Shown publicly next to your comments."
         required
         disabled={pending}
       />

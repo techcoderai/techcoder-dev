@@ -9,8 +9,8 @@ const sections = [
     body: "Everything published on TechCoder is free to read, with no account required. You're welcome to link to articles, quote short excerpts with attribution, and share them — just don't republish full articles elsewhere without asking first.",
   },
   {
-    title: "Responses",
-    body: "Signed-in readers can post responses to articles. Keep them on topic and civil: no spam, harassment, hate, personal data about others, or illegal content. You're responsible for what you post. We may hide or remove responses, and suspend accounts, that break these rules; readers can report responses for review.",
+    title: "Comments",
+    body: "Signed-in readers can comment on articles. Keep comments on topic and civil: no spam, harassment, hate, personal data about others, or illegal content. You're responsible for what you post. We may hide or remove comments, and suspend accounts, that break these rules; readers can report comments for review.",
   },
   {
     title: "Content accuracy",

@@ -14,19 +14,19 @@ export async function POST(request: Request, ctx: RouteContext<"/api/comments/[i
   if (rejected) return rejected;
 
   const { id } = await ctx.params;
-  if (!isUuid(id)) return jsonError("Response not found.", 404);
+  if (!isUuid(id)) return jsonError("Comment not found.", 404);
 
   const payload = await readJson(request);
   const reason = normalizeReportReason(payload?.reason);
 
   const supabase = await createClient();
   const user = await getVerifiedUser(supabase);
-  if (!user) return jsonError("Sign in to report responses.", 401);
+  if (!user) return jsonError("Sign in to report comments.", 401);
 
   const { error } = await supabase.from("comment_reports").insert({ comment_id: id, reason });
   // A repeat report from the same reader is already on file — not an error.
   if (error && error.code !== "23505") {
-    if (error.code === "42501") return jsonError("You can't report this response.", 403);
+    if (error.code === "42501") return jsonError("You can't report this comment.", 403);
     return databaseErrorResponse(error, "report comment");
   }
   return json({ reported: true });

@@ -2,7 +2,20 @@ import Link from "next/link";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Compact, centered frame shared by every /auth page and the account page. */
+/** Surface shared by the sign-in dialog and the direct /auth/* pages. */
+export const authPanelClass =
+  "w-full max-w-[400px] rounded-xl border border-tc-border bg-tc-bg-card p-5 text-left sm:p-7";
+
+/** Direct-URL frame for /auth/sign-in, /sign-up and /forgot-password: the dialog's panel, on the page. */
+export function AuthPage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="px-3 pb-16 pt-24 sm:px-6 sm:pt-32 md:pb-24">
+      <div className={cn(authPanelClass, "mx-auto")}>{children}</div>
+    </div>
+  );
+}
+
+/** Compact, centered frame for the account and update-password pages. */
 export function AuthShell({
   overline,
   title,
@@ -29,34 +42,44 @@ export function AuthShell({
   );
 }
 
+// 16px on phones so iOS doesn't zoom the page when a field gains focus.
 export const inputClass =
-  "focus-ring w-full rounded-xl border border-tc-border bg-tc-bg-card px-3.5 py-3 text-[15px] text-tc-text placeholder:text-tc-text-light outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_var(--tc-glow-soft)] disabled:opacity-60";
+  "block h-10 w-full rounded-lg border border-tc-border-strong bg-tc-bg-card px-3 text-base text-tc-text placeholder:text-tc-text-light outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] focus:border-tc-primary focus:shadow-[0_0_0_3px_var(--tc-glow)] disabled:opacity-60 aria-[invalid=true]:border-tc-accent sm:text-[15px]";
 
 export function Field({
   id,
   label,
   hint,
+  error,
   aside,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & {
   id: string;
   label: string;
   hint?: string;
+  error?: string | null;
   aside?: React.ReactNode;
 }) {
+  const note = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
   return (
     <div>
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
-        <label htmlFor={id} className="text-sm font-medium text-tc-text">
+        <label htmlFor={id} className="text-[13.5px] font-medium text-tc-text">
           {label}
         </label>
         {aside}
       </div>
-      <input id={id} aria-describedby={hint ? `${id}-hint` : undefined} className={inputClass} {...props} />
-      {hint && (
-        <p id={`${id}-hint`} className="mt-1.5 text-xs text-tc-text-light">
-          {hint}
+      <input id={id} aria-describedby={note} aria-invalid={error ? true : undefined} className={inputClass} {...props} />
+      {error ? (
+        <p id={note} className="mt-1.5 text-xs font-medium text-tc-accent">
+          {error}
         </p>
+      ) : (
+        hint && (
+          <p id={note} className="mt-1.5 text-xs text-tc-text-light">
+            {hint}
+          </p>
+        )
       )}
     </div>
   );
@@ -79,13 +102,28 @@ export function FormMessage({ tone, children }: { tone: "error" | "success"; chi
 }
 
 export const primaryButtonClass =
-  "btn-primary focus-ring w-full py-3 text-[14.5px] disabled:pointer-events-none disabled:opacity-60";
+  "focus-ring inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-tc-primary px-4 text-sm font-semibold text-white transition-colors duration-[var(--tc-dur)] hover:bg-tc-primary-dark disabled:pointer-events-none disabled:opacity-60";
 
-export function TextLink({ href, children }: { href: string; children: React.ReactNode }) {
+export const secondaryButtonClass =
+  "focus-ring inline-flex h-10 w-full items-center justify-center gap-2.5 rounded-lg border border-tc-border-strong bg-tc-bg-card px-4 text-sm font-medium text-tc-text transition-colors duration-[var(--tc-dur)] hover:bg-tc-bg-elevated disabled:pointer-events-none disabled:opacity-60";
+
+export const textLinkClass =
+  "focus-ring rounded font-medium text-tc-text underline decoration-tc-border-strong underline-offset-4 transition-colors duration-[var(--tc-dur)] hover:text-tc-primary hover:decoration-tc-primary";
+
+export function TextLink({
+  href,
+  children,
+  newTab,
+}: {
+  href: string;
+  children: React.ReactNode;
+  newTab?: boolean;
+}) {
   return (
     <Link
       href={href}
-      className="focus-ring rounded font-medium text-tc-text underline decoration-tc-border-strong underline-offset-4 transition-colors duration-[var(--tc-dur)] hover:text-tc-primary hover:decoration-tc-primary"
+      className={textLinkClass}
+      {...(newTab && { target: "_blank", rel: "noopener noreferrer" })}
     >
       {children}
     </Link>

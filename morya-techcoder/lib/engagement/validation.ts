@@ -45,16 +45,16 @@ export type ValidationResult = { ok: true; value: string } | { ok: false; error:
 
 /** Normalizes a comment: strips control chars, caps blank lines, trims. */
 export function normalizeCommentBody(value: unknown): ValidationResult {
-  if (typeof value !== "string") return { ok: false, error: "Write a response first." };
+  if (typeof value !== "string") return { ok: false, error: "Write a comment first." };
   const body = value
     .replace(/\r\n?/g, "\n")
     .replace(CONTROL_CHARS, "")
     .replace(BIDI_CONTROLS, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
-  if (body.length === 0) return { ok: false, error: "Write a response first." };
+  if (body.length === 0) return { ok: false, error: "Write a comment first." };
   if (body.length > COMMENT_MAX_LENGTH) {
-    return { ok: false, error: `Responses can be up to ${COMMENT_MAX_LENGTH} characters.` };
+    return { ok: false, error: `Comments can be up to ${COMMENT_MAX_LENGTH} characters.` };
   }
   return { ok: true, value: body };
 }
@@ -101,6 +101,11 @@ export function isSameOriginRequest(
 /** Mirrors Supabase Auth's `minimum_password_length = 8` + `letters_digits` setting. */
 export function isAcceptablePassword(value: string): boolean {
   return value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value);
+}
+
+/** Catches typos before a round trip; Supabase Auth remains the real check. */
+export function isPlausibleEmail(value: string): boolean {
+  return value.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 /** Avatars are only ever rendered from Google's image CDN (matches the DB CHECK). */

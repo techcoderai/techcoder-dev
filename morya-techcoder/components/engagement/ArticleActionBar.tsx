@@ -1,63 +1,65 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Heart, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { signInHref } from "@/components/auth/AccountMenu";
-import { useEngagement } from "@/components/engagement/EngagementProvider";
+import { ARTICLE_ACTIONS_ID, COMMENTS_ID, useEngagement } from "@/components/engagement/EngagementProvider";
+import ClapIcon from "@/components/engagement/ClapIcon";
 
 const compact = new Intl.NumberFormat("en", { notation: "compact" });
 
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+
 /**
- * End-of-article action row: like (heart + count) and a responses shortcut.
- * Deliberately quiet — icon + number, a hairline above and below.
+ * End-of-article action row: clap (one per reader, backed by the like API)
+ * and a comments shortcut. Deliberately quiet — icon + number, a hairline
+ * above and below.
  */
 export default function ArticleActionBar() {
   const { status: authStatus } = useAuth();
-  const { status, likes, liked, likePending, commentCount, setLiked } = useEngagement();
-  const pathname = usePathname();
-  const [message, setMessage] = useState<{ text: string; signIn?: boolean } | null>(null);
+  const { status, likes, liked, likePending, commentCount, setLiked, requestSignIn } = useEngagement();
+  const [message, setMessage] = useState<string | null>(null);
 
   if (status === "unavailable") return null;
   const ready = status === "ready";
 
-  const onLike = async () => {
+  const onClap = async () => {
     if (!ready || likePending) return;
+    setMessage(null);
     if (authStatus !== "signed-in") {
-      setMessage({ text: "Sign in to like this article.", signIn: true });
+      requestSignIn("clap");
       return;
     }
-    setMessage(null);
     const result = await setLiked(!liked);
-    if (!result.ok) setMessage({ text: result.error, signIn: result.needsSignIn });
+    if (result.ok) return;
+    if (result.needsSignIn) requestSignIn("clap");
+    else setMessage(result.error);
   };
 
+  const claps = plural(likes, "clap", "claps");
+
   return (
-    <div className="reading-dim max-w-[720px] mb-10">
+    <div id={ARTICLE_ACTIONS_ID} className="reading-dim max-w-[720px] mb-10 scroll-mt-28">
       <div className="flex items-center gap-5 border-y border-tc-border py-2.5">
         <button
           type="button"
-          onClick={onLike}
+          onClick={onClap}
           aria-pressed={liked}
           aria-disabled={!ready || likePending}
-          aria-label={liked ? `Unlike this article (${likes} likes)` : `Like this article (${likes} likes)`}
+          aria-label={`Clap for this article (${claps})`}
+          title={liked ? "Remove your clap" : "Clap"}
           className={cn(
             "press focus-ring group -ml-2 inline-flex min-h-11 items-center gap-2 rounded-full px-2 text-sm tabular-nums transition-colors duration-[var(--tc-dur)]",
             liked ? "text-tc-primary" : "text-tc-text-muted hover:text-tc-text",
             !ready && "cursor-default"
           )}
         >
-          <Heart
+          <ClapIcon
             key={String(liked)}
-            size={20}
-            aria-hidden="true"
-            className={cn(
-              "transition-transform duration-[var(--tc-dur)] group-hover:scale-110",
-              liked && "animate-bookmark-pop fill-current"
-            )}
+            size={22}
+            active={liked}
+            className={cn(liked && "animate-bookmark-pop")}
           />
           <span aria-hidden="true" className="min-w-[1ch]">
             {ready ? compact.format(likes) : "\u00a0"}
@@ -65,8 +67,9 @@ export default function ArticleActionBar() {
         </button>
 
         <a
-          href="#responses"
-          aria-label={`Responses (${commentCount})`}
+          href={`#${COMMENTS_ID}`}
+          aria-label={`Comments (${commentCount})`}
+          title="Comments"
           className="press focus-ring inline-flex min-h-11 items-center gap-2 rounded-full px-2 text-sm tabular-nums text-tc-text-muted transition-colors duration-[var(--tc-dur)] hover:text-tc-text"
         >
           <MessageCircle size={20} aria-hidden="true" />
@@ -77,19 +80,7 @@ export default function ArticleActionBar() {
       </div>
 
       <div aria-live="polite" className="empty:hidden">
-        {message && (
-          <p className="mt-2.5 text-sm text-tc-text-muted animate-fade-up">
-            {message.text}{" "}
-            {message.signIn && (
-              <Link
-                href={signInHref(pathname)}
-                className="focus-ring rounded font-semibold text-tc-text underline underline-offset-4 hover:text-tc-primary"
-              >
-                Sign in
-              </Link>
-            )}
-          </p>
-        )}
+        {message && <p className="mt-2.5 text-sm text-tc-text-muted animate-fade-up">{message}</p>}
       </div>
     </div>
   );

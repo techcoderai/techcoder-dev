@@ -27,7 +27,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/articles/[s
 
   const supabase = await createClient();
   const user = await getVerifiedUser(supabase);
-  if (!user) return jsonError("Sign in to respond.", 401);
+  if (!user) return jsonError("Sign in to comment.", 401);
 
   // user_id and status come from column defaults; RLS re-checks both.
   const { data, error } = await supabase

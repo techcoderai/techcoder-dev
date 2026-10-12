@@ -6,20 +6,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { LogOut, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useAuthModal } from "@/components/auth/AuthModal";
 import UserAvatar from "@/components/ui/UserAvatar";
 
-/** `/auth/sign-in?next=<here>` — auth pages themselves never become the destination. */
-export function signInHref(pathname: string, hash = ""): string {
-  if (pathname.startsWith("/auth")) return "/auth/sign-in";
-  return `/auth/sign-in?next=${encodeURIComponent(pathname + hash)}`;
-}
-
 /**
- * Navbar account control: a compact "Sign in" link when signed out, or a
- * circular avatar that opens a small Profile / Sign out menu.
+ * Navbar account control: a compact "Sign in" button that opens the sign-in
+ * dialog when signed out, or a circular avatar that opens a small Profile /
+ * Sign out menu.
  */
 export default function AccountMenu({ className }: { className?: string }) {
   const { status, profile, email, signOut } = useAuth();
+  const { openAuth } = useAuthModal();
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -66,19 +63,29 @@ export default function AccountMenu({ className }: { className?: string }) {
   }
 
   if (status === "signed-out") {
-    return (
-      <Link
-        href={signInHref(pathname)}
-        aria-label="Sign in"
-        className={cn(
-          "press focus-ring flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-tc-border bg-tc-glass-bg text-[13.5px] font-medium text-tc-text-muted transition-colors duration-[var(--tc-dur)] hover:border-tc-primary hover:text-tc-primary",
-          "w-9 sm:w-auto sm:px-3.5",
-          className
-        )}
-      >
+    const signInClass = cn(
+      "press focus-ring flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-tc-border bg-tc-glass-bg text-[13.5px] font-medium text-tc-text-muted transition-colors duration-[var(--tc-dur)] hover:border-tc-primary hover:text-tc-primary",
+      "w-9 sm:w-auto sm:px-3.5",
+      className
+    );
+    const label = (
+      <>
         <User size={16} aria-hidden="true" className="sm:hidden" />
         <span className="hidden sm:inline">Sign in</span>
-      </Link>
+      </>
+    );
+    // The /auth pages already show the forms; a dialog on top would be redundant.
+    if (pathname.startsWith("/auth")) {
+      return (
+        <Link href="/auth/sign-in" aria-label="Sign in" className={signInClass}>
+          {label}
+        </Link>
+      );
+    }
+    return (
+      <button type="button" onClick={() => openAuth()} aria-haspopup="dialog" aria-label="Sign in" className={signInClass}>
+        {label}
+      </button>
     );
   }
 

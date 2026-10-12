@@ -19,7 +19,7 @@ import DifficultyBadge from "@/components/ui/DifficultyBadge";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 import RatingStars from "@/components/ui/RatingStars";
 import ArticleActionBar from "@/components/engagement/ArticleActionBar";
-import Responses from "@/components/engagement/Responses";
+import Comments from "@/components/engagement/Comments";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -313,7 +313,7 @@ export default async function BlogDetailPage({ params }: Props) {
                 )}
               </div>
 
-              <Responses />
+              <Comments />
 
               {(adjacent.newer || adjacent.older) && (
                 <nav

@@ -3,25 +3,51 @@
 import { useId, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { Field, FormMessage, TextLink, primaryButtonClass, withNext } from "@/components/auth/AuthUi";
+import { Field, FormMessage, primaryButtonClass } from "@/components/auth/AuthUi";
 import { authErrorMessage, callbackUrl } from "@/components/auth/GoogleButton";
+import { isPlausibleEmail } from "@/lib/engagement/validation";
 
-export default function SignInForm({ next }: { next: string }) {
+type FieldErrors = { email?: string; password?: string };
+
+export default function SignInForm({
+  next,
+  forgotLink,
+  onSignedIn,
+  defaultEmail,
+  onEmailChange,
+}: {
+  next: string;
+  forgotLink: React.ReactNode;
+  /** Defaults to navigating to `next`; the dialog closes in place instead. */
+  onSignedIn?: () => void;
+  defaultEmail?: string;
+  onEmailChange?: (email: string) => void;
+}) {
   const { getClient } = useAuth();
   const router = useRouter();
   const ids = useId();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (pending) return;
-    const form = new FormData(e.currentTarget);
+    const formEl = e.currentTarget;
+    const form = new FormData(formEl);
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
-    if (!email || !password) return;
+
+    const errors: FieldErrors = {};
+    if (!isPlausibleEmail(email)) errors.email = email ? "Enter a valid email address." : "Enter your email address.";
+    if (!password) errors.password = "Enter your password.";
+    setFieldErrors(errors);
+    if (errors.email || errors.password) {
+      formEl.querySelector<HTMLInputElement>(`[name="${errors.email ? "email" : "password"}"]`)?.focus();
+      return;
+    }
 
     setPending(true);
     setError(null);
@@ -34,6 +60,10 @@ export default function SignInForm({ next }: { next: string }) {
         setError(authErrorMessage(error));
         if (error.code === "email_not_confirmed") setUnconfirmedEmail(email);
         setPending(false);
+        return;
+      }
+      if (onSignedIn) {
+        onSignedIn();
         return;
       }
       router.replace(next);
@@ -57,7 +87,7 @@ export default function SignInForm({ next }: { next: string }) {
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <Field
         id={`${ids}-email`}
         name="email"
@@ -67,6 +97,9 @@ export default function SignInForm({ next }: { next: string }) {
         inputMode="email"
         required
         disabled={pending}
+        defaultValue={defaultEmail}
+        onChange={(e) => onEmailChange?.(e.target.value)}
+        error={fieldErrors.email}
       />
       <Field
         id={`${ids}-password`}
@@ -76,11 +109,8 @@ export default function SignInForm({ next }: { next: string }) {
         autoComplete="current-password"
         required
         disabled={pending}
-        aside={
-          <span className="text-xs">
-            <TextLink href={withNext("/auth/forgot-password", next)}>Forgot password?</TextLink>
-          </span>
-        }
+        error={fieldErrors.password}
+        aside={<span className="text-xs">{forgotLink}</span>}
       />
       <div aria-live="polite" className="flex flex-col gap-2 empty:hidden">
         {error && <FormMessage tone="error">{error}</FormMessage>}

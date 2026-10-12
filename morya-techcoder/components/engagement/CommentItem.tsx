@@ -29,9 +29,9 @@ function timeAgo(iso: string): string {
 type Confirming = "delete" | "report" | "remove" | null;
 
 const CONFIRM_COPY: Record<Exclude<Confirming, null>, { prompt: string; action: string; pending: string }> = {
-  delete: { prompt: "Delete your response?", action: "Delete", pending: "Deleting…" },
-  report: { prompt: "Report this response to the moderators?", action: "Report", pending: "Reporting…" },
-  remove: { prompt: "Remove this response for everyone?", action: "Remove", pending: "Removing…" },
+  delete: { prompt: "Delete your comment?", action: "Delete", pending: "Deleting…" },
+  report: { prompt: "Report this comment to the moderators?", action: "Report", pending: "Reporting…" },
+  remove: { prompt: "Remove this comment for everyone?", action: "Remove", pending: "Removing…" },
 };
 
 const linkButton =
@@ -68,7 +68,7 @@ export default function CommentItem({ comment }: { comment: CommentView }) {
 
   return (
     <li className="py-5">
-      <article aria-label={`Response from ${comment.author.name}`}>
+      <article aria-label={`Comment from ${comment.author.name}`}>
         <header className="flex items-center gap-2.5">
           <UserAvatar name={comment.author.name} src={comment.author.avatarUrl} size={28} />
           <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 text-sm">

@@ -26,7 +26,7 @@ export async function PUT(request: Request, ctx: RouteContext<"/api/articles/[sl
 
   const supabase = await createClient();
   const user = await getVerifiedUser(supabase);
-  if (!user) return jsonError("Sign in to like articles.", 401);
+  if (!user) return jsonError("Sign in to clap for articles.", 401);
 
   if (body.liked) {
     // user_id comes from the column default (auth.uid()), never from the client.

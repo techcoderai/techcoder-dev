@@ -11,11 +11,11 @@ export async function DELETE(request: Request, ctx: RouteContext<"/api/comments/
   if (rejected) return rejected;
 
   const { id } = await ctx.params;
-  if (!isUuid(id)) return jsonError("Response not found.", 404);
+  if (!isUuid(id)) return jsonError("Comment not found.", 404);
 
   const supabase = await createClient();
   const user = await getVerifiedUser(supabase);
-  if (!user) return jsonError("Sign in to manage responses.", 401);
+  if (!user) return jsonError("Sign in to manage comments.", 401);
 
   const { data: deleted, error } = await supabase
     .from("article_comments")
@@ -38,5 +38,5 @@ export async function DELETE(request: Request, ctx: RouteContext<"/api/comments/
     return jsonError("Sign out and back in to activate moderator access.", 403);
   }
 
-  return jsonError("Response not found.", 404);
+  return jsonError("Comment not found.", 404);
 }

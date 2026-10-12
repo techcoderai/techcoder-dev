@@ -13,7 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 /**
  * Article route layout — scopes JetBrains Mono + immersive reading chrome
  * (progress / floating TOC) so Framer Motion never ships on home or list pages.
- * Also hosts the likes/responses island, which loads client-side so the
+ * Also hosts the claps/comments island, which loads client-side so the
  * article HTML stays static.
  */
 export default async function ArticleLayout({

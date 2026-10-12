@@ -1,27 +1,23 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { signInHref } from "@/components/auth/AccountMenu";
-import { FormMessage } from "@/components/auth/AuthUi";
-import { useEngagement } from "@/components/engagement/EngagementProvider";
+import { FormMessage, primaryButtonClass, textLinkClass } from "@/components/auth/AuthUi";
+import { COMMENT_COMPOSER_ID, COMMENTS_ID, useEngagement } from "@/components/engagement/EngagementProvider";
 import CommentItem from "@/components/engagement/CommentItem";
 import UserAvatar from "@/components/ui/UserAvatar";
 import { COMMENT_MAX_LENGTH } from "@/lib/engagement/validation";
 
 function Composer() {
   const { profile } = useAuth();
-  const { addComment } = useEngagement();
-  const pathname = usePathname();
-  const id = useId();
+  const { addComment, requestSignIn } = useEngagement();
+  const id = COMMENT_COMPOSER_ID;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [body, setBody] = useState("");
   const [pending, setPending] = useState(false);
-  const [feedback, setFeedback] = useState<{ tone: "error" | "success"; text: string; signIn?: boolean } | null>(null);
+  const [feedback, setFeedback] = useState<{ tone: "error" | "success"; text: string } | null>(null);
 
   const trimmedLength = body.trim().length;
   const overLimit = body.length > COMMENT_MAX_LENGTH;
@@ -35,9 +31,11 @@ function Composer() {
     setPending(false);
     if (result.ok) {
       setBody("");
-      setFeedback({ tone: "success", text: "Your response is published." });
+      setFeedback({ tone: "success", text: "Your comment is posted." });
+    } else if (result.needsSignIn) {
+      requestSignIn("comment");
     } else {
-      setFeedback({ tone: "error", text: result.error, signIn: result.needsSignIn });
+      setFeedback({ tone: "error", text: result.error });
       textareaRef.current?.focus();
     }
   };
@@ -51,7 +49,7 @@ function Composer() {
         <span className="text-sm font-medium text-tc-text">{name}</span>
       </div>
       <label htmlFor={id} className="sr-only">
-        Write a response
+        Write a comment
       </label>
       <textarea
         ref={textareaRef}
@@ -61,13 +59,13 @@ function Composer() {
           setBody(e.target.value);
           if (feedback?.tone === "success") setFeedback(null);
         }}
-        placeholder="What are your thoughts?"
+        placeholder="Add a comment…"
         rows={3}
         maxLength={COMMENT_MAX_LENGTH + 200}
         disabled={pending}
         aria-describedby={`${id}-count`}
         aria-invalid={overLimit || undefined}
-        className="focus-ring min-h-24 w-full resize-y rounded-xl border border-tc-border bg-tc-bg-card px-3.5 py-3 text-[15px] leading-relaxed text-tc-text placeholder:text-tc-text-light outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] hover:border-tc-border-strong focus:border-tc-primary focus:shadow-[0_0_0_3px_var(--tc-glow-soft)] disabled:opacity-60"
+        className="min-h-24 w-full resize-y rounded-lg border border-tc-border-strong bg-tc-bg-card px-3.5 py-3 text-base leading-relaxed text-tc-text placeholder:text-tc-text-light outline-none transition-[border-color,box-shadow] duration-[var(--tc-dur)] focus:border-tc-primary focus:shadow-[0_0_0_3px_var(--tc-glow)] disabled:opacity-60 sm:text-[15px]"
       />
       <div className="flex items-center justify-between gap-3">
         <span
@@ -80,48 +78,38 @@ function Composer() {
           type="submit"
           disabled={pending || trimmedLength === 0 || overLimit}
           aria-busy={pending}
-          className="btn-primary focus-ring px-5 py-2 text-sm disabled:pointer-events-none disabled:opacity-50"
+          className={cn(primaryButtonClass, "h-9 w-auto disabled:opacity-50")}
         >
-          {pending ? "Publishing…" : "Respond"}
+          {pending ? "Posting…" : "Comment"}
         </button>
       </div>
       <div aria-live="polite" className="empty:hidden">
-        {feedback && (
-          <FormMessage tone={feedback.tone}>
-            {feedback.text}{" "}
-            {feedback.signIn && (
-              <Link href={signInHref(pathname, "#responses")} className="font-semibold underline underline-offset-4">
-                Sign in
-              </Link>
-            )}
-          </FormMessage>
-        )}
+        {feedback && <FormMessage tone={feedback.tone}>{feedback.text}</FormMessage>}
       </div>
     </form>
   );
 }
 
 /**
- * Text-first responses section: heading with count, composer (or a sign-in
+ * Text-first comments section: heading with count, composer (or a sign-in
  * prompt), then a flat list separated by hairlines. Top-level only.
  */
-export default function Responses() {
+export default function Comments() {
   const { status: authStatus } = useAuth();
-  const { status, comments, commentCount, reload } = useEngagement();
-  const pathname = usePathname();
+  const { status, comments, commentCount, reload, requestSignIn } = useEngagement();
   const headingId = useId();
 
   if (status === "unavailable") return null;
 
   return (
     <section
-      id="responses"
+      id={COMMENTS_ID}
       tabIndex={-1}
       aria-labelledby={headingId}
       className="reading-dim max-w-[720px] mb-12 scroll-mt-24 outline-none"
     >
       <h2 id={headingId} className="heading-md text-xl sm:text-[1.375rem]">
-        Responses{status === "ready" && <span className="text-tc-text-light"> ({commentCount})</span>}
+        Comments{status === "ready" && <span className="text-tc-text-light"> ({commentCount})</span>}
       </h2>
 
       <div className="mt-5 border-b border-tc-border pb-6">
@@ -129,13 +117,15 @@ export default function Responses() {
           <Composer />
         ) : authStatus === "signed-out" ? (
           <p className="text-[15px] text-tc-text-muted">
-            <Link
-              href={signInHref(pathname, "#responses")}
-              className="focus-ring rounded font-semibold text-tc-text underline decoration-tc-border-strong underline-offset-4 hover:text-tc-primary hover:decoration-tc-primary"
+            <button
+              type="button"
+              onClick={() => requestSignIn("comment")}
+              aria-haspopup="dialog"
+              className={cn(textLinkClass, "font-semibold")}
             >
-              Sign in to respond
-            </Link>{" "}
-            — reading responses is open to everyone.
+              Sign in to comment
+            </button>{" "}
+            — anyone can read the conversation.
           </p>
         ) : (
           <div className="h-6" aria-hidden="true" />
@@ -146,13 +136,13 @@ export default function Responses() {
         {status === "loading" && (
           <p className="flex items-center gap-2 py-6 text-sm text-tc-text-light">
             <Loader2 size={16} aria-hidden="true" className="animate-spin" />
-            Loading responses…
+            Loading comments…
           </p>
         )}
 
         {status === "error" && (
           <div className="flex flex-wrap items-center gap-3 py-6">
-            <FormMessage tone="error">Couldn&apos;t load responses.</FormMessage>
+            <FormMessage tone="error">Couldn&apos;t load comments.</FormMessage>
             <button
               type="button"
               onClick={reload}
@@ -164,7 +154,7 @@ export default function Responses() {
         )}
 
         {status === "ready" && comments.length === 0 && (
-          <p className="py-6 text-sm text-tc-text-light">No responses yet. Start the conversation.</p>
+          <p className="py-6 text-sm text-tc-text-light">No comments yet. Start the conversation.</p>
         )}
 
         {status === "ready" && comments.length > 0 && (
@@ -176,7 +166,7 @@ export default function Responses() {
         )}
 
         {status === "ready" && commentCount > comments.length && (
-          <p className="pt-4 text-xs text-tc-text-light">Showing the {comments.length} most recent responses.</p>
+          <p className="pt-4 text-xs text-tc-text-light">Showing the {comments.length} most recent comments.</p>
         )}
       </div>
     </section>

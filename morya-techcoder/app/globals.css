@@ -1403,6 +1403,48 @@ html.reading-focus .prose-tc li {
 }
 .animate-bookmark-pop { animation: bookmarkPop var(--tc-dur-slow) var(--tc-ease); }
 
+/* Sign-in dialog (components/auth/AuthModal.tsx). The <dialog> is a
+   transparent full-viewport scroller so the panel can be centred, stay
+   reachable on short screens, and let clicks on the margin dismiss it. */
+.auth-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.auth-dialog[open] { display: flex; flex-direction: column; }
+@media (min-width: 640px) {
+  .auth-dialog { padding: 24px; }
+}
+/* ::backdrop doesn't inherit custom properties in every browser — literal values. */
+.auth-dialog::backdrop {
+  background: rgba(17, 24, 39, 0.32);
+  animation: authFadeIn 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.dark .auth-dialog::backdrop { background: rgba(0, 0, 0, 0.62); }
+.auth-dialog-panel {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -24px rgba(15, 23, 42, 0.28);
+  animation: authPanelIn 220ms var(--tc-ease) both;
+}
+.dark .auth-dialog-panel { box-shadow: none; }
+@keyframes authFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes authPanelIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
 /* View Transitions — quick, calm cross-fade for navigations & theme swap */
 ::view-transition-old(root),
 ::view-transition-new(root) {
@@ -1415,6 +1457,8 @@ html.reading-focus .prose-tc li {
   .spotlight-layer { display: none !important; }
   .grid-cursor-field { display: none !important; }
   .animate-bookmark-pop { animation: none !important; }
+  .auth-dialog::backdrop,
+  .auth-dialog-panel { animation: none !important; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none !important; }
 }

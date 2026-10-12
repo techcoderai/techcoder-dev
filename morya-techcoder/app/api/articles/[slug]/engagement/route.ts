@@ -27,7 +27,7 @@ export async function GET(_request: Request, ctx: RouteContext<"/api/articles/[s
   ]);
   if (!likeState.ok || !comments.ok) {
     console.error("[engagement] load failed:", likeState.ok ? comments.error : likeState.error);
-    return jsonError("Couldn't load responses.", 500);
+    return jsonError("Couldn't load comments.", 500);
   }
 
   const payload: EngagementPayload = {

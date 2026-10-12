@@ -10,7 +10,7 @@ const sections = [
   },
   {
     title: "Reader accounts",
-    body: "An account is optional and only needed to like articles or post responses. We store your email address, a display name, your likes, and the responses you write; if you sign in with Google, we also keep your Google profile picture. Your display name, picture, and responses are shown publicly next to what you post. Accounts are run on Supabase, which keeps you signed in with a first-party cookie. You can delete your responses at any time, and ask us to delete your account.",
+    body: "An account is optional and only needed to clap for articles or post comments. We store your email address, a display name, your claps, and the comments you write; if you sign in with Google, we also keep your Google profile picture. Your display name, picture, and comments are shown publicly next to what you post. Accounts are run on Supabase, which keeps you signed in with a first-party cookie. You can delete your comments at any time, and ask us to delete your account.",
   },
   {
     title: "Cookies & analytics",

@@ -5,6 +5,7 @@ import {
   COMMENT_MAX_LENGTH,
   isAcceptablePassword,
   isAllowedAvatarUrl,
+  isPlausibleEmail,
   isSameOriginRequest,
   isUuid,
   isValidSlugFormat,
@@ -16,7 +17,7 @@ import {
 
 test("safeNextPath keeps same-site paths and rejects open redirects", () => {
   assert.equal(safeNextPath("/blog/hello-world"), "/blog/hello-world");
-  assert.equal(safeNextPath("/blog/hello-world#responses"), "/blog/hello-world#responses");
+  assert.equal(safeNextPath("/blog/hello-world#comments"), "/blog/hello-world#comments");
   assert.equal(safeNextPath("/auth/update-password?x=1"), "/auth/update-password?x=1");
   for (const bad of [
     "https://evil.example",
@@ -86,6 +87,14 @@ test("password rule mirrors the Supabase Auth policy", () => {
   assert.equal(isAcceptablePassword("short1"), false);
   assert.equal(isAcceptablePassword("lettersonly"), false);
   assert.equal(isAcceptablePassword("12345678"), false);
+});
+
+test("email check catches obvious typos only", () => {
+  assert.ok(isPlausibleEmail("reader@techcoder.tech"));
+  assert.ok(isPlausibleEmail("a.b+tag@sub.example.co.uk"));
+  for (const bad of ["", "reader", "reader@", "reader@host", "two words@example.com", "a@b@c.com"]) {
+    assert.equal(isPlausibleEmail(bad), false, `should reject ${bad}`);
+  }
 });
 
 test("only Google-hosted avatars are rendered", () => {
