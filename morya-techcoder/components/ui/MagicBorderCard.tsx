@@ -110,16 +110,16 @@ export default function MagicBorderCard({ post, size = "default", className }: P
             </p>
           )}
 
-          <div className={cn("card-premium-meta flex items-center gap-2 border-t border-tc-border font-medium text-tc-text-light", isCompact ? "mt-1.5 pt-1.5 text-[9px] sm:mt-2 sm:pt-2 sm:text-[10px]" : "pt-2.5 mt-2.5 text-[11px]")}>
-            <time dateTime={post.date}>{formatDate(post.date)}</time>
+          <div className={cn("card-premium-meta flex flex-nowrap items-center gap-2 border-t border-tc-border font-medium text-tc-text-light", isCompact ? "mt-1.5 pt-1.5 text-[9px] sm:mt-2 sm:pt-2 sm:text-[10px]" : "pt-2.5 mt-2.5 text-[11px]")}>
+            <time className="shrink-0 whitespace-nowrap" dateTime={post.date}>{formatDate(post.date)}</time>
             {!isCompact && (
               <>
-                <span className="w-0.5 h-0.5 rounded-full bg-tc-text-light/60" />
-                <span className="flex items-center gap-1">
+                <span className="w-0.5 h-0.5 shrink-0 rounded-full bg-tc-text-light/60" />
+                <span className="flex shrink-0 items-center gap-1 whitespace-nowrap">
                   <Clock size={11} />
                   {post.readingTime}
                 </span>
-                <span className="ml-auto inline-flex items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0">
+                <span className="ml-auto hidden items-center gap-1 text-tc-primary opacity-0 -translate-x-1 transition-[opacity,transform] duration-[var(--tc-dur)] group-hover:opacity-100 group-hover:translate-x-0 sm:inline-flex">
                   Read
                   <ArrowRight size={12} />
                 </span>

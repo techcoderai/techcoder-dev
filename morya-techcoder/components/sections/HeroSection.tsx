@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Sparkles, Compass, Star, TrendingUp } from "lucide-react";
+import { ArrowRight, Compass, Star, TrendingUp } from "lucide-react";
 import CategoryBadge from "@/components/ui/CategoryBadge";
 import { CATEGORIES } from "@/lib/categories";
 import { categoryIcon } from "@/lib/category-icons";
@@ -9,7 +9,7 @@ import TiltSurface from "@/components/ui/TiltSurface";
 /* Representative headlines for the editorial preview — decorative, not live data. */
 const previewFeature = {
   category: "AI" as const,
-  title: "The AI models quietly reshaping how we work",
+  title: "The AI models reshaping how we work",
   meta: "6 min read",
 };
 
@@ -26,7 +26,7 @@ const previewItems = previewList.map((item) => ({
 
 export default function HeroSection() {
   return (
-    <section className="relative px-4 pb-10 pt-20 sm:px-6 sm:pb-20 sm:pt-36 md:pb-28 md:pt-44">
+    <section className="relative px-4 pb-10 pt-20 sm:px-6 sm:pb-20 sm:pt-28 md:pb-28 md:pt-36">
       {/* Ambient mesh — clipped so glow doesn't spill; floats live outside this layer */}
       <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
         <div className="absolute top-0 left-1/2 h-[700px] w-[1100px] -translate-x-1/2 mesh-glow opacity-80" />
@@ -40,22 +40,22 @@ export default function HeroSection() {
       </div>
 
       <div className="container-wide mx-auto flex flex-col items-center text-center">
-        {/* Badge */}
-        <div className="hero-enter-fade" style={{ animationDelay: "80ms" }}>
-          <Link href="/blog" className="chip hero-badge focus-ring group">
-            <span className="flex items-center justify-center w-4 h-4 rounded-full bg-tc-primary text-white">
-              <Sparkles size={9} className="fill-current" />
-            </span>
-            <span className="relative">Trustworthy tech insights, every week</span>
-            <ArrowRight size={12} className="icon-nudge" />
-          </Link>
-        </div>
+        <p
+          aria-label="Technology, AI, and Reviews"
+          className="hero-enter-fade flex items-center gap-2 font-mono text-[10px] font-medium uppercase text-tc-primary sm:gap-2.5 sm:text-xs"
+          style={{ animationDelay: "80ms" }}
+        >
+          <span>Technology</span>
+          <span aria-hidden="true" className="text-tc-primary/50">--</span>
+          <span>AI</span>
+          <span aria-hidden="true" className="text-tc-primary/50">--</span>
+          <span>Reviews</span>
+        </p>
 
         {/* Headline — no enter animation: this is the LCP element */}
-        <h1 className="display-xl hero-title mt-4 max-w-5xl sm:mt-7">
-          <span className="hero-title-line">Discover the </span>
-          <span className="hero-title-line">technology that&apos;s </span>
-          <span className="hero-title-line text-gradient">worth knowing.</span>
+        <h1 className="display-xl hero-title mt-5 w-full sm:mt-6">
+          <span className="hero-title-line">Discover the technology</span>
+          <span className="hero-title-line"><span className="text-tc-text-muted">that&apos;s </span><span className="text-gradient">worth knowing.</span></span>
         </h1>
 
         {/* Subtitle */}
@@ -68,22 +68,22 @@ export default function HeroSection() {
           that actually matters.
         </p> */}
 
-        <p className="hero-enter mt-4 max-w-2xl text-[16px] leading-relaxed text-tc-text-muted sm:mt-6 sm:text-lg"
+        <p className="hero-enter mt-5 max-w-[19rem] text-[14px] leading-[1.45] text-tc-text-muted sm:mt-6 sm:max-w-2xl sm:text-lg sm:leading-relaxed"
           style={{ animationDelay: "240ms" }} >
           Clear thinking on the technology shaping how we build, work, and live  <span className="font-bold"> without the noise.</span>
         </p>
 
         {/* CTAs */}
         <div
-          className="hero-enter mt-5 flex w-full flex-row items-center gap-2 sm:mt-9 sm:w-auto sm:gap-3"
+          className="hero-enter mt-6 flex w-full flex-row flex-wrap items-center justify-center gap-2 max-[359px]:flex-col sm:mt-8 sm:w-auto sm:gap-3"
           style={{ animationDelay: "320ms" }}
         >
-          <Link href="/blog" className="btn-primary hero-cta-primary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
+          <Link href="/blog" className="btn-primary hero-cta-primary focus-ring group flex-none min-h-10 justify-center gap-1.5 px-3 py-2 text-[13px] max-[359px]:w-full sm:min-h-11 sm:w-auto sm:gap-2 sm:px-7 sm:py-3.5 sm:text-[15px]">
             Start exploring
-            <ArrowRight size={16} className="icon-nudge" />
+            <ArrowRight size={14} className="icon-nudge sm:h-4 sm:w-4" />
           </Link>
-          <Link href="/#topics" className="btn-secondary hero-cta-secondary focus-ring group flex-1 justify-center px-4 py-3.5 text-[13.5px] sm:flex-none sm:w-auto sm:px-7 sm:text-[15px]">
-            <Compass size={15} className="icon-lift" />
+          <Link href="/#topics" className="btn-secondary hero-cta-secondary focus-ring group flex-none min-h-10 justify-center gap-1.5 px-3 py-2 text-[13px] max-[359px]:w-full sm:min-h-11 sm:w-auto sm:gap-2 sm:px-7 sm:py-3.5 sm:text-[15px]">
+            <Compass size={14} className="icon-lift sm:h-[15px] sm:w-[15px]" />
             Browse topics
           </Link>
         </div>
@@ -93,7 +93,7 @@ export default function HeroSection() {
       <div
         aria-hidden="true"
         style={{ perspective: 1400, animationDelay: "400ms" }}
-        className="hero-browser-enter container-wide relative mx-auto mt-8 w-[calc(100%-1rem)] max-w-5xl sm:mt-16 sm:w-full md:mt-20"
+        className="hero-browser-enter container-wide relative mx-auto mt-8 w-[calc(100%-1rem)] max-w-5xl sm:mt-12 sm:w-full md:mt-16"
       >
         <div className="hero-browser-glow" aria-hidden="true" />
         <TiltSurface
@@ -107,7 +107,7 @@ export default function HeroSection() {
                 <span className="w-3 h-3 rounded-full bg-[#FEBC2E]" />
                 <span className="w-3 h-3 rounded-full bg-[#28C840]" />
                 <span className="mx-auto flex items-center gap-1.5 rounded-md bg-tc-bg-elevated px-3 py-1 text-[11px] font-medium text-tc-text-light">
-                  https://techcoder.tech
+                  techcoder.tech
                 </span>
               </div>
 
@@ -122,6 +122,8 @@ export default function HeroSection() {
                     fill
                     className="object-cover object-[center_20%]"
                     sizes="(max-width: 768px) 90vw, 420px"
+                    loading="eager"
+                    fetchPriority="high"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                   <CategoryBadge

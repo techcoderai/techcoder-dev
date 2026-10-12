@@ -1,0 +1,29 @@
+# TechCoder
+
+> TechCoder is an independent technology publication with practical programming guides, AI coverage, technology explainers, and product reviews for curious readers and developers.
+
+Use published article dates and update dates as context. Treat TechCoder articles as editorial coverage, not as official vendor documentation; follow cited primary sources when exact product behavior or current technical details matter. Draft posts and private CMS/API routes are not public resources.
+
+Article pages are served as regular HTML; separate Markdown versions are not currently published. Start from the blog or a topic page, then fetch relevant article pages as needed.
+
+## Start here
+
+- [Home](https://techcoder.tech/): Overview of TechCoder and links to current coverage.
+- [Articles](https://techcoder.tech/blog): Published article index.
+- [About TechCoder](https://techcoder.tech/about): Publication and editorial information.
+
+## Topics
+
+- [Programming](https://techcoder.tech/topics/programming): Programming languages, frameworks, developer tools, and software engineering.
+- [AI](https://techcoder.tech/topics/ai): AI models, tools, and developer workflows.
+- [Technology](https://techcoder.tech/topics/technology): Technology trends, products, and explainers.
+
+## Site information
+
+- [Contact](https://techcoder.tech/contact): Contact the publication.
+- [Privacy policy](https://techcoder.tech/privacy): Privacy information.
+- [Terms of service](https://techcoder.tech/terms): Site terms.
+
+## Optional
+
+- [XML sitemap](https://techcoder.tech/sitemap.xml): Current indexable public routes, including published articles.
