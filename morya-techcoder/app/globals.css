@@ -419,9 +419,12 @@
   display: block;
 }
 @media (max-width: 639px) {
+  .hero-title-line {
+    display: inline;
+  }
   .hero-title {
-    font-size: clamp(1.375rem, 7vw, 2.1rem);
-    line-height: 1.02;
+    font-size: clamp(1.625rem, 7.6vw, 2.2rem);
+    line-height: 1.06;
   }
 }
 .heading-xl {

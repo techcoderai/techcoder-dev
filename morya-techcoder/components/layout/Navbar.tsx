@@ -96,7 +96,7 @@ export default function Navbar() {
           // Mobile-first: a leaner bar that reclaims vertical space for content,
           // scaling back up to the roomier desktop bar at sm+.
           scrolled
-            ? "nav-shell-scrolled mt-2.5 h-12 px-3 shadow-[var(--tc-shadow-md)] sm:mt-3 sm:h-14 sm:px-4"
+            ? "nav-shell-scrolled mt-2.5 h-[3.25rem] px-3 shadow-[var(--tc-shadow-md)] sm:mt-3 sm:h-14 sm:px-4"
             : "mt-3 h-14 px-4 border border-transparent sm:mt-5 sm:h-16 sm:px-5"
         )}
       >
@@ -107,7 +107,7 @@ export default function Navbar() {
             <Link
               href={chrome.backHref}
               aria-label="Back to articles"
-              className="press focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200 lg:hidden"
+              className="press focus-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200 lg:hidden"
             >
               <ChevronLeft size={19} />
             </Link>
@@ -170,30 +170,30 @@ export default function Navbar() {
         </div>
 
         {/* Mobile controls — 44px thumb-friendly tap targets */}
-        <div className="flex lg:hidden items-center gap-1 shrink-0">
+        <div className="flex lg:hidden items-center gap-2 shrink-0">
           {reading ? (
             <>
               <button
                 onClick={() => setSheetOpen(true)}
                 aria-label="Open contents"
-                className="press focus-ring flex h-10 w-10 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
+                className="press focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
               >
                 <List size={18} />
               </button>
               <button
                 onClick={shareArticle}
                 aria-label="Share article"
-                className="press focus-ring flex h-10 w-10 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
+                className="press focus-ring flex h-11 w-11 items-center justify-center rounded-full border border-tc-border text-tc-text hover:border-tc-primary transition-colors duration-200"
               >
                 <Share2 size={17} />
               </button>
-              <ThemeToggle />
+              <ThemeToggle className="max-lg:h-11 max-lg:w-11" />
             </>
           ) : (
             <>
               {!menuOpen && (
                 <>
-                  <ThemeToggle />
+                  <ThemeToggle className="max-lg:h-11 max-lg:w-11" />
                   <AccountMenu />
                   <button
                     type="button"

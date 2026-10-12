@@ -60,8 +60,8 @@ export default function AccountMenu({ className }: { className?: string }) {
 
   const signIn = (extraClass?: string) => {
     const signInClass = cn(
-      "press focus-ring flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-tc-border bg-tc-glass-bg text-[13.5px] font-medium text-tc-text-muted transition-colors duration-[var(--tc-dur)] hover:border-tc-primary hover:text-tc-primary",
-      "w-9 sm:w-auto sm:px-3.5",
+      "press focus-ring flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full border border-tc-border bg-tc-glass-bg text-[13.5px] font-medium text-tc-text-muted transition-colors duration-[var(--tc-dur)] hover:border-tc-primary hover:text-tc-primary max-lg:h-11",
+      "w-9 max-sm:w-11 sm:w-auto sm:px-3.5",
       extraClass,
       className
     );
@@ -90,7 +90,7 @@ export default function AccountMenu({ className }: { className?: string }) {
   if (status === "loading") {
     return (
       <>
-        <span aria-hidden="true" className={cn("auth-pending skeleton h-9 w-9 shrink-0 rounded-full", className)} />
+        <span aria-hidden="true" className={cn("auth-pending skeleton h-9 w-9 shrink-0 rounded-full max-lg:h-11 max-lg:w-11", className)} />
         {signIn("auth-guest")}
       </>
     );
@@ -123,7 +123,7 @@ export default function AccountMenu({ className }: { className?: string }) {
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         aria-label={`Account menu for ${name}`}
-        className="press focus-ring flex h-9 w-9 items-center justify-center rounded-full transition-shadow duration-[var(--tc-dur)] hover:shadow-[0_0_0_2px_var(--tc-primary)]"
+        className="press focus-ring flex h-9 w-9 items-center justify-center rounded-full transition-shadow duration-[var(--tc-dur)] hover:shadow-[0_0_0_2px_var(--tc-primary)] max-lg:h-11 max-lg:w-11"
       >
         {profile ? (
           <UserAvatar name={name} src={profile.avatarUrl} size={36} />
