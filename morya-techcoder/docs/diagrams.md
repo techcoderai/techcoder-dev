@@ -8,10 +8,12 @@ VS Code Markdown preview (with a Mermaid extension).
 
 ## 1. System architecture
 
-Everything runs inside one Next.js app. There is no database — content is
-files in Git. The only server-side runtime call to another service is the newsletter
-(Resend). In the browser, Vercel Analytics, tweets, and video/code embeds
-load third-party resources.
+Everything runs inside one Next.js app. Content is files in Git, not a
+database. Server-side runtime calls go to the newsletter (Resend) and to
+Supabase, which handles reader accounts, likes and responses (see
+[auth-and-engagement.md](./auth-and-engagement.md)). In the browser, Vercel
+Analytics, Supabase Auth, tweets, and video/code embeds load third-party
+resources.
 
 ```mermaid
 flowchart LR

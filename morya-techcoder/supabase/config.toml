@@ -1,0 +1,5 @@
+# Supabase CLI project file. TechCoder uses a hosted Supabase project only; the
+# CLI needs this file for `supabase link`, `supabase db push` and
+# `supabase test db --linked`. Auth settings live in the Supabase dashboard
+# (see docs/auth-and-engagement.md).
+project_id = "cuwwcnlaipukrjixxfto"

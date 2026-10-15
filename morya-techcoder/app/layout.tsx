@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   },
 };
 
-// Runs before paint to prevent a flash of the wrong theme.
+// Runs before paint to prevent a flash of the wrong theme or navbar account control.
 const themeScript = `
 (function() {
   try {
@@ -56,6 +56,7 @@ const themeScript = `
     var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     if (theme === 'dark') document.documentElement.classList.add('dark');
   } catch (e) {}
+  if (/(?:^|;\\s*)sb-[^=]+-auth-token/.test(document.cookie)) document.documentElement.setAttribute('data-session', '');
 })();
 `;
 

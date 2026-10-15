@@ -40,6 +40,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Unit tests
+        run: npm test
+
       # Also validates every MDX post compiles and every static route
       # (articles, share images, sitemap) prerenders.
       - name: Build
